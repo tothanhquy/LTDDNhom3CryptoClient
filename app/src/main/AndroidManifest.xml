@@ -12,8 +12,22 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Nhom3_crypto_client"
         tools:targetApi="31">
+        <service
+            android:name=".service.SocketService"
+            android:enabled="true"
+            android:exported="true"></service>
+
         <activity
-            android:name=".Test2Activity"
+            android:name=".view.ExampleActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".view.BaseActivity"
             android:exported="false" />
         <activity
             android:name=".TestActivity"

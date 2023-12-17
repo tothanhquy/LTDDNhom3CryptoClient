@@ -1,14 +1,15 @@
-package com.example.nhom3_crypto_client;
+package com.example.nhom3_crypto_client.view;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-public class Test2Activity extends AppCompatActivity {
+import com.example.nhom3_crypto_client.R;
+
+public class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_test2);
     }
 }

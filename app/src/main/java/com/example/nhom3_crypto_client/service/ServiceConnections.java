@@ -1,0 +1,37 @@
+package com.example.nhom3_crypto_client.service;
+
+import android.content.ComponentName;
+import android.content.ServiceConnection;
+import android.os.IBinder;
+
+public class ServiceConnections {
+    public static class SocketServiceConnection implements ServiceConnection{
+        private ServiceCreatedCallback serviceCreatedCallback;
+        public SocketServiceConnection(ServiceCreatedCallback serviceCreatedCallback){
+            this.serviceCreatedCallback = serviceCreatedCallback;
+        }
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder binder) {
+            SocketService.MyBinder myBinder = (SocketService.MyBinder) binder;
+            serviceCreatedCallback.setService(myBinder.getService());
+            serviceCreatedCallback.setIsBound(true);
+            serviceCreatedCallback.createdComplete();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            serviceCreatedCallback.setIsBound(false);
+        }
+
+        @Override
+        public void onBindingDied(ComponentName name) {
+            ServiceConnection.super.onBindingDied(name);
+        }
+
+        @Override
+        public void onNullBinding(ComponentName name) {
+            ServiceConnection.super.onNullBinding(name);
+        }
+
+    }
+}
