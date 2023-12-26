@@ -60,7 +60,7 @@ public class API {
         }
     }
 
-    public static String SERVER_URL = "http://192.168.1.9";
+    public static String SERVER_URL = "http://10.0.0.2";
     public static String SERVER_URL_AND_PORT= SERVER_URL+":8080";
 
 
@@ -84,7 +84,7 @@ public class API {
         try {
             OkHttpClient client = new OkHttpClient();
 //            RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), requestBody);
-
+            System.out.println(context);
             Request request = new Request.Builder()
                     .url(SERVER_URL_AND_PORT + path)
                     .addHeader("auth",getAuth(context))
@@ -96,7 +96,7 @@ public class API {
                 throw new Exception();
             }
 
-            System.out.println(response.body().string());
+            System.out.println(response.body().toString());
 
             ResponseAPICrude responseAPICrude = new Gson().fromJson(response.body().string(),ResponseAPICrude.class);
             return new ResponseAPI(responseAPICrude);

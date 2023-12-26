@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.os.StrictMode;
 
 import com.example.nhom3_crypto_client.api.API;
 import com.example.nhom3_crypto_client.model.socket.SocketServiceEventsModel;
@@ -48,7 +49,15 @@ public class SocketService extends Service {
     public void onCreate() {
         // Initialize your cursor or any other relevant data
         socketServiceEventManager = new SocketServiceEventsModel.SocketServiceEventManager();
+        int SDK_INT = android.os.Build.VERSION.SDK_INT;
+        if (SDK_INT > 8)
+        {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                    .permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+            //your codes here
 
+        }
         try {
             clientSocket = new Socket(SERVER_ADDRESS, SERVER_POST);
             outputWriter = new PrintWriter(clientSocket.getOutputStream(), true);
@@ -56,11 +65,11 @@ public class SocketService extends Service {
 
             listenInput();
 
-            //join personal room
+//            join personal room
             send(SocketServiceEventsModel.EventNames.Send.JoinPersonalRoom,API.getAuth(getApplicationContext()));
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            System.out.println(e);
         }
     }
     private void listenInput(){
