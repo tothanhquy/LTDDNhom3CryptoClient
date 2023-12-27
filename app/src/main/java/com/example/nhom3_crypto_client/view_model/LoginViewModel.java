@@ -17,9 +17,6 @@ public class LoginViewModel extends BaseViewModel{
 
     public void login(String sdt, String password, SystemNotificationModel.OkCallback okCallback){
         if(isLoading().getValue())return;
-        System.out.println("heheheheeheheh");
-        System.out.println(sdt);
-        System.out.println(password);
         _isLoading.postValue(true);
         new Thread(()->{
             loginAPI(sdt,password,okCallback);

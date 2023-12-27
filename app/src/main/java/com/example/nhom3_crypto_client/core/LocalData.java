@@ -15,7 +15,7 @@ public class LocalData {
 
 
     public String getString(String key){
-        return prefs.getString(key, null);
+        return prefs.getString(key, "");
     }
     public void setString(String key, String value){
         prefs.edit().putString(key,value).apply();
