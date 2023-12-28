@@ -29,7 +29,7 @@ public class CoinService extends Service {
     private Boolean isBoundSocketService;
     private ServiceConnection serviceConnection;
     private CoinServiceModel.CoinServiceListenerManager coinServiceListenerManager;
-    private CoinServiceModel.CoinsNow coinsNow = new CoinServiceModel.CoinsNow();
+    private CoinServiceModel.CoinsNow coinsNow = null;
 
     public void addEventListener(ArrayList<String> coinsId, String author, CoinServiceModel.EventCallbackInterface callback){
         coinServiceListenerManager.addListener(coinsId,author,callback);
@@ -41,8 +41,30 @@ public class CoinService extends Service {
         coinServiceListenerManager.removeListener(author);
     }
 
-    public ArrayList<CoinServiceModel.CoinNow> getAllCoins(){
-        return coinsNow.data;
+
+    public static interface GetAllWaitCallback{
+        public void handle(ArrayList<CoinServiceModel.CoinNow> coins);
+    }
+    public void getAllCoins(GetAllWaitCallback callback){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    int i = 0;
+                    while(true){
+                        if(i++>20)break;
+                        if(coinsNow!=null)
+                        {
+                            callback.handle(coinsNow.data);
+                            return;
+                        };
+                        Thread.sleep(500);
+                    }
+                } catch (InterruptedException e) {
+                }
+                callback.handle(new ArrayList<>());
+            }
+        }).start();
     }
 
     private class SocketServiceCreatedCallback implements ServiceCreatedCallback{
@@ -63,15 +85,19 @@ public class CoinService extends Service {
         @Override
         public void handle(String data) {
             try{
-                CoinServiceModel.CoinsNow coinsNow = new Gson().fromJson(data,CoinServiceModel.CoinsNow.class);
+                coinsNow = new Gson().fromJson(data,CoinServiceModel.CoinsNow.class);
                 coinServiceListenerManager.handleEvent(coinsNow.data);
-            }catch(Exception e){}
+            }catch(Exception e){
+                System.out.println(e);
+            }
         }
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
+
+        coinServiceListenerManager = new CoinServiceModel.CoinServiceListenerManager();
         // Bind to the service
         SocketServiceCreatedCallback serviceCreatedCallback = new SocketServiceCreatedCallback();
         serviceConnection = new ServiceConnections.SocketServiceConnection(serviceCreatedCallback);

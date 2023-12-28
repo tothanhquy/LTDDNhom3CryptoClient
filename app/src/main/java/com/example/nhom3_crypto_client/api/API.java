@@ -16,6 +16,7 @@ import com.google.gson.Gson;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class API {
     private static String AUTH_LOCAL_DATA_NAME = "auth";
@@ -60,8 +61,8 @@ public class API {
         }
     }
 
-    public static String SERVER_URL = "http://10.0.0.2";
-    public static String SERVER_URL_AND_PORT= SERVER_URL+":8080";
+    public static String SERVER_URL = "192.168.1.10";
+    public static String SERVER_URL_AND_PORT= "http://"+SERVER_URL+":8080";
 
 
     public static String getAuth (Context context){
@@ -96,7 +97,7 @@ public class API {
                 throw new Exception();
             }
 
-            System.out.println(response.body().toString());
+//            System.out.println(response.body().toString());
 
             ResponseAPICrude responseAPICrude = new Gson().fromJson(response.body().string(),ResponseAPICrude.class);
             return new ResponseAPI(responseAPICrude);
@@ -143,7 +144,7 @@ public class API {
     }
     public static ResponseAPI get(Context context, String path, RequestParams requestParams){
         try {
-            OkHttpClient client = new OkHttpClient();
+            OkHttpClient client = new OkHttpClient.Builder().readTimeout(10, TimeUnit.SECONDS).build();
             HttpUrl.Builder urlBuilder = HttpUrl.parse(SERVER_URL_AND_PORT + path).newBuilder();
             if(requestParams!=null&&requestParams.size()!=0){
                 for(int i=0;i<requestParams.size();i++){
@@ -161,13 +162,14 @@ public class API {
                 throw new Exception();
             }
 
-            System.out.println(response.body().string());
+//            System.out.println(response.body().string());
 
             ResponseAPICrude responseAPICrude = new Gson().fromJson(response.body().string(),ResponseAPICrude.class);
             return new ResponseAPI(responseAPICrude);
 
         } catch (Exception err){
-            System.out.println(err.toString());
+//            throw new RuntimeException(err);
+            System.out.println(err);
             return new ResponseAPI(1, ResponseAPI.Status.Fail, null, "system_error");
         }
     }

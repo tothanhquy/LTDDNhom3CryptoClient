@@ -127,7 +127,7 @@ public class SocketService extends Service {
             inputStream.close();
             outputWriter.close();
             clientSocket.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
         }
         super.onDestroy();
     }

@@ -19,7 +19,10 @@ public class BaseViewModel extends ViewModel {
     }
 
     // Method to update the data
-    public void updateData(boolean isLoading) {
-        _isLoading.setValue(isLoading);
+//    public void updateData(boolean isLoading) {
+//        _isLoading.setValue(isLoading);
+//    }
+    public static interface OkCallback{
+        public void handle(String data);
     }
 }

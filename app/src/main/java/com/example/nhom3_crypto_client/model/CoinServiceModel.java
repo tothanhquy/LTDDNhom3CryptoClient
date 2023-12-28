@@ -8,29 +8,23 @@ public class CoinServiceModel {
         public String id;
         public int rank;
         public String symbol;
+        public String icon;
         public String name;
-        public float supply;
-        public float maxSupply;
-        public float marketCapUsd;
         public float volumeUsd24Hr;
         public float priceUsd;
         public float changePercent24Hr;
         public float vwap24Hr;
-        public String explorer;
 
-        public CoinNow(String id, int rank, String symbol, String name, float supply, float maxSupply, float marketCapUsd, float volumeUsd24Hr, float priceUsd, float changePercent24Hr, float vwap24Hr, String explorer) {
+        public CoinNow(String id, int rank, String symbol, String icon, String name, float volumeUsd24Hr, float priceUsd, float changePercent24Hr, float vwap24Hr) {
             this.id = id;
             this.rank = rank;
             this.symbol = symbol;
+            this.icon = icon;
             this.name = name;
-            this.supply = supply;
-            this.maxSupply = maxSupply;
-            this.marketCapUsd = marketCapUsd;
             this.volumeUsd24Hr = volumeUsd24Hr;
             this.priceUsd = priceUsd;
             this.changePercent24Hr = changePercent24Hr;
             this.vwap24Hr = vwap24Hr;
-            this.explorer = explorer;
         }
     }
     public static class CoinsNow{
