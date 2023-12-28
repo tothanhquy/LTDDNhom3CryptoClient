@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.nhom3_crypto_client.R;
 
-public class ResetPasswordActivity extends AppCompatActivity {
+public class Thuc_ResetPasswordActivity extends AppCompatActivity {
     public boolean check(String phonenumber, String newPassword, String confirmPassword){
         String hashPhoneNumber = "0123";
         String hashnewPassword = "123";
@@ -27,7 +27,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         System.out.println("gegeegegeg");
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_reset_password);
+        setContentView(R.layout.thuc_activity_reset_password);
         ResetPassword();
     }
     public void ResetPassword(){
@@ -42,7 +42,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
         signin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ResetPasswordActivity.this, MainActivity.class);
+                Intent intent = new Intent(Thuc_ResetPasswordActivity.this, Thuc_MainActivity.class);
                 startActivity(intent);
             }
         });
@@ -50,7 +50,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
         signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ResetPasswordActivity.this, SignUpActivity.class);
+                Intent intent = new Intent(Thuc_ResetPasswordActivity.this, Thuc_SignUpActivity.class);
                 startActivity(intent);
             }
         });
@@ -60,8 +60,8 @@ public class ResetPasswordActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Boolean check123 =  check(phonenumber.getText().toString(), newpassword.getText().toString(), confirmnewpassword.getText().toString());
                 if(check123) {
-                    Toast.makeText(ResetPasswordActivity.this, "Đổi mật khẩu thành công", Toast.LENGTH_LONG).show();
-                    Intent intent = new Intent(ResetPasswordActivity.this, OTPActivity.class);
+                    Toast.makeText(Thuc_ResetPasswordActivity.this, "Đổi mật khẩu thành công", Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(Thuc_ResetPasswordActivity.this, Thuc_OTPActivity.class);
                     startActivity(intent);
                 }
             }
