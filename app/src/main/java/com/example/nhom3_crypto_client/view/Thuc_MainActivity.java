@@ -18,7 +18,7 @@ import com.example.nhom3_crypto_client.service.SocketService;
 import com.example.nhom3_crypto_client.view_model.LoginViewModel;
 
 
-public class MainActivity extends AppCompatActivity {
+public class Thuc_MainActivity extends AppCompatActivity {
 
     private SocketService socketService;
     private Boolean isBoundSocketService;
@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         if (it != null) {
-                            Toast.makeText(MainActivity.this, it.content, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Thuc_MainActivity.this, it.content, Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(MainActivity.this, "thanh cong", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Thuc_MainActivity.this, "thanh cong", Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.thuc_activity_main);
         loginViewModel = new LoginViewModel(getApplicationContext());
         Signin();
         setRender();
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
                 String setPhonenumber = phonenumber.getText().toString();
 
                 if (setPassword.isEmpty() || setPhonenumber.isEmpty()) {
-                    Toast.makeText(MainActivity.this, "Bạn đang bỏ trống", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Thuc_MainActivity.this, "Bạn đang bỏ trống", Toast.LENGTH_SHORT).show();
                 } else {
                     check(setPhonenumber, setPassword);
                     // Xử lý đăng
@@ -102,14 +102,14 @@ public class MainActivity extends AppCompatActivity {
         signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, SignUpActivity.class);
+                Intent intent = new Intent(Thuc_MainActivity.this, Thuc_SignUpActivity.class);
                 startActivity(intent);
             }
         });
         resetpassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, ResetPasswordActivity.class);
+                Intent intent = new Intent(Thuc_MainActivity.this, Thuc_ResetPasswordActivity.class);
                 startActivity(intent);
             }
         });

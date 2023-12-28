@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.nhom3_crypto_client.R;
 
-public class SignUpActivity extends AppCompatActivity {
+public class Thuc_SignUpActivity extends AppCompatActivity {
 
     public boolean check(String phonenumber, String createpassword, String confirmcreatepassword){
         String hashPhoneNumber = "0123";
@@ -27,7 +27,7 @@ public class SignUpActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_signup);
+        setContentView(R.layout.thuc_activity_signup);
         Signup();
     }
 
@@ -43,7 +43,7 @@ public class SignUpActivity extends AppCompatActivity {
         signin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(SignUpActivity.this, MainActivity.class);
+                Intent intent = new Intent(Thuc_SignUpActivity.this, Thuc_MainActivity.class);
                 startActivity(intent);
             }
         });
@@ -51,7 +51,7 @@ public class SignUpActivity extends AppCompatActivity {
         resetpassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(SignUpActivity.this, ResetPasswordActivity.class);
+                Intent intent = new Intent(Thuc_SignUpActivity.this, Thuc_ResetPasswordActivity.class);
                 startActivity(intent);
             }
         });
@@ -60,8 +60,8 @@ public class SignUpActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Boolean check123 =  check(phonenumber.getText().toString(), createpassword.getText().toString(), confirmcreatepassword.getText().toString());
                 if(check123) {
-                    Toast.makeText(SignUpActivity.this, "Đăng ký thành công", Toast.LENGTH_LONG).show();
-                    Intent intent = new Intent(SignUpActivity.this, OTPActivity.class);
+                    Toast.makeText(Thuc_SignUpActivity.this, "Đăng ký thành công", Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(Thuc_SignUpActivity.this, Thuc_OTPActivity.class);
                     startActivity(intent);
                 }
             }

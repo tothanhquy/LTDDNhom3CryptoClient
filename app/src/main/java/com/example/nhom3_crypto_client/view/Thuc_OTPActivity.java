@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.nhom3_crypto_client.R;
 
-public class OTPActivity extends AppCompatActivity {
+public class Thuc_OTPActivity extends AppCompatActivity {
 
     private EditText otp1;
     private EditText otp2;
@@ -25,7 +25,7 @@ public class OTPActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_otp);
+        setContentView(R.layout.thuc_activity_otp);
         OTP();
         setupOtpEditText(otp1, otp2, otp1);
         setupOtpEditText(otp2, otp3, otp1);
@@ -48,7 +48,7 @@ public class OTPActivity extends AppCompatActivity {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(OTPActivity.this, SignUpActivity.class);
+                Intent intent = new Intent(Thuc_OTPActivity.this, Thuc_SignUpActivity.class);
                 startActivity(intent);
             }
         });
