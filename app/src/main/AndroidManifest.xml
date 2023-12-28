@@ -35,10 +35,10 @@
             android:name=".view.BaseActivity"
             android:exported="false" />
         <activity
-            android:name=".view.Home"
+            android:name=".view.Thuc_Home"
             android:exported="false" />
         <activity
-            android:name=".view.MainActivity"
+            android:name=".view.Thuc_MainActivity"
             android:exported="true" >
 <!--            <intent-filter>-->
 <!--                <action android:name="android.intent.action.MAIN" />-->
@@ -46,13 +46,13 @@
 <!--            </intent-filter>-->
         </activity>
         <activity
-            android:name=".view.OTPActivity"
+            android:name=".view.Thuc_OTPActivity"
             android:exported="false" />
         <activity
-            android:name=".view.ResetPasswordActivity"
+            android:name=".view.Thuc_ResetPasswordActivity"
             android:exported="false" />
         <activity
-            android:name=".view.SignUpActivity"
+            android:name=".view.Thuc_SignUpActivity"
             android:exported="false" />
         <activity
             android:name=".TestActivity"
