@@ -13,8 +13,8 @@ public class QuyProfileViewModel extends BaseViewModel{
     }
 
     public void getMiniInfo(OkCallback okCallback){
-//        if(isLoading().getValue())return;
-//        _isLoading.postValue(true);
+        if(isLoading().getValue())return;
+        _isLoading.postValue(true);
         new Thread(()->{
             getMiniInfoAPI(okCallback);
         }).start();
@@ -36,7 +36,7 @@ public class QuyProfileViewModel extends BaseViewModel{
             System.out.println(e);
             _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Error,"Lỗi hệ thống."));
         }finally {
-//            _isLoading.postValue(false);
+            _isLoading.postValue(false);
         }
     }
 }

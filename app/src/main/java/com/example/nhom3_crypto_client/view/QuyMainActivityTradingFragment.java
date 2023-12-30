@@ -218,6 +218,21 @@ public class QuyMainActivityTradingFragment extends Fragment {
                 }
             }
         });
+        quyProfileViewModel.isLoading().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean isLoading) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(isLoading==true){
+                            loadingLayout.setVisibility(View.VISIBLE);
+                        }else{
+                            loadingLayout.setVisibility(View.GONE);
+                        }
+                    }
+                });
+            }
+        });
         quyTradingCommandViewModel.notification().observe(this, new Observer<SystemNotificationModel>() {
             @Override
             public void onChanged(SystemNotificationModel systemNotificationModel) {
@@ -281,7 +296,7 @@ public class QuyMainActivityTradingFragment extends Fragment {
         quyMainActivityTradingFragmentCreateCommandContainerOpenCommandButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openCommand();
+                checkCommandAndContinue();
             }
         });
     }
@@ -365,7 +380,7 @@ public class QuyMainActivityTradingFragment extends Fragment {
             leverage = Integer.parseInt(quyMainActivityTradingFragmentCreateCommandContainerLeverage.getSelectedItem().toString());
             money = Long.parseLong(quyMainActivityTradingFragmentCreateCommandContainerInputMoney.getText().toString());
             if(leverage!=1){
-                commission = (long)(money*leverage*0.0001f);//0.01%
+                commission = getCommission(money,leverage);//0.01%
             }
         }catch(Exception e){}
         quyMainActivityTradingFragmentCreateCommandContainerSumMoney.setText("Khối lượng: "+money*leverage);
@@ -471,9 +486,61 @@ public class QuyMainActivityTradingFragment extends Fragment {
         }
     }
 
-    private void openCommand(){
+    private long getCommission(long money, int leverage){
+        if(leverage==1)return 0L;
+        return (long)(money*leverage*0.0001f);
+    }
+    private void checkCommandAndContinue(){
+        long money = 0L;
+        int leverage = 1;
+        long commission = 0;
+        try{
+            leverage = Integer.parseInt(quyMainActivityTradingFragmentCreateCommandContainerLeverage.getSelectedItem().toString());
+            money = Long.parseLong(quyMainActivityTradingFragmentCreateCommandContainerInputMoney.getText().toString());
+            if(leverage!=1){
+                commission = getCommission(money,leverage);//0.01%
+            }
+        }catch(Exception e){}
+
+        if(money==0L){
+            General.showNotification(context,new SystemNotificationModel(SystemNotificationModel.Type.Warning,"Chưa nhập số tiền."));
+        }else if(money<10L){
+            General.showNotification(context,new SystemNotificationModel(SystemNotificationModel.Type.Warning,"Số tiền không ít hơn 10$."));
+        }
+
+        if(quyMainActivityTradingFragmentCreateCommandContainerEnableTPSL.isChecked()){
+            long tp = 0L;
+            long sl = 0L;
+            try{
+                tp = Long.parseLong(quyMainActivityTradingFragmentCreateCommandContainerTakeProfit.getText().toString());
+                sl = Long.parseLong(quyMainActivityTradingFragmentCreateCommandContainerStopLoss.getText().toString());
+            }catch(Exception e){}
+            if(tp<money-commission){
+                General.showNotification(context,new SystemNotificationModel(SystemNotificationModel.Type.Warning,"Chốt lời không ít hơn giá trị hiện tại."));
+            }
+            if(sl>money-commission){
+                General.showNotification(context,new SystemNotificationModel(SystemNotificationModel.Type.Warning,"Cắt lỗ không lớn hơn giá trị hiện tại."));
+            }
+        }
+        checkTracePinStatusAndContinue();
+    }
+    private void checkTracePinStatusAndContinue(){
+        quyTradingCommandViewModel.checkTradePinStatus(new BaseViewModel.OkCallback() {
+            @Override
+            public void handle(String data) {
+                if(data.equals("true")){
+                    openVerifyPinAndContinue();
+                }else{
+                    General.showNotification(context,new SystemNotificationModel(SystemNotificationModel.Type.Warning,"Bạn chưa thiết lập mã pin giao dịch. Hãy vào hồ sơ > cài đặt để thiết lập."));
+                }
+            }
+        });
+    }
+
+    private void openVerifyPinAndContinue(){
 
 
     }
+
 
 }
