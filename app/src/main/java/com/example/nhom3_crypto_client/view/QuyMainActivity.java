@@ -37,7 +37,7 @@ public class QuyMainActivity extends AppCompatActivity {
     QuyMainActivityProfileFragment quyMainActivityProfileFragment;
 
 
-    private String REGISTER_COIN_SERVICE_NAME = "coin-list";
+    private String REGISTER_COIN_SERVICE_NAME = "main-activity";
     private CoinService coinService;
     private Boolean isBoundCoinService=false;
     private ServiceConnection serviceConnection;
@@ -65,7 +65,7 @@ public class QuyMainActivity extends AppCompatActivity {
 
 
         String[] tabTitles = {"Home","Yêu thích" ,"Giao dịch", "Hồ sơ"};//put titles based on your need
-        int[] tabIcons = {R.drawable.outline_info_24,R.drawable.outline_info_24, R.drawable.outline_info_24, R.drawable.outline_info_24};
+        int[] tabIcons = {R.drawable.quy_icon_checked,R.drawable.quy_icon_checked, R.drawable.quy_icon_checked, R.drawable.quy_icon_checked};
 
         quyMainActivityHomeFragment = new QuyMainActivityHomeFragment();
         quyMainActivityInterestedCoinsFragment = new QuyMainActivityInterestedCoinsFragment();
@@ -88,6 +88,17 @@ public class QuyMainActivity extends AppCompatActivity {
         serviceConnection = new ServiceConnections.CoinServiceConnection(serviceCreatedCallback);
         Intent intent = new Intent(this, CoinService.class);
         bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (isBoundCoinService) {
+            coinService.removeEventListener(REGISTER_COIN_SERVICE_NAME);
+            unbindService(serviceConnection);
+            isBoundCoinService = false;
+        }
     }
 
     ActivityResultLauncher<Intent> changeCoinLauncher = registerForActivityResult(

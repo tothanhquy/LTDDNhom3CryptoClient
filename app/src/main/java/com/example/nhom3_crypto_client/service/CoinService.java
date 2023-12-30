@@ -67,6 +67,37 @@ public class CoinService extends Service {
         }).start();
     }
 
+    public static interface GetOneWaitCallback{
+        public void handle(CoinServiceModel.CoinNow coin);
+    }
+    public void getCoinById(String coinId, GetOneWaitCallback callback){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    int i = 0;
+                    while(true){
+                        if(i++>20)break;
+                        if(coinsNow!=null)
+                        {
+                            for (int j = 0; j < coinsNow.data.size(); j++) {
+                                if(coinsNow.data.get(j).id.equals(coinId)){
+                                    callback.handle(coinsNow.data.get(j));
+                                    return;
+                                }
+                            }
+                            callback.handle(null);
+                            return;
+                        };
+                        Thread.sleep(500);
+                    }
+                } catch (InterruptedException e) {
+                }
+                callback.handle(null);
+            }
+        }).start();
+    }
+
     private class SocketServiceCreatedCallback implements ServiceCreatedCallback{
         @Override
         public void setService(Service service) {

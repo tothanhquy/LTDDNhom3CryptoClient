@@ -70,9 +70,9 @@ public class QuyCoinListActivity extends AppCompatActivity {
 
         String[] tabTitles = {"Coins","Top tăng giá" ,"Top giảm giá"};//put titles based on your need
         int[] tabIcons = {
-                R.drawable.outline_info_24,
-                R.drawable.outline_info_24,
-                R.drawable.outline_info_24};
+                R.drawable.quy_icon_checked,
+                R.drawable.quy_icon_checked,
+                R.drawable.quy_icon_checked};
 
         normalList = new QuyCoinListFragment(getApplicationContext(),QuyCoinListFragment.SortStatus.None);
         normalList.setChooseCallback(new ChooseCallback());
