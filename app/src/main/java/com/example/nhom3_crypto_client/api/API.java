@@ -61,7 +61,7 @@ public class API {
         }
     }
 
-    public static String SERVER_URL = "192.168.1.10";
+    public static String SERVER_URL = "192.168.5.158";
     public static String SERVER_URL_AND_PORT= "http://"+SERVER_URL+":8080";
 
 
@@ -84,8 +84,7 @@ public class API {
     public static ResponseAPI post(Context context, String path, RequestBody requestBody){
         try {
             OkHttpClient client = new OkHttpClient();
-//            RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), requestBody);
-            System.out.println(context);
+//            RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), requestBody.toString());
             Request request = new Request.Builder()
                     .url(SERVER_URL_AND_PORT + path)
                     .addHeader("auth",getAuth(context))

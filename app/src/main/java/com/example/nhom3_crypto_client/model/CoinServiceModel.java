@@ -43,38 +43,25 @@ public class CoinServiceModel {
     public static class CoinServiceListenerManager{
         private ArrayList<Listener> listeners=new ArrayList<>();
 
-        public void addListener(ArrayList<String> coinsId, String author, EventCallbackInterface callback){
-            int ind = findIndex(author);
+        public void addListener(ArrayList<String> coinsId, String mainAuthor, String subAuthor, EventCallbackInterface callback){
+            int ind = findIndex(mainAuthor,subAuthor);
             if(ind==-1){
-                listeners.add(new Listener(coinsId,author,callback));
+                listeners.add(new Listener(coinsId,mainAuthor,subAuthor,callback));
             }else{
-                Listener temp = listeners.get(ind);
-                for (int i = 0; i < coinsId.size(); i++) {
-                    if(temp.coinsId.indexOf(coinsId.get(i))==-1){
-                        temp.coinsId.add(coinsId.get(i));
-                    }
-                }
+                listeners.get(ind).coinsId = coinsId;
             }
         }
-        public void removeListener(ArrayList<String> coinsId, String author){
-            int ind = findIndex(author);
-            if(ind!=-1){
-                Listener temp = listeners.get(ind);
-                for (int i = 0; i < coinsId.size(); i++) {
-                    int coinInd = temp.coinsId.indexOf(coinsId.get(i));
-                    if(coinInd!=-1){
-                        temp.coinsId.remove(coinInd);
-                    }
-                }
-                if(temp.coinsId.size()==0){
-                    listeners.remove(ind);
-                }
-            }
-        }
-        public void removeListener(String author){
-            int ind = findIndex(author);
+        public void removeListener(String mainAuthor,String subAuthor){
+            int ind = findIndex(mainAuthor,subAuthor);
             if(ind!=-1){
                 listeners.remove(ind);
+            }
+        }
+        public void removeListener(String mainAuthor){
+            for (int i = listeners.size()-1; i >= 0; i--) {
+                if(listeners.get(i).mainAuthor.equals(mainAuthor)){
+                    listeners.remove(i);
+                }
             }
         }
 
@@ -102,9 +89,9 @@ public class CoinServiceModel {
             }
             return -1;
         }
-        private int findIndex(String author){
+        private int findIndex(String mainAuthor, String subAuthor){
             for(int i=listeners.size()-1;i>=0;i--){
-                if(listeners.get(i).author.equals(author)){
+                if(listeners.get(i).mainAuthor.equals(mainAuthor)&&listeners.get(i).subAuthor.equals(subAuthor)){
                     return i;
                 }
             }
@@ -118,12 +105,13 @@ public class CoinServiceModel {
 
     private static class Listener{
         public ArrayList<String> coinsId;
-        public String author;
+        public String mainAuthor, subAuthor;
         public EventCallbackInterface callback;
 
-        public Listener(ArrayList<String> coinsId, String author, EventCallbackInterface callback) {
+        public Listener(ArrayList<String> coinsId, String mainAuthor, String subAuthor, EventCallbackInterface callback) {
             this.coinsId = coinsId;
-            this.author = author;
+            this.mainAuthor = mainAuthor;
+            this.subAuthor = subAuthor;
             this.callback = callback;
         }
     }
