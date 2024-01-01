@@ -31,14 +31,17 @@ public class CoinService extends Service {
     private CoinServiceModel.CoinServiceListenerManager coinServiceListenerManager;
     private CoinServiceModel.CoinsNow coinsNow = null;
 
-    public void addEventListener(ArrayList<String> coinsId, String author, CoinServiceModel.EventCallbackInterface callback){
-        coinServiceListenerManager.addListener(coinsId,author,callback);
+    public void addEventListener(ArrayList<String> coinsId, String mainAuthor,String subAuthor, CoinServiceModel.EventCallbackInterface callback){
+        coinServiceListenerManager.addListener(coinsId,mainAuthor,subAuthor,callback);
     }
-    public void removeEventListener(ArrayList<String> coinsId, String author){
-        coinServiceListenerManager.removeListener(coinsId,author);
+    public void addEventListener(ArrayList<String> coinsId, String mainAuthor, CoinServiceModel.EventCallbackInterface callback){
+        coinServiceListenerManager.addListener(coinsId,mainAuthor,"main",callback);
     }
-    public void removeEventListener(String author){
-        coinServiceListenerManager.removeListener(author);
+    public void removeEventListener(String mainAuthor){
+        coinServiceListenerManager.removeListener(mainAuthor);
+    }
+    public void removeEventListener(String mainAuthor, String subAuthor){
+        coinServiceListenerManager.removeListener(mainAuthor,subAuthor);
     }
 
 

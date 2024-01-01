@@ -20,6 +20,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -39,6 +40,8 @@ import com.example.nhom3_crypto_client.model.response.QuyProfileResponseModel;
 import com.example.nhom3_crypto_client.service.CoinService;
 import com.example.nhom3_crypto_client.service.ServiceConnections;
 import com.example.nhom3_crypto_client.service.ServiceCreatedCallback;
+import com.example.nhom3_crypto_client.view.custom_dialog.QuyVerifyOtpDialog;
+import com.example.nhom3_crypto_client.view.custom_dialog.QuyVerifyPinDialog;
 import com.example.nhom3_crypto_client.view_model.BaseViewModel;
 import com.example.nhom3_crypto_client.view_model.QuyProfileViewModel;
 import com.example.nhom3_crypto_client.view_model.QuyTradingCommandViewModel;
@@ -116,8 +119,8 @@ public class QuyMainActivityTradingFragment extends Fragment {
 
         CoinServiceCreatedCallback serviceCreatedCallback = new CoinServiceCreatedCallback();
         serviceConnection = new ServiceConnections.CoinServiceConnection(serviceCreatedCallback);
-        Intent intent = new Intent(getActivity(), CoinService.class);
-        getActivity().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+        Intent intent = new Intent(context, CoinService.class);
+        context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
     public void changeCoinChartView(String coinId){
         this.coinId = coinId;
@@ -134,7 +137,7 @@ public class QuyMainActivityTradingFragment extends Fragment {
         super.onDestroy();
         if (isBoundCoinService) {
             coinService.removeEventListener(REGISTER_COIN_SERVICE_NAME);
-            getActivity().unbindService(serviceConnection);
+            context.unbindService(serviceConnection);
             isBoundCoinService = false;
         }
     }
@@ -299,31 +302,52 @@ public class QuyMainActivityTradingFragment extends Fragment {
                 checkCommandAndContinue();
             }
         });
-    }
-    private void setConstrainEvents(){
-        quyMainActivityTradingFragmentCreateCommandContainerInputMoney.addTextChangedListener(new TextWatcher() {
+        quyMainActivityTradingFragmentCreateCommandContainerLeverage.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-            @Override
-            public void afterTextChanged(Editable editable) {
-                long money=0;
-                try{
-                    money = Long.parseLong(editable.toString());
-                }catch (Exception e){}
-                long maximumMoney = (long) (miniProfile.moneyNow*0.99f);
-                if(money>maximumMoney){
-                    quyMainActivityTradingFragmentCreateCommandContainerInputMoney.setText(""+maximumMoney);
-                }
-                if(quyMainActivityTradingFragmentCreateCommandContainerSeekBarMoney.getProgress()!=(int)(money/maximumMoney)){
-                    quyMainActivityTradingFragmentCreateCommandContainerSeekBarMoney.setProgress((int)(money/maximumMoney));
-                }
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 setTempSumMoney();
             }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
         });
+        quyMainActivityTradingFragmentCreateCommandContainerEnableTPSL.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                setTPSLInputStatus();
+            }
+        });
+
+    }
+
+    TextWatcher quyMainActivityTradingFragmentCreateCommandContainerInputMoneyTextWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+        @Override
+        public void afterTextChanged(Editable editable) {
+            long money=0;
+            try{
+                money = Long.parseLong(editable.toString());
+            }catch (Exception e){}
+            long maximumMoney = (long) (miniProfile.moneyNow*0.99f);
+            if(money>maximumMoney){
+                quyMainActivityTradingFragmentCreateCommandContainerInputMoney.setText(""+maximumMoney);
+            }
+            if(quyMainActivityTradingFragmentCreateCommandContainerSeekBarMoney.getProgress()!=(int)(100*money/maximumMoney)){
+                quyMainActivityTradingFragmentCreateCommandContainerSeekBarMoney.setProgress((int)(100*money/maximumMoney));
+            }
+            setTempSumMoney();
+        }
+    };
+    private void setConstrainEvents(){
+        quyMainActivityTradingFragmentCreateCommandContainerInputMoney.removeTextChangedListener(quyMainActivityTradingFragmentCreateCommandContainerInputMoneyTextWatcher);
+        quyMainActivityTradingFragmentCreateCommandContainerInputMoney.addTextChangedListener(quyMainActivityTradingFragmentCreateCommandContainerInputMoneyTextWatcher);
         quyMainActivityTradingFragmentCreateCommandContainerSeekBarMoney.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
@@ -336,12 +360,12 @@ public class QuyMainActivityTradingFragment extends Fragment {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                long money=0l;
+                long money=0L;
                 try{
                     money = Long.parseLong(quyMainActivityTradingFragmentCreateCommandContainerInputMoney.getText().toString());
                 }catch (Exception e){}
-                if(money!=seekBar.getProgress()*0.99f*miniProfile.moneyNow){
-                    quyMainActivityTradingFragmentCreateCommandContainerInputMoney.setText(seekBar.getProgress()*0.99f*miniProfile.moneyNow+"");
+                if(money!=(long)(seekBar.getProgress()/100f*0.99f*miniProfile.moneyNow)){
+                    quyMainActivityTradingFragmentCreateCommandContainerInputMoney.setText((long)(seekBar.getProgress()/100f*0.99f*miniProfile.moneyNow)+"");
                 }
                 setTempSumMoney();
             }
@@ -375,7 +399,7 @@ public class QuyMainActivityTradingFragment extends Fragment {
     private void setTempSumMoney(){
         long money = 0L;
         int leverage = 1;
-        long commission = 0;
+        long commission = 0L;
         try{
             leverage = Integer.parseInt(quyMainActivityTradingFragmentCreateCommandContainerLeverage.getSelectedItem().toString());
             money = Long.parseLong(quyMainActivityTradingFragmentCreateCommandContainerInputMoney.getText().toString());
@@ -395,13 +419,14 @@ public class QuyMainActivityTradingFragment extends Fragment {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+
                         setMiniInfo();
                     }
                 });
 
                 ArrayList<String> coinIds = new ArrayList<>(miniProfile.openCommandItems.stream().map(e->e.coinId).collect(Collectors.toList()));
                 if(coinIds.size()!=0){
-                    coinService.addEventListener(coinIds, REGISTER_COIN_SERVICE_NAME, new CoinServiceModel.EventCallbackInterface() {
+                    coinService.addEventListener(coinIds, REGISTER_COIN_SERVICE_NAME,"mini-profile", new CoinServiceModel.EventCallbackInterface() {
                         @Override
                         public void handle(ArrayList<CoinServiceModel.CoinNow> coins) {
                             updateMiniInfoSumMoney(coins);
@@ -427,7 +452,7 @@ public class QuyMainActivityTradingFragment extends Fragment {
         for (int i = 0; i < miniProfile.openCommandItems.size(); i++) {
             int indCoin = -1;
             for (int j = 0; j < coins.size(); j++) {
-                if(coins.get(j).id.equals(miniProfile.openCommandItems.get(i))){
+                if(coins.get(j).id.equals(miniProfile.openCommandItems.get(i).coinId)){
                     indCoin=j;
                     break;
                 }
@@ -458,12 +483,13 @@ public class QuyMainActivityTradingFragment extends Fragment {
                 }
             }
         });
-        coinService.addEventListener(new ArrayList<>(Arrays.asList(this.coinId)), REGISTER_COIN_SERVICE_NAME, new CoinServiceModel.EventCallbackInterface() {
+        coinService.addEventListener(new ArrayList<>(Arrays.asList(this.coinId)), REGISTER_COIN_SERVICE_NAME,"coin-info", new CoinServiceModel.EventCallbackInterface() {
             @Override
             public void handle(ArrayList<CoinServiceModel.CoinNow> coins) {
-                for (int i = 0; i < coins.size(); i++) {
-                    updateCoinInfo(coins.get(i));
-                }
+//                for (int i = 0; i < coins.size(); i++) {
+//                    updateCoinInfo(coins.get(i));
+//                }
+                updateCoinInfo(coins.get(0));
             }
         });
 
@@ -473,6 +499,11 @@ public class QuyMainActivityTradingFragment extends Fragment {
         General.setImageUrl(context,quyMainActivityTradingFragmentCoinInfoIcon,coin.icon);
         quyMainActivityTradingFragmentCoinInfoPrice.setText(""+coin.priceUsd);
         quyMainActivityTradingFragmentCoinInfoChange24h.setText(""+coin.changePercent24Hr);
+        if(coin.changePercent24Hr>=0){
+            quyMainActivityTradingFragmentCoinInfoChange24h.setTextColor(Color.GREEN);
+        }else{
+            quyMainActivityTradingFragmentCoinInfoChange24h.setTextColor(Color.RED);
+        }
     }
     private void updateCoinInfo(CoinServiceModel.CoinNow coin){
         if(coin.id.equals(this.coinId)){
@@ -481,6 +512,11 @@ public class QuyMainActivityTradingFragment extends Fragment {
                 public void run() {
                     quyMainActivityTradingFragmentCoinInfoPrice.setText(""+coin.priceUsd);
                     quyMainActivityTradingFragmentCoinInfoChange24h.setText(""+coin.changePercent24Hr);
+                    if(coin.changePercent24Hr>=0){
+                        quyMainActivityTradingFragmentCoinInfoChange24h.setTextColor(Color.GREEN);
+                    }else{
+                        quyMainActivityTradingFragmentCoinInfoChange24h.setTextColor(Color.RED);
+                    }
                 }
             });
         }
@@ -503,9 +539,11 @@ public class QuyMainActivityTradingFragment extends Fragment {
         }catch(Exception e){}
 
         if(money==0L){
-            General.showNotification(context,new SystemNotificationModel(SystemNotificationModel.Type.Warning,"Chưa nhập số tiền."));
+            General.showNotification(getContext(),new SystemNotificationModel(SystemNotificationModel.Type.Warning,"Chưa nhập số tiền."));
+            return;
         }else if(money<10L){
-            General.showNotification(context,new SystemNotificationModel(SystemNotificationModel.Type.Warning,"Số tiền không ít hơn 10$."));
+            General.showNotification(getContext(),new SystemNotificationModel(SystemNotificationModel.Type.Warning,"Số tiền không ít hơn 10$."));
+            return;
         }
 
         if(quyMainActivityTradingFragmentCreateCommandContainerEnableTPSL.isChecked()){
@@ -516,10 +554,12 @@ public class QuyMainActivityTradingFragment extends Fragment {
                 sl = Long.parseLong(quyMainActivityTradingFragmentCreateCommandContainerStopLoss.getText().toString());
             }catch(Exception e){}
             if(tp<money-commission){
-                General.showNotification(context,new SystemNotificationModel(SystemNotificationModel.Type.Warning,"Chốt lời không ít hơn giá trị hiện tại."));
+                General.showNotification(getContext(),new SystemNotificationModel(SystemNotificationModel.Type.Warning,"Chốt lời không ít hơn giá trị hiện tại."));
+                return;
             }
             if(sl>money-commission){
-                General.showNotification(context,new SystemNotificationModel(SystemNotificationModel.Type.Warning,"Cắt lỗ không lớn hơn giá trị hiện tại."));
+                General.showNotification(getContext(),new SystemNotificationModel(SystemNotificationModel.Type.Warning,"Cắt lỗ không lớn hơn giá trị hiện tại."));
+                return;
             }
         }
         checkTracePinStatusAndContinue();
@@ -528,17 +568,111 @@ public class QuyMainActivityTradingFragment extends Fragment {
         quyTradingCommandViewModel.checkTradePinStatus(new BaseViewModel.OkCallback() {
             @Override
             public void handle(String data) {
-                if(data.equals("true")){
-                    openVerifyPinAndContinue();
-                }else{
-                    General.showNotification(context,new SystemNotificationModel(SystemNotificationModel.Type.Warning,"Bạn chưa thiết lập mã pin giao dịch. Hãy vào hồ sơ > cài đặt để thiết lập."));
-                }
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(data.equals("true")){
+                            openVerifyPinAndContinue();
+//                            openVerifyOtpAndContinue();
+                        }else{
+                            General.showNotification(getContext(),new SystemNotificationModel(SystemNotificationModel.Type.Warning,"Bạn chưa thiết lập mã pin giao dịch. Hãy vào hồ sơ > cài đặt để thiết lập."));
+                        }
+                    }
+                });
+
             }
         });
     }
 
     private void openVerifyPinAndContinue(){
 
+        QuyVerifyPinDialog quyVerifyPinDialog = new QuyVerifyPinDialog(getContext());
+        quyVerifyPinDialog.setHandleCallback(new QuyVerifyPinDialog.OkCallback() {
+            @Override
+            public void handle(String pin) {
+                quyVerifyPinDialog.hide();
+                quyTradingCommandViewModel.checkVerifyPin(pin, new BaseViewModel.OkCallback() {
+                    @Override
+                    public void handle(String data) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                openVerifyOtpAndContinue();
+                            }
+                        });
+
+                    }
+                }, new BaseViewModel.OkCallback() {
+                    @Override
+                    public void handle(String data) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                quyVerifyPinDialog.show();
+                            }
+                        });
+
+                    }
+                });
+            }
+        });
+        quyVerifyPinDialog.show();
+    }
+
+    private void openVerifyOtpAndContinue(){
+        String buyOrSell = quyMainActivityTradingFragmentCreateCommandContainerSwitchBuySell.isChecked()?"buy":"sell";
+        long money = 0L;
+        int leverage = 1;
+        try{
+            leverage = Integer.parseInt(quyMainActivityTradingFragmentCreateCommandContainerLeverage.getSelectedItem().toString());
+            money = Long.parseLong(quyMainActivityTradingFragmentCreateCommandContainerInputMoney.getText().toString());
+        }catch(Exception e){}
+
+        boolean enableTpSl = quyMainActivityTradingFragmentCreateCommandContainerEnableTPSL.isChecked();
+        long tp = 0L;
+        long sl = 0L;
+        if(quyMainActivityTradingFragmentCreateCommandContainerEnableTPSL.isChecked()){
+            try{
+                tp = Long.parseLong(quyMainActivityTradingFragmentCreateCommandContainerTakeProfit.getText().toString());
+                sl = Long.parseLong(quyMainActivityTradingFragmentCreateCommandContainerStopLoss.getText().toString());
+            }catch(Exception e){}
+        }
+
+        QuyVerifyOtpDialog quyVerifyOtpDialog = new QuyVerifyOtpDialog(getContext());
+        long finalMoney = money;
+        int finalLeverage = leverage;
+        long finalTp = tp;
+        long finalSl = sl;
+        quyVerifyOtpDialog.setHandleCallback(new QuyVerifyOtpDialog.OkCallback() {
+            @Override
+            public void handle(String otp) {
+                quyVerifyOtpDialog.hide();
+                quyTradingCommandViewModel.openCommand(otp, buyOrSell, coinId, (float) finalMoney, finalLeverage, enableTpSl, (float) finalTp, (float) finalSl, new BaseViewModel.OkCallback() {
+                    @Override
+                    public void handle(String data) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                quyMainActivityTradingFragmentCreateCommandContainer.setVisibility(View.GONE);
+                                loadMiniProfile();
+                            }
+                        });
+
+                    }
+                }, new BaseViewModel.OkCallback() {
+                    @Override
+                    public void handle(String data) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                quyVerifyOtpDialog.show();
+                            }
+                        });
+                    }
+                });
+            }
+        });
+        quyVerifyOtpDialog.show();
 
     }
 

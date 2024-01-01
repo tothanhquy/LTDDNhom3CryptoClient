@@ -15,15 +15,15 @@ public class QuyTradingCommandViewModel extends BaseViewModel{
         this.context = context;
     }
 
-    public void openCommand(String optCode, String buyOrSell, String coinId, float moneyNumber, int leverage, boolean enableTpSl, float takeProfit, float stopLoss,OkCallback okCallback){
+    public void openCommand(String optCode, String buyOrSell, String coinId, float moneyNumber, int leverage, boolean enableTpSl, float takeProfit, float stopLoss,OkCallback okCallback,OkCallback failCallback){
         if(isLoading().getValue())return;
         _isLoading.postValue(true);
         new Thread(()->{
-            openCommandAPI(optCode,buyOrSell,coinId,moneyNumber,leverage,enableTpSl,takeProfit,stopLoss,okCallback);
+            openCommandAPI(optCode,buyOrSell,coinId,moneyNumber,leverage,enableTpSl,takeProfit,stopLoss,okCallback,failCallback);
         }).start();
     }
 
-    private void openCommandAPI(String optCode, String buyOrSell, String coinId, float moneyNumber, int leverage, boolean enableTpSl, float takeProfit, float stopLoss, OkCallback okCallback){
+    private void openCommandAPI(String optCode, String buyOrSell, String coinId, float moneyNumber, int leverage, boolean enableTpSl, float takeProfit, float stopLoss, OkCallback okCallback,OkCallback failCallback){
         try{
             RequestBody requestBody = new MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
@@ -40,9 +40,14 @@ public class QuyTradingCommandViewModel extends BaseViewModel{
 
 
 
-            API.ResponseAPI response = API.post(context,"/profile/miniDetails",requestBody);
+            API.ResponseAPI response = API.post(context,"/tradingCommand/open",requestBody);
             if(response.status== API.ResponseAPI.Status.Fail){
-                _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Error,response.error));
+                _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Error, "Fail", response.error, new SystemNotificationModel.OkCallback() {
+                    @Override
+                    public void handle() {
+                        failCallback.handle("");
+                    }
+                }));
             }else{
 //                okCallback.handle(response.data);
                 _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Info, "Success", "Mở lệnh thành công",new SystemNotificationModel.OkCallback() {
@@ -61,8 +66,8 @@ public class QuyTradingCommandViewModel extends BaseViewModel{
     }
 
     public void checkTradePinStatus(OkCallback okCallback){
-//        if(isLoading().getValue())return;
-//        _isLoading.postValue(true);
+        if(isLoading().getValue())return;
+        _isLoading.postValue(true);
         new Thread(()->{
             checkTradePinStatusAPI(okCallback);
         }).start();
@@ -79,10 +84,43 @@ public class QuyTradingCommandViewModel extends BaseViewModel{
 //                _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Info,"ok"));
             }
         }catch(Exception e){
+            _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Error,"Lỗi hệ thống."));
+        }finally {
+            _isLoading.postValue(false);
+        }
+    }
+
+    public void checkVerifyPin(String pin, OkCallback okCallback, OkCallback failCallback){
+        if(isLoading().getValue())return;
+        _isLoading.postValue(true);
+        new Thread(()->{
+            checkVerifyPinAPI(pin, okCallback, failCallback);
+        }).start();
+    }
+    private void checkVerifyPinAPI(String pin, OkCallback okCallback, OkCallback failCallback){
+        try{
+            RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("pin", pin)
+                .build();
+
+            API.ResponseAPI response = API.post(context,"/tradingCommand/verifyPin",requestBody);
+            if(response.status== API.ResponseAPI.Status.Fail){
+                _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Error, "Fail", response.error, new SystemNotificationModel.OkCallback() {
+                    @Override
+                    public void handle() {
+                        failCallback.handle("");
+                    }
+                }));
+            }else{
+                okCallback.handle(response.data);
+//                _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Info,"ok"));
+            }
+        }catch(Exception e){
             System.out.println(e);
             _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Error,"Lỗi hệ thống."));
         }finally {
-//            _isLoading.postValue(false);
+            _isLoading.postValue(false);
         }
     }
 }

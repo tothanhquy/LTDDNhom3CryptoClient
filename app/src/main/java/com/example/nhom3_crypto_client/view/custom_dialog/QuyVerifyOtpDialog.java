@@ -13,7 +13,7 @@ import com.example.nhom3_crypto_client.R;
 
 import java.util.regex.Pattern;
 
-public class QuyVerifyPinDialog extends Dialog {
+public class QuyVerifyOtpDialog extends Dialog {
     EditText input;
     Button btnVerify, btnCancel;
     OkCallback okCallback;
@@ -22,21 +22,21 @@ public class QuyVerifyPinDialog extends Dialog {
         this.okCallback = okCallback;
     }
 
-    public QuyVerifyPinDialog(Context context) {
+    public QuyVerifyOtpDialog(Context context) {
         super(context,android.R.style.Theme_Black_NoTitleBar_Fullscreen);
     }
     public static interface OkCallback{
-        public void handle(String pin);
+        public void handle(String otp);
     }
 
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.quy_dialog_verify_pin);
-        input = findViewById(R.id.quyDialogVerifyPinInput);
-        btnCancel = findViewById(R.id.quyDialogVerifyPinCancelBtn);
-        btnVerify = findViewById(R.id.quyDialogVerifyPinVerifyBtn);
+        setContentView(R.layout.quy_dialog_verify_otp);
+        input = findViewById(R.id.quyDialogVerifyOtpInput);
+        btnCancel = findViewById(R.id.quyDialogVerifyOtpCancelBtn);
+        btnVerify = findViewById(R.id.quyDialogVerifyOtpVerifyBtn);
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -52,18 +52,18 @@ public class QuyVerifyPinDialog extends Dialog {
                 }
             });
     }
-    public static boolean checkValidPin(String pin){
-        String regex = "^(\\d{4})$";
-        return Pattern.matches(regex, pin);
+    public static boolean checkValidOtp(String otp){
+        String regex = "^(\\d{6})$";
+        return Pattern.matches(regex, otp);
     }
     private boolean isDataValid() {
-        String pin = input.getText().toString().trim();
-        if(pin.isEmpty()){
-            Toast.makeText(getContext(), "Pin không được để trống",Toast.LENGTH_SHORT).show();
+        String otp = input.getText().toString().trim();
+        if(otp.isEmpty()){
+            Toast.makeText(getContext(), "Otp không được để trống",Toast.LENGTH_SHORT).show();
             return false;
         }else{
-            if(!checkValidPin(pin)){
-                Toast.makeText(getContext(), "Pin không hợp lệ",Toast.LENGTH_SHORT).show();
+            if(!checkValidOtp(otp)){
+                Toast.makeText(getContext(), "Otp không hợp lệ",Toast.LENGTH_SHORT).show();
                 return false;
             }
             return true;

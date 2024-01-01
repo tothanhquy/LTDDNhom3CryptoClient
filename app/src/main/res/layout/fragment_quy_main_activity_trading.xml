@@ -150,7 +150,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:background="#00FFFFFF" />
+            android:background="#88FFFFFF" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -215,7 +215,8 @@
                 android:id="@+id/quyMainActivityTradingFragmentCreateCommandContainerSeekBarMoney"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp" />
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="10dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -234,6 +235,8 @@
                     android:id="@+id/quyMainActivityTradingFragmentCreateCommandContainerLeverage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:dropDownWidth="100dp"
+                    android:minWidth="100dp"
                     android:spinnerMode="dropdown" />
             </LinearLayout>
 
