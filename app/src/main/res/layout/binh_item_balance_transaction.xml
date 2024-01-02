@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="120dp"
+    android:layout_marginTop="5dp"
+    android:background="@drawable/binh_custom_background_element">
+
+    <ImageView
+        android:id="@+id/img_transaction_arrow"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/binh_ic_arrow_up" />
+
+    <TextView
+        android:id="@+id/txt_transaction_coin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:text="BTC/USD"
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="@+id/img_transaction_arrow"
+        app:layout_constraintStart_toEndOf="@+id/img_transaction_arrow"
+        app:layout_constraintTop_toTopOf="@+id/img_transaction_arrow" />
+
+    <TextView
+        android:id="@+id/txt_transaction_coin_level"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:text=" 1000 x 5"
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="@+id/txt_transaction_coin"
+        app:layout_constraintStart_toEndOf="@+id/txt_transaction_coin"
+        app:layout_constraintTop_toTopOf="@+id/txt_transaction_coin" />
+
+    <TextView
+        android:id="@+id/txt_transaction_date_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="12-12-2023 19:48"
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        app:layout_constraintStart_toStartOf="@+id/txt_transaction_coin"
+        app:layout_constraintTop_toBottomOf="@+id/txt_transaction_coin" />
+
+    <TextView
+        android:id="@+id/txt_transaction_close_command"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Đóng lệnh thủ công"
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        app:layout_constraintStart_toStartOf="@+id/txt_transaction_date_time"
+        app:layout_constraintTop_toBottomOf="@+id/txt_transaction_date_time" />
+
+    <TextView
+        android:id="@+id/txt_transaction_datetime_close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="12.12.2023, 19:49"
+        android:textColor="@color/black"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/txt_transaction_date_time"
+        app:layout_constraintEnd_toEndOf="@+id/txt_transaction_money_change" />
+
+    <TextView
+        android:id="@+id/txt_transaction_money_change"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="28dp"
+        android:text="-$ 1,56"
+        android:textColor="#E60000"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/txt_transaction_coin_level" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
