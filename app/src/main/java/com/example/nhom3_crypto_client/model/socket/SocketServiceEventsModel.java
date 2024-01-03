@@ -10,6 +10,7 @@ public class SocketServiceEventsModel {
         }
         public static class Receive{
             public static String CoinsPriceNow="coins-price-now";
+            public static String AutoCloseTradingCommand="auto-close-trading-command";
         }
     }
 

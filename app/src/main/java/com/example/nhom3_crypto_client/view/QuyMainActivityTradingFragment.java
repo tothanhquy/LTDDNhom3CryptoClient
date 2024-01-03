@@ -58,6 +58,7 @@ public class QuyMainActivityTradingFragment extends Fragment {
     QuyCoinChartFragment coinChartFragment;
     TextView miniInfoSumMoney, miniInfoReadyMoney, miniInfoTradingCommandNumber;
     Context context;
+    private QuyMainActivity.InterestedCoinsChange interestedCoinsChange;
 
     TextView quyMainActivityTradingFragmentCoinInfoName;
     ImageView quyMainActivityTradingFragmentCoinInfoIcon;
@@ -79,6 +80,7 @@ public class QuyMainActivityTradingFragment extends Fragment {
     TextView quyMainActivityTradingFragmentCreateCommandContainerSumMoney;
     TextView quyMainActivityTradingFragmentCreateCommandContainerCommission;
     View quyMainActivityTradingFragmentCreateCommandContainerOpenCommandButton;
+    ImageView quyMainActivityTradingFragmentInterestedIcon;
     LinearLayout loadingLayout;
 
 
@@ -110,9 +112,11 @@ public class QuyMainActivityTradingFragment extends Fragment {
     }
 
     private String coinId = "bitcoin";
+    QuyProfileResponseModel.InterestedCoins interestedCoins;
 
-    public QuyMainActivityTradingFragment(Context context,ActivityResultLauncher<Intent> changeCoinLauncher) {
+    public QuyMainActivityTradingFragment(Context context,ActivityResultLauncher<Intent> changeCoinLauncher, QuyMainActivity.InterestedCoinsChange interestedCoinsChange) {
         this.context = context;
+        this.interestedCoinsChange = interestedCoinsChange;
         this.changeCoinLauncher = changeCoinLauncher;
         quyProfileViewModel = new QuyProfileViewModel(context);
         quyTradingCommandViewModel = new QuyTradingCommandViewModel(context);
@@ -126,6 +130,7 @@ public class QuyMainActivityTradingFragment extends Fragment {
         this.coinId = coinId;
         loadCoinInfo();
         coinChartFragment.changeCoinView(coinId);
+        setInterestedCoins();
     }
 
     @Override
@@ -173,6 +178,8 @@ public class QuyMainActivityTradingFragment extends Fragment {
         quyMainActivityTradingFragmentCreateCommandContainerCommission = view.findViewById(R.id.quyMainActivityTradingFragmentCreateCommandContainerCommission);
         quyMainActivityTradingFragmentCreateCommandContainerOpenCommandButton = view.findViewById(R.id.quyMainActivityTradingFragmentCreateCommandContainerOpenCommandButton);
 
+        quyMainActivityTradingFragmentInterestedIcon = view.findViewById(R.id.quyMainActivityTradingFragmentInterestedIcon);
+
         loadingLayout = view.findViewById(R.id.loadingLayout);
         return view;
     }
@@ -181,7 +188,7 @@ public class QuyMainActivityTradingFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        coinChartFragment = QuyCoinChartFragment.newInstance(this.coinId, context);
+        coinChartFragment = QuyCoinChartFragment.newInstance(this.coinId, 0L, context);
         coinChartFragment.setChangeCoinLauncher(changeCoinLauncher);
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
@@ -190,7 +197,7 @@ public class QuyMainActivityTradingFragment extends Fragment {
         // Add the transaction to the back stack (optional)
 //        transaction.addToBackStack(null);
         // Commit the transaction
-        transaction.commit();
+        transaction.commitAllowingStateLoss();
         setObserve();
         setInitView();
         setEvents();
@@ -319,6 +326,14 @@ public class QuyMainActivityTradingFragment extends Fragment {
                 setTPSLInputStatus();
             }
         });
+        quyMainActivityTradingFragmentInterestedIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                toggleInterestedCoin();
+            }
+        });
+
+
 
     }
 
@@ -446,6 +461,7 @@ public class QuyMainActivityTradingFragment extends Fragment {
         miniInfoSumMoney.setText(miniProfile.moneyNow+miniProfile.moneyInvested+miniProfile.moneyProfitNow+"");
         miniInfoReadyMoney.setText(miniProfile.moneyNow+"");
         miniInfoTradingCommandNumber.setText(miniProfile.openTradingCommandNumber+"");
+        loadInterestedCoinStatus();
     }
     private void updateMiniInfoSumMoney(ArrayList<CoinServiceModel.CoinNow> coins){
         miniProfile.moneyProfitNow = 0f;
@@ -465,6 +481,45 @@ public class QuyMainActivityTradingFragment extends Fragment {
             @Override
             public void run() {
                 miniInfoSumMoney.setText(miniProfile.moneyNow+miniProfile.moneyInvested+miniProfile.moneyProfitNow+"");
+            }
+        });
+    }
+
+    private void loadInterestedCoinStatus(){
+        quyProfileViewModel.getInterestedCoins(new BaseViewModel.OkCallback() {
+            @Override
+            public void handle(String data) {
+                interestedCoins = new Gson().fromJson(data,QuyProfileResponseModel.InterestedCoins.class);
+                setInterestedCoins();
+            }
+        });
+    }
+
+    public void setInterestedCoins() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(interestedCoins!=null){
+                    if(interestedCoins.items.contains(QuyMainActivityTradingFragment.this.coinId)){
+                        quyMainActivityTradingFragmentInterestedIcon.setBackgroundResource(R.drawable.quy_heart_fill);
+                    }else{
+                        quyMainActivityTradingFragmentInterestedIcon.setBackgroundResource(R.drawable.quy_heart);
+                    }
+                }
+            }
+        });
+    }
+    public void toggleInterestedCoin(){
+        quyProfileViewModel.toggleInterestedCoin(this.coinId, new BaseViewModel.OkCallback() {
+            @Override
+            public void handle(String data) {
+                if(interestedCoins.items.contains(QuyMainActivityTradingFragment.this.coinId)){
+                    interestedCoins.items.remove(QuyMainActivityTradingFragment.this.coinId);
+                }else{
+                    interestedCoins.items.add(QuyMainActivityTradingFragment.this.coinId);
+                }
+                setInterestedCoins();
+                interestedCoinsChange.setStatus(true);
             }
         });
     }

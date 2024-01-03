@@ -12,6 +12,9 @@ import android.widget.ImageView;
 import com.example.nhom3_crypto_client.model.SystemNotificationModel;
 import com.squareup.picasso.Picasso;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 public class General {
     public static void showNotification(Context context, SystemNotificationModel model){
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -30,6 +33,12 @@ public class General {
     public static void setImageUrl(Context context, ImageView image, String url){
         Picasso.with(context).load(url).into(image);
     }
+    public static String convertTimeToDateTime(long milliSeconds){
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm");
 
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(milliSeconds);
+        return formatter.format(calendar.getTime());
+    }
 
 }

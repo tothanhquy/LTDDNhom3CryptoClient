@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class QuyCoinListActivity extends AppCompatActivity {
-    private String REGISTER_COIN_SERVICE_NAME = "coin-list";
+    private String REGISTER_COIN_SERVICE_NAME = "coin-list-activity";
     private CoinService coinService;
     private Boolean isBoundCoinService=false;
     private ServiceConnection serviceConnection;
