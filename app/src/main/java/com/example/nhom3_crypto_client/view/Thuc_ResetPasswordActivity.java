@@ -11,21 +11,15 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.nhom3_crypto_client.R;
+import com.example.nhom3_crypto_client.model.SystemNotificationModel;
+import com.example.nhom3_crypto_client.view_model.LoginViewModel;
 
 public class Thuc_ResetPasswordActivity extends AppCompatActivity {
-    public boolean check(String phonenumber, String newPassword, String confirmPassword){
-        String hashPhoneNumber = "0123";
-        String hashnewPassword = "123";
-        String hashConfirmPassword  = "123";
-        if(phonenumber.equals(hashPhoneNumber) && newPassword.equals(hashnewPassword) && newPassword.equals(confirmPassword)){
 
-            return true;
-        }
-        return false;
-    }
+    private LoginViewModel loginViewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        System.out.println("gegeegegeg");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.thuc_activity_reset_password);
         ResetPassword();
@@ -58,12 +52,28 @@ public class Thuc_ResetPasswordActivity extends AppCompatActivity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Boolean check123 =  check(phonenumber.getText().toString(), newpassword.getText().toString(), confirmnewpassword.getText().toString());
-                if(check123) {
-                    Toast.makeText(Thuc_ResetPasswordActivity.this, "Đổi mật khẩu thành công", Toast.LENGTH_LONG).show();
-                    Intent intent = new Intent(Thuc_ResetPasswordActivity.this, Thuc_OTPActivity.class);
-                    startActivity(intent);
+
+                String setPhonenumber = phonenumber.getText().toString();
+                String setNewPassword = newpassword.getText().toString();
+                String setConfirmNewPassword = confirmnewpassword.getText().toString();
+
+                if (setNewPassword.isEmpty() || setPhonenumber.isEmpty() || setConfirmNewPassword.isEmpty()) {
+                    Toast.makeText(Thuc_ResetPasswordActivity.this, "Bạn đang bỏ trống", Toast.LENGTH_SHORT).show();
+                    if (setConfirmNewPassword != setNewPassword){
+                        Toast.makeText(Thuc_ResetPasswordActivity.this, "Xác nhận mật khẩu sai", Toast.LENGTH_LONG).show();
+
+                    }
+                } else {
+                    loginViewModel.resetPassword(setPhonenumber, setNewPassword, setConfirmNewPassword, new SystemNotificationModel.OkCallback() {
+                        @Override
+                        public void handle() {
+                            Intent intent = new Intent(Thuc_ResetPasswordActivity.this, Thuc_OTPActivity.class);
+                            intent.putExtra("phonenumber", setPhonenumber);
+                            startActivity(intent);
+                        }
+                    });
                 }
+
             }
         });
     }
