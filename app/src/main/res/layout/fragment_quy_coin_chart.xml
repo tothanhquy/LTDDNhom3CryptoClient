@@ -37,7 +37,14 @@
         <Button
             android:id="@+id/quyCoinChartCoinNameSpinner"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:minWidth="20dip"
+            android:minHeight="0dip"
+            android:padding="4dp"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:textSize="12sp"
+            app:iconPadding="0dp" />
         <Spinner
             android:id="@+id/quyCoinChartCoinIntervalSpinner"
             android:layout_width="wrap_content"

@@ -23,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Spinner;
 
 import com.example.nhom3_crypto_client.core.General;
@@ -57,7 +58,6 @@ import java.util.List;
 import java.util.Locale;
 
 public class QuyCoinChartFragment extends Fragment {
-    private int CHANGE_COIN_ACTIVITY_CODE = 100;
     private String coinId;
     QuyCoinChartViewModel quyCoinChartViewModel;
     CandleStickChart candleStickChart;
@@ -82,15 +82,17 @@ public class QuyCoinChartFragment extends Fragment {
         changeCoinOkCallback = a;
     }
 
+    private long endTime=0L;
     public QuyCoinChartFragment(Context context) {
         this.context = context;
         quyCoinChartViewModel = new QuyCoinChartViewModel(context);
     }
 
-    public static QuyCoinChartFragment newInstance(String coinId, Context context) {
+    public static QuyCoinChartFragment newInstance(String coinId, long endTime, Context context) {
         QuyCoinChartFragment fragment = new QuyCoinChartFragment(context);
         Bundle args = new Bundle();
         args.putString("coinId", coinId);
+        args.putLong("endTime", endTime);
         fragment.setArguments(args);
         return fragment;
     }
@@ -100,6 +102,7 @@ public class QuyCoinChartFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             coinId = getArguments().getString("coinId");
+            endTime = getArguments().getLong("endTime");
         }
     }
 
@@ -190,27 +193,6 @@ public class QuyCoinChartFragment extends Fragment {
     public static interface ChangeCoinOkCallback{
         public void handle(String coinId);
     }
-
-//    ActivityResultLauncher<Intent> changeCoinLauncher = registerForActivityResult(
-//            new ActivityResultContracts.StartActivityForResult(), o -> {
-//        if (o.getResultCode()== Activity.RESULT_OK){
-//            Intent intent = o.getData();
-//            coinId = intent.getStringExtra("coinId");
-//            coinName.setText(coinId);
-//            loadData();
-//            //changeCoinOkCallback.handle(coinId);
-//        }
-//    });
-
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if (requestCode == CHANGE_COIN_ACTIVITY_CODE && resultCode == Activity.RESULT_OK) {
-//            coinId = data.getStringExtra("coinId");
-//            coinName.setText(coinId);
-//            loadData();
-//        }
-//    }
 
     @Override
     public void onStart() {
@@ -320,7 +302,14 @@ public class QuyCoinChartFragment extends Fragment {
         }
     }
     public long getStartTimeBaseInterval(String interval){
-        long now = System.currentTimeMillis();
+        long now;
+        if(endTime==0L){
+            //now
+            now = System.currentTimeMillis();
+        }else{
+            now = endTime;
+        }
+
         long baseTime = 1000*60*60*3;//180 column
         if(interval.equals("m1")){
             return now - (baseTime);

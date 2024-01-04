@@ -101,6 +101,17 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="TextView" />
+
+                        <Space
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
+
+                        <ImageView
+                            android:id="@+id/quyMainActivityTradingFragmentInterestedIcon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/quy_heart" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -143,7 +154,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="visible">
+        tools:visibility="gone">
 
         <View
             android:id="@+id/quyMainActivityTradingFragmentCreateCommandContainerCloseView"
@@ -253,9 +264,9 @@
                     android:layout_weight="1">
 
                     <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/quyMainActivityTradingFragmentCreateCommandContainerTakeProfit"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/quyMainActivityTradingFragmentCreateCommandContainerTakeProfit"
                         android:hint="Chốt lời"
                         android:inputType="number|numberDecimal" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -275,10 +286,10 @@
                     android:layout_weight="1">
 
                     <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/quyMainActivityTradingFragmentCreateCommandContainerStopLoss"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Cắt lỗ"
-                        android:id="@+id/quyMainActivityTradingFragmentCreateCommandContainerStopLoss"
                         android:inputType="number|numberDecimal" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
@@ -352,7 +363,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="visible">
+        tools:visibility="gone">
 
         <ProgressBar
             android:id="@+id/progressBar"

@@ -57,6 +57,38 @@ public class QuyMainActivity extends AppCompatActivity {
         }
     }
 
+    private boolean interestedCoinsChangeStatus;
+    public static interface InterestedCoinsChange{
+        public void setStatus(boolean status);
+        public boolean getStatus();
+    }
+    private InterestedCoinsChange InterestedCoinsChangeObject = new InterestedCoinsChange() {
+        @Override
+        public void setStatus(boolean status) {
+            interestedCoinsChangeStatus = status;
+            if(interestedCoinsChangeStatus==true){
+                quyMainActivityInterestedCoinsFragment.getInterestedCoin();
+            }
+        }
+
+        @Override
+        public boolean getStatus() {
+            return interestedCoinsChangeStatus;
+        }
+    };
+
+    public static interface OpenViewCoin{
+        public void open(String coinId);
+    }
+    private OpenViewCoin OpenViewCoinObject = new OpenViewCoin() {
+        @Override
+        public void open(String coinId) {
+            quyMainActivityTradingFragment.changeCoinChartView(coinId);
+            viewPager2Adapter.changeLayout(2);
+        }
+    };
+    ViewPager2Adapter viewPager2Adapter;
+
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,13 +100,14 @@ public class QuyMainActivity extends AppCompatActivity {
         int[] tabIcons = {R.drawable.quy_icon_checked,R.drawable.quy_icon_checked, R.drawable.quy_icon_checked, R.drawable.quy_icon_checked};
 
         quyMainActivityHomeFragment = new QuyMainActivityHomeFragment();
-        quyMainActivityInterestedCoinsFragment = new QuyMainActivityInterestedCoinsFragment();
-        quyMainActivityTradingFragment = new QuyMainActivityTradingFragment(getApplicationContext(),changeCoinLauncher);
+        quyMainActivityInterestedCoinsFragment = new QuyMainActivityInterestedCoinsFragment(getApplicationContext(),InterestedCoinsChangeObject,OpenViewCoinObject);
+        quyMainActivityTradingFragment = new QuyMainActivityTradingFragment(getApplicationContext(),changeCoinLauncher,InterestedCoinsChangeObject);
         quyMainActivityProfileFragment = new QuyMainActivityProfileFragment();
 
         ArrayList<Fragment> fragments = new ArrayList<>(Arrays.asList(quyMainActivityHomeFragment, quyMainActivityInterestedCoinsFragment,quyMainActivityTradingFragment, quyMainActivityProfileFragment));
         ViewPager2 viewPager2 = findViewById(R.id.quyMainViewPager);
-        viewPager2.setAdapter(new ViewPager2Adapter(getSupportFragmentManager(),getLifecycle(),viewPager2,fragments));
+        viewPager2Adapter = new ViewPager2Adapter(getSupportFragmentManager(),getLifecycle(),viewPager2,fragments);
+        viewPager2.setAdapter(viewPager2Adapter);
         TabLayout tabLayout = findViewById(R.id.quyMainTabLayout);
         viewPager2.setUserInputEnabled(false);
         new TabLayoutMediator(tabLayout, viewPager2,
@@ -101,6 +134,8 @@ public class QuyMainActivity extends AppCompatActivity {
         }
     }
 
+
+
     ActivityResultLauncher<Intent> changeCoinLauncher = registerForActivityResult(
         new ActivityResultContracts.StartActivityForResult(), o -> {
             if (o.getResultCode()== Activity.RESULT_OK){
@@ -118,6 +153,9 @@ public class QuyMainActivity extends AppCompatActivity {
             this.viewPager2 = viewPager2;
             this.fragments = fragments;
         }
+        public void changeLayout(int position){
+            viewPager2.setCurrentItem(position);
+        }
 
         @NonNull
         @Override
@@ -129,5 +167,6 @@ public class QuyMainActivity extends AppCompatActivity {
         public int getItemCount() {
             return 4;
         }
+
     }
 }
