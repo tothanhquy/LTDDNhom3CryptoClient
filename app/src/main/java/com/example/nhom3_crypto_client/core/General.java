@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.example.nhom3_crypto_client.R;
 import com.example.nhom3_crypto_client.model.SystemNotificationModel;
 import com.squareup.picasso.Picasso;
 
@@ -18,15 +19,28 @@ import java.util.Calendar;
 public class General {
     public static void showNotification(Context context, SystemNotificationModel model){
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        if(model.type.equals(SystemNotificationModel.Type.Info)){
+            builder.setIcon(R.drawable.quy_info);
+            builder.setTitle("Thông báo");
+        }else if(model.type.equals(SystemNotificationModel.Type.Warning)){
+            builder.setIcon(R.drawable.quy_warning);
+            builder.setTitle("Cảnh báo");
+        }else{
+            builder.setIcon(R.drawable.quy_error);
+            builder.setTitle("Error!");
+        }
+
         builder.setMessage(model.content);
-        if(model.okCallback!=null){
-            builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                @Override
-                public void onDismiss(DialogInterface dialogInterface) {
+        builder.setCancelable(false);
+        builder.setOnDismissListener(null);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if(model.okCallback!=null){
                     model.okCallback.handle();
                 }
-            });
-        }
+            }
+        });
 
         builder.show();
     }
