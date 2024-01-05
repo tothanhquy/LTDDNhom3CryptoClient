@@ -17,6 +17,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.example.nhom3_crypto_client.R;
 import com.example.nhom3_crypto_client.model.CoinServiceModel;
@@ -35,7 +36,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class QuyCoinListActivity extends AppCompatActivity {
+public class QuyCoinListActivity extends BaseActivity {
     private String REGISTER_COIN_SERVICE_NAME = "coin-list-activity";
     private CoinService coinService;
     private Boolean isBoundCoinService=false;
@@ -68,11 +69,11 @@ public class QuyCoinListActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Danh sách coin");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        String[] tabTitles = {"Coins","Top tăng giá" ,"Top giảm giá"};//put titles based on your need
-        int[] tabIcons = {
-                R.drawable.quy_icon_checked,
-                R.drawable.quy_icon_checked,
-                R.drawable.quy_icon_checked};
+        View[] tabItem = {
+                super.getCustomViewTabLayout(R.drawable.quy_cryptocurrency, "Coins"),
+                super.getCustomViewTabLayout(R.drawable.quy_increase_coin, "Top tăng giá"),
+                super.getCustomViewTabLayout(R.drawable.quy_decrease_coin, "Top giảm giá")
+        };
 
         normalList = new QuyCoinListFragment(getApplicationContext(),QuyCoinListFragment.SortStatus.None);
         normalList.setChooseCallback(new ChooseCallback());
@@ -90,8 +91,7 @@ public class QuyCoinListActivity extends AppCompatActivity {
         viewPager2.setUserInputEnabled(true);
         new TabLayoutMediator(tabLayout, viewPager2,
                 ((tab, position) -> {
-                    tab.setText(tabTitles[position]);
-                    tab.setIcon(tabIcons[position]);
+                    tab.setCustomView(tabItem[position]);
                 }
                 )).attach();
 

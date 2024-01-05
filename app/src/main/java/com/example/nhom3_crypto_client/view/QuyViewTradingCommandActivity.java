@@ -366,7 +366,7 @@ public class QuyViewTradingCommandActivity extends AppCompatActivity {
             quyViewTradingCommandActivityOpenTradingCommandContainerBuyOrSellIcon.setBackgroundResource(R.drawable.binh_ic_arrow_down);
         }
         updateOpenProfitNow();
-        quyViewTradingCommandActivityOpenTradingCommandContainerCommission.setText("Hoa hồng: "+getCommission(tradingCommandDetails.moneyNumber,tradingCommandDetails.leverage,tradingCommandDetails.openTime));
+        quyViewTradingCommandActivityOpenTradingCommandContainerCommission.setText("Hoa hồng: "+(long)getCommission(tradingCommandDetails.moneyNumber,tradingCommandDetails.leverage,tradingCommandDetails.openTime));
         if(tradingCommandDetails.enableTpSl){
             quyViewTradingCommandActivityOpenTradingCommandContainerTakeProfit.setText("TP: "+(long)tradingCommandDetails.takeProfit);
             quyViewTradingCommandActivityOpenTradingCommandContainerStopLost.setText("SL: "+(long)tradingCommandDetails.stopLoss);
@@ -582,19 +582,19 @@ public class QuyViewTradingCommandActivity extends AppCompatActivity {
         quyViewTradingCommandActivityCloseTradingCommandContainerCoinInfoName.setText(coin.name);
 
         if(tradingCommandDetails.finalProfit>0){
-            quyViewTradingCommandActivityCloseTradingCommandContainerProfit.setText("$+"+tradingCommandDetails.finalProfit);
+            quyViewTradingCommandActivityCloseTradingCommandContainerProfit.setText("$+"+String.format("%.2", tradingCommandDetails.finalProfit));
             quyViewTradingCommandActivityCloseTradingCommandContainerProfit.setTextColor(Color.GREEN);
         }else{
-            quyViewTradingCommandActivityCloseTradingCommandContainerProfit.setText("$-"+tradingCommandDetails.finalProfit);
+            quyViewTradingCommandActivityCloseTradingCommandContainerProfit.setText("$-"+String.format("%.2", tradingCommandDetails.finalProfit));
             quyViewTradingCommandActivityCloseTradingCommandContainerProfit.setTextColor(Color.RED);
         }
 
-        quyViewTradingCommandActivityCloseTradingCommandContainerSumValue.setText(""+tradingCommandDetails.moneyNumber+" X "+tradingCommandDetails.leverage);
-        quyViewTradingCommandActivityCloseTradingCommandContainerOpenPrice.setText(""+tradingCommandDetails.openPrice);
+        quyViewTradingCommandActivityCloseTradingCommandContainerSumValue.setText(""+(long)tradingCommandDetails.moneyNumber+" X "+tradingCommandDetails.leverage);
+        quyViewTradingCommandActivityCloseTradingCommandContainerOpenPrice.setText(""+String.format("%.2", tradingCommandDetails.openPrice));
         quyViewTradingCommandActivityCloseTradingCommandContainerOpenTime.setText(General.convertTimeToDateTime(tradingCommandDetails.openTime));
-        quyViewTradingCommandActivityCloseTradingCommandContainerClosePrice.setText(""+tradingCommandDetails.closePrice);
+        quyViewTradingCommandActivityCloseTradingCommandContainerClosePrice.setText(""+String.format("%.2", tradingCommandDetails.closePrice));
         quyViewTradingCommandActivityCloseTradingCommandContainerCloseTime.setText(General.convertTimeToDateTime(tradingCommandDetails.closeTime));
-        quyViewTradingCommandActivityCloseTradingCommandContainerCommission.setText("Hoa hồng: "+tradingCommandDetails.commission);
+        quyViewTradingCommandActivityCloseTradingCommandContainerCommission.setText("Hoa hồng: "+(long)tradingCommandDetails.commission);
 
         quyViewTradingCommandActivityCloseTradingCommandContainer.setVisibility(View.VISIBLE);
         quyViewTradingCommandActivityOpenTradingCommandContainer.setVisibility(View.GONE);
@@ -667,10 +667,10 @@ public class QuyViewTradingCommandActivity extends AppCompatActivity {
             profitNow = (-coin.priceUsd+tradingCommandDetails.openPrice)*tradingCommandDetails.coinNumber;
         }
         if(profitNow>0){
-            quyViewTradingCommandActivityOpenTradingCommandContainerProfitNow.setText("$+"+profitNow);
+            quyViewTradingCommandActivityOpenTradingCommandContainerProfitNow.setText("$+"+String.format("%.2", profitNow));
             quyViewTradingCommandActivityOpenTradingCommandContainerProfitNow.setTextColor(Color.GREEN);
         }else{
-            quyViewTradingCommandActivityOpenTradingCommandContainerProfitNow.setText("$-"+profitNow);
+            quyViewTradingCommandActivityOpenTradingCommandContainerProfitNow.setText("$-"+String.format("%.2", profitNow));
             quyViewTradingCommandActivityOpenTradingCommandContainerProfitNow.setTextColor(Color.RED);
         }
 

@@ -1,7 +1,6 @@
 package com.example.nhom3_crypto_client.view;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -9,28 +8,22 @@ import android.graphics.Paint;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 
-import android.text.Layout;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.Spinner;
 
 import com.example.nhom3_crypto_client.core.General;
 import com.example.nhom3_crypto_client.model.QuyCoinChartModel;
 import com.example.nhom3_crypto_client.model.SystemNotificationModel;
 import com.example.nhom3_crypto_client.view_model.BaseViewModel;
-import com.example.nhom3_crypto_client.view_model.QuyCoinChartViewModel;
+import com.example.nhom3_crypto_client.view_model.QuyCoinViewModel;
 import com.github.mikephil.charting.charts.CandleStickChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -40,11 +33,9 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.CandleData;
 import com.github.mikephil.charting.data.CandleDataSet;
 import com.github.mikephil.charting.data.CandleEntry;
-import com.github.mikephil.charting.data.DataSet;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 
 import com.example.nhom3_crypto_client.R;
 import com.github.mikephil.charting.formatter.ValueFormatter;
@@ -59,7 +50,7 @@ import java.util.Locale;
 
 public class QuyCoinChartFragment extends Fragment {
     private String coinId;
-    QuyCoinChartViewModel quyCoinChartViewModel;
+    QuyCoinViewModel quyCoinViewModel;
     CandleStickChart candleStickChart;
     LineChart lineChart;
 
@@ -85,7 +76,7 @@ public class QuyCoinChartFragment extends Fragment {
     private long endTime=0L;
     public QuyCoinChartFragment(Context context) {
         this.context = context;
-        quyCoinChartViewModel = new QuyCoinChartViewModel(context);
+        quyCoinViewModel = new QuyCoinViewModel(context);
     }
 
     public static QuyCoinChartFragment newInstance(String coinId, long endTime, Context context) {
@@ -205,7 +196,7 @@ public class QuyCoinChartFragment extends Fragment {
     }
 
     public void setObserve(){
-        quyCoinChartViewModel.notification().observe(this, new Observer<SystemNotificationModel>() {
+        quyCoinViewModel.notification().observe(this, new Observer<SystemNotificationModel>() {
             @Override
             public void onChanged(SystemNotificationModel systemNotificationModel) {
                 if(systemNotificationModel!=null){
@@ -218,7 +209,7 @@ public class QuyCoinChartFragment extends Fragment {
                 }
             }
         });
-        quyCoinChartViewModel.isLoading().observe(this, new Observer<Boolean>() {
+        quyCoinViewModel.isLoading().observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean isLoading) {
                 getActivity().runOnUiThread(new Runnable() {
@@ -296,9 +287,9 @@ public class QuyCoinChartFragment extends Fragment {
         String typeStr = type.getSelectedItem().toString().toLowerCase();
         intervalStr = interval.getSelectedItem().toString().toLowerCase();
         if(typeStr.equals("candle")){
-            quyCoinChartViewModel.loadChart(typeStr,coinId,intervalStr,""+getStartTimeBaseInterval(intervalStr),"now", new HandleCandleChartResponse());
+            quyCoinViewModel.loadChart(typeStr,coinId,intervalStr,""+getStartTimeBaseInterval(intervalStr),"now", new HandleCandleChartResponse());
         }else{
-            quyCoinChartViewModel.loadChart(typeStr,coinId,intervalStr,""+getStartTimeBaseInterval(intervalStr),"now", new HandleLineChartResponse());
+            quyCoinViewModel.loadChart(typeStr,coinId,intervalStr,""+getStartTimeBaseInterval(intervalStr),"now", new HandleLineChartResponse());
         }
     }
     public long getStartTimeBaseInterval(String interval){
