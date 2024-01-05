@@ -74,6 +74,11 @@ public class QuyCoinChartFragment extends Fragment {
     }
 
     private long endTime=0L;
+
+    public void setEndTime(long endTime) {
+        this.endTime = endTime;
+    }
+
     public QuyCoinChartFragment(Context context) {
         this.context = context;
         quyCoinViewModel = new QuyCoinViewModel(context);
@@ -287,9 +292,9 @@ public class QuyCoinChartFragment extends Fragment {
         String typeStr = type.getSelectedItem().toString().toLowerCase();
         intervalStr = interval.getSelectedItem().toString().toLowerCase();
         if(typeStr.equals("candle")){
-            quyCoinViewModel.loadChart(typeStr,coinId,intervalStr,""+getStartTimeBaseInterval(intervalStr),"now", new HandleCandleChartResponse());
+            quyCoinViewModel.loadChart(typeStr,coinId,intervalStr,""+getStartTimeBaseInterval(intervalStr),endTime==0L?"now":endTime+"", new HandleCandleChartResponse());
         }else{
-            quyCoinViewModel.loadChart(typeStr,coinId,intervalStr,""+getStartTimeBaseInterval(intervalStr),"now", new HandleLineChartResponse());
+            quyCoinViewModel.loadChart(typeStr,coinId,intervalStr,""+getStartTimeBaseInterval(intervalStr),endTime==0L?"now":endTime+"", new HandleLineChartResponse());
         }
     }
     public long getStartTimeBaseInterval(String interval){

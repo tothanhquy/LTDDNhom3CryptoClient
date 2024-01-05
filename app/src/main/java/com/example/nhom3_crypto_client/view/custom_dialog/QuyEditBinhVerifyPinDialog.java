@@ -7,16 +7,19 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import androidx.cardview.widget.CardView;
 
 import com.example.nhom3_crypto_client.R;
 
 import java.util.regex.Pattern;
 
 public class QuyEditBinhVerifyPinDialog extends Dialog {
-    EditText input;
-    Button btnVerify, btnCancel;
     OkCallback okCallback;
+
+    View[] pinCodeViews;
 
     public void setHandleCallback(OkCallback okCallback) {
         this.okCallback = okCallback;
@@ -33,40 +36,83 @@ public class QuyEditBinhVerifyPinDialog extends Dialog {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.quy_dialog_verify_pin);
-        input = findViewById(R.id.quyDialogVerifyPinInput);
-        btnCancel = findViewById(R.id.quyDialogVerifyPinCancelBtn);
-        btnVerify = findViewById(R.id.quyDialogVerifyPinVerifyBtn);
-        btnCancel.setOnClickListener(new View.OnClickListener() {
+        setContentView(R.layout.quy_edit_binh_dialog_pin_code);
+
+
+        // mã pin
+        pinCodeViews = new View[]{
+            findViewById(R.id.quy_edit_binh_pin_code_1),
+            findViewById(R.id.quy_edit_binh_pin_code_2),
+            findViewById(R.id.quy_edit_binh_pin_code_3),
+            findViewById(R.id.quy_edit_binh_pin_code_4)
+        };
+
+        CardView[] btns = {
+                findViewById(R.id.quy_edit_binh_btn0),
+                findViewById(R.id.quy_edit_binh_btn1),
+                findViewById(R.id.quy_edit_binh_btn2),
+                findViewById(R.id.quy_edit_binh_btn3),
+                findViewById(R.id.quy_edit_binh_btn4),
+                findViewById(R.id.quy_edit_binh_btn5),
+                findViewById(R.id.quy_edit_binh_btn6),
+                findViewById(R.id.quy_edit_binh_btn7),
+                findViewById(R.id.quy_edit_binh_btn8),
+                findViewById(R.id.quy_edit_binh_btn9),
+        };
+
+        for (int i = 0; i < btns.length; i++) {
+            int finalI = i;
+            btns[i].setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    handlePinButtonClick(finalI);
+                }
+            });
+        }
+
+        findViewById(R.id.quy_edit_binh_btn_cancel).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 dismiss();
             }
         });
-        btnVerify.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (isDataValid()) {
-                        okCallback.handle(input.getText().toString());
-                    }
-                }
-            });
-    }
-    public static boolean checkValidPin(String pin){
-        String regex = "^(\\d{4})$";
-        return Pattern.matches(regex, pin);
-    }
-    private boolean isDataValid() {
-        String pin = input.getText().toString().trim();
-        if(pin.isEmpty()){
-            Toast.makeText(getContext(), "Pin không được để trống",Toast.LENGTH_SHORT).show();
-            return false;
-        }else{
-            if(!checkValidPin(pin)){
-                Toast.makeText(getContext(), "Pin không hợp lệ",Toast.LENGTH_SHORT).show();
-                return false;
+        findViewById(R.id.quy_edit_binh_btn_clear_all).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                clearPin();
             }
-            return true;
+        });
+    }
+    private void handlePinButtonClick(int pin) {
+        for (View pinCodeView : pinCodeViews) {
+            if (pinCodeView.getTag() == null) {
+                pinCodeView.setBackgroundResource(R.drawable.binh_view_circle_pin_code2);
+                pinCodeView.setTag(pin);
+                checkAndShowToast();
+                break;
+            }
+        }
+
+    }
+
+    // Kiểm tra
+    private void checkAndShowToast() {
+        StringBuilder enteredPin = new StringBuilder();
+        for (View pinCodeView : pinCodeViews) {
+            if (pinCodeView.getTag() != null) {
+                enteredPin.append(pinCodeView.getTag());
+            }
+        }
+        if (enteredPin.length() == 4) {
+            okCallback.handle(enteredPin.toString());
+        }
+    }
+
+    // Clear all pin
+    public void clearPin() {
+        for (View pinCodeView : pinCodeViews) {
+            pinCodeView.setBackgroundResource(R.drawable.binh_view_circle_pin_code);
+            pinCodeView.setTag(null);
         }
     }
 }

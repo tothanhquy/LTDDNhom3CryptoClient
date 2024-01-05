@@ -36,6 +36,7 @@ import com.example.nhom3_crypto_client.service.CoinService;
 import com.example.nhom3_crypto_client.service.ServiceConnections;
 import com.example.nhom3_crypto_client.service.ServiceCreatedCallback;
 import com.example.nhom3_crypto_client.service.SocketService;
+import com.example.nhom3_crypto_client.view.custom_dialog.QuyEditBinhVerifyPinDialog;
 import com.example.nhom3_crypto_client.view.custom_dialog.QuyVerifyOtpDialog;
 import com.example.nhom3_crypto_client.view.custom_dialog.QuyVerifyPinDialog;
 import com.example.nhom3_crypto_client.view_model.BaseViewModel;
@@ -180,7 +181,7 @@ public class QuyViewTradingCommandActivity extends AppCompatActivity {
 //
 ////        Intent intent1 = getIntent();
 ////        tradingCommandId = intent1.getStringExtra("id");
-        tradingCommandId = "65831802eb7884668b3554d7";
+        tradingCommandId = "65981e0f3207ed004c8badd2";
 //        tradingCommandId = "658792596ae2ca5adaa9616a";
 //
         setObserve();
@@ -366,7 +367,7 @@ public class QuyViewTradingCommandActivity extends AppCompatActivity {
             quyViewTradingCommandActivityOpenTradingCommandContainerBuyOrSellIcon.setBackgroundResource(R.drawable.binh_ic_arrow_down);
         }
         updateOpenProfitNow();
-        quyViewTradingCommandActivityOpenTradingCommandContainerCommission.setText("Hoa hồng: "+(long)getCommission(tradingCommandDetails.moneyNumber,tradingCommandDetails.leverage,tradingCommandDetails.openTime));
+        quyViewTradingCommandActivityOpenTradingCommandContainerCommission.setText("Hoa hồng: $ "+(long)getCommission(tradingCommandDetails.moneyNumber,tradingCommandDetails.leverage,tradingCommandDetails.openTime));
         if(tradingCommandDetails.enableTpSl){
             quyViewTradingCommandActivityOpenTradingCommandContainerTakeProfit.setText("TP: "+(long)tradingCommandDetails.takeProfit);
             quyViewTradingCommandActivityOpenTradingCommandContainerStopLost.setText("SL: "+(long)tradingCommandDetails.stopLoss);
@@ -399,8 +400,8 @@ public class QuyViewTradingCommandActivity extends AppCompatActivity {
         closeCommandOpenVerifyPinAndContinue();
     }
     private void closeCommandOpenVerifyPinAndContinue(){
-        QuyVerifyPinDialog quyVerifyPinDialog = new QuyVerifyPinDialog(this);
-        quyVerifyPinDialog.setHandleCallback(new QuyVerifyPinDialog.OkCallback() {
+        QuyEditBinhVerifyPinDialog quyVerifyPinDialog = new QuyEditBinhVerifyPinDialog(this);
+        quyVerifyPinDialog.setHandleCallback(new QuyEditBinhVerifyPinDialog.OkCallback() {
             @Override
             public void handle(String pin) {
                 quyVerifyPinDialog.hide();
@@ -421,6 +422,7 @@ public class QuyViewTradingCommandActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                quyVerifyPinDialog.clearPin();
                                 quyVerifyPinDialog.show();
                             }
                         });
@@ -492,8 +494,8 @@ public class QuyViewTradingCommandActivity extends AppCompatActivity {
     }
 
     private void editCommandOpenVerifyPinAndContinue(){
-        QuyVerifyPinDialog quyVerifyPinDialog = new QuyVerifyPinDialog(this);
-        quyVerifyPinDialog.setHandleCallback(new QuyVerifyPinDialog.OkCallback() {
+        QuyEditBinhVerifyPinDialog quyVerifyPinDialog = new QuyEditBinhVerifyPinDialog(this);
+        quyVerifyPinDialog.setHandleCallback(new QuyEditBinhVerifyPinDialog.OkCallback() {
             @Override
             public void handle(String pin) {
                 quyVerifyPinDialog.hide();
@@ -514,6 +516,7 @@ public class QuyViewTradingCommandActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                quyVerifyPinDialog.clearPin();
                                 quyVerifyPinDialog.show();
                             }
                         });
@@ -582,17 +585,17 @@ public class QuyViewTradingCommandActivity extends AppCompatActivity {
         quyViewTradingCommandActivityCloseTradingCommandContainerCoinInfoName.setText(coin.name);
 
         if(tradingCommandDetails.finalProfit>0){
-            quyViewTradingCommandActivityCloseTradingCommandContainerProfit.setText("$+"+String.format("%.2", tradingCommandDetails.finalProfit));
+            quyViewTradingCommandActivityCloseTradingCommandContainerProfit.setText("$+"+String.format("%.2f", tradingCommandDetails.finalProfit));
             quyViewTradingCommandActivityCloseTradingCommandContainerProfit.setTextColor(Color.GREEN);
         }else{
-            quyViewTradingCommandActivityCloseTradingCommandContainerProfit.setText("$-"+String.format("%.2", tradingCommandDetails.finalProfit));
+            quyViewTradingCommandActivityCloseTradingCommandContainerProfit.setText("$"+String.format("%.2f", tradingCommandDetails.finalProfit));
             quyViewTradingCommandActivityCloseTradingCommandContainerProfit.setTextColor(Color.RED);
         }
 
         quyViewTradingCommandActivityCloseTradingCommandContainerSumValue.setText(""+(long)tradingCommandDetails.moneyNumber+" X "+tradingCommandDetails.leverage);
-        quyViewTradingCommandActivityCloseTradingCommandContainerOpenPrice.setText(""+String.format("%.2", tradingCommandDetails.openPrice));
+        quyViewTradingCommandActivityCloseTradingCommandContainerOpenPrice.setText(""+String.format("%.2f", tradingCommandDetails.openPrice));
         quyViewTradingCommandActivityCloseTradingCommandContainerOpenTime.setText(General.convertTimeToDateTime(tradingCommandDetails.openTime));
-        quyViewTradingCommandActivityCloseTradingCommandContainerClosePrice.setText(""+String.format("%.2", tradingCommandDetails.closePrice));
+        quyViewTradingCommandActivityCloseTradingCommandContainerClosePrice.setText(""+String.format("%.2f", tradingCommandDetails.closePrice));
         quyViewTradingCommandActivityCloseTradingCommandContainerCloseTime.setText(General.convertTimeToDateTime(tradingCommandDetails.closeTime));
         quyViewTradingCommandActivityCloseTradingCommandContainerCommission.setText("Hoa hồng: "+(long)tradingCommandDetails.commission);
 
@@ -667,10 +670,10 @@ public class QuyViewTradingCommandActivity extends AppCompatActivity {
             profitNow = (-coin.priceUsd+tradingCommandDetails.openPrice)*tradingCommandDetails.coinNumber;
         }
         if(profitNow>0){
-            quyViewTradingCommandActivityOpenTradingCommandContainerProfitNow.setText("$+"+String.format("%.2", profitNow));
+            quyViewTradingCommandActivityOpenTradingCommandContainerProfitNow.setText("$+"+String.format("%.2f", profitNow));
             quyViewTradingCommandActivityOpenTradingCommandContainerProfitNow.setTextColor(Color.GREEN);
         }else{
-            quyViewTradingCommandActivityOpenTradingCommandContainerProfitNow.setText("$-"+String.format("%.2", profitNow));
+            quyViewTradingCommandActivityOpenTradingCommandContainerProfitNow.setText("$"+String.format("%.2f", profitNow));
             quyViewTradingCommandActivityOpenTradingCommandContainerProfitNow.setTextColor(Color.RED);
         }
 

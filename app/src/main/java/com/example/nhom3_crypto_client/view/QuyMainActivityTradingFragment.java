@@ -40,6 +40,7 @@ import com.example.nhom3_crypto_client.model.response.QuyProfileResponseModel;
 import com.example.nhom3_crypto_client.service.CoinService;
 import com.example.nhom3_crypto_client.service.ServiceConnections;
 import com.example.nhom3_crypto_client.service.ServiceCreatedCallback;
+import com.example.nhom3_crypto_client.view.custom_dialog.QuyEditBinhVerifyPinDialog;
 import com.example.nhom3_crypto_client.view.custom_dialog.QuyVerifyOtpDialog;
 import com.example.nhom3_crypto_client.view.custom_dialog.QuyVerifyPinDialog;
 import com.example.nhom3_crypto_client.view_model.BaseViewModel;
@@ -535,7 +536,7 @@ public class QuyMainActivityTradingFragment extends Fragment {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                miniInfoSumMoney.setText((long)(miniProfile.moneyNow+miniProfile.moneyInvested+miniProfile.moneyProfitNow)+"");
+                miniInfoSumMoney.setText("$ "+String.format("%.2f",((miniProfile.moneyNow+miniProfile.moneyInvested+miniProfile.moneyProfitNow)/1000f))+" K");
             }
         });
     }
@@ -698,11 +699,11 @@ public class QuyMainActivityTradingFragment extends Fragment {
 
     private void openVerifyPinAndContinue(){
 
-        QuyVerifyPinDialog quyVerifyPinDialog = new QuyVerifyPinDialog(getContext());
-        quyVerifyPinDialog.setHandleCallback(new QuyVerifyPinDialog.OkCallback() {
+        QuyEditBinhVerifyPinDialog verifyPinDialog = new QuyEditBinhVerifyPinDialog(getContext());
+        verifyPinDialog.setHandleCallback(new QuyEditBinhVerifyPinDialog.OkCallback() {
             @Override
             public void handle(String pin) {
-                quyVerifyPinDialog.hide();
+                verifyPinDialog.hide();
                 quyTradingCommandViewModel.checkVerifyPin(pin, new BaseViewModel.OkCallback() {
                     @Override
                     public void handle(String data) {
@@ -720,7 +721,8 @@ public class QuyMainActivityTradingFragment extends Fragment {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                quyVerifyPinDialog.show();
+                                verifyPinDialog.clearPin();
+                                verifyPinDialog.show();
                             }
                         });
 
@@ -728,7 +730,7 @@ public class QuyMainActivityTradingFragment extends Fragment {
                 });
             }
         });
-        quyVerifyPinDialog.show();
+        verifyPinDialog.show();
     }
 
     private void openVerifyOtpAndContinue(){

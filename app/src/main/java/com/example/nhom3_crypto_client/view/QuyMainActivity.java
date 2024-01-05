@@ -103,6 +103,7 @@ public class QuyMainActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quy_main);
+        getSupportActionBar().hide();
 
         quyAccountViewModel = new QuyAccountViewModel(getApplicationContext());
 
