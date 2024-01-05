@@ -61,7 +61,9 @@ public class API {
         }
     }
 
-    public static String SERVER_URL = "192.168.1.10";
+
+    public static String SERVER_URL = "10.0.2.2";
+
     public static String SERVER_URL_AND_PORT= "http://"+SERVER_URL+":8080";
 
 

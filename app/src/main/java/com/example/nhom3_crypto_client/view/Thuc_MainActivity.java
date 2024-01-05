@@ -45,27 +45,6 @@ public class Thuc_MainActivity extends AppCompatActivity {
         // Set alert notification
     }
 
-        // Set loading
-    public boolean check(String phonenumber, String password){
-        if(phonenumber.equals(phonenumber) && password.equals(password)){
-            loginViewModel.login(phonenumber, password, new Login1());
-            return true;
-        }
-        return false;
-    }
-
-    public class Login1 implements SystemNotificationModel.OkCallback{
-
-        @Override
-        public void handle() {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(Thuc_MainActivity.this, "thanh cong", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,22 +62,6 @@ public class Thuc_MainActivity extends AppCompatActivity {
         final TextView signup = findViewById(R.id.signup);
         final TextView resetpassword = findViewById((R.id.resetpassword));
 
-        btnLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String setPassword = password.getText().toString();
-                String setPhonenumber = phonenumber.getText().toString();
-
-                if (setPassword.isEmpty() || setPhonenumber.isEmpty()) {
-                    Toast.makeText(Thuc_MainActivity.this, "Bạn đang bỏ trống", Toast.LENGTH_SHORT).show();
-                } else {
-                    check(setPhonenumber, setPassword);
-                    // Xử lý đăng
-                    // Ở đây có thể thêm logic xác thực đăng nhập
-                   // Toast.makeText(MainActivity.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
         signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,17 +76,26 @@ public class Thuc_MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-//        btnLogin.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Boolean check123 =  check(phonenumber.getText().toString(), password.getText().toString());
-//                if(check123) {
-//                    Toast.makeText(MainActivity.this, "Đăng nhập thành công", Toast.LENGTH_LONG).show();
-//                    Intent intent = new Intent(MainActivity.this, Home.class);
-//                    startActivity(intent);
-//                }
-//            }
-//        });
+        btnLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String setPassword = password.getText().toString();
+                String setPhonenumber = phonenumber.getText().toString();
+
+                if (setPassword.isEmpty() || setPhonenumber.isEmpty()) {
+                    Toast.makeText(Thuc_MainActivity.this, "Bạn đang bỏ trống", Toast.LENGTH_SHORT).show();
+                } else {
+                    loginViewModel.login(setPhonenumber, setPassword, new SystemNotificationModel.OkCallback() {
+                        @Override
+                        public void handle() {
+                            finish();
+                        }
+                    });
+                }
+
+            }
+        });
     }
 
 }
