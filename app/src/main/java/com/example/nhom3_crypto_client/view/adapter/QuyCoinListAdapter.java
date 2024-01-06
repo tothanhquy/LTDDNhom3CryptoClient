@@ -124,7 +124,7 @@ public class QuyCoinListAdapter extends RecyclerView.Adapter<QuyCoinListAdapter.
 
         public void bindData(CoinServiceModel.CoinNow item, Context context, int position) throws IOException {
             name.setText(item.name);
-            price.setText(""+String.format("%.2f", item.priceUsd));
+            price.setText("$ "+String.format("%.2f", item.priceUsd));
 
             if(item.changePercent24Hr>=0){
                 changePercent.setTextColor(Color.GREEN);
