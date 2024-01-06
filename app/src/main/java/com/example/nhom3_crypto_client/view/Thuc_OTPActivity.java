@@ -12,8 +12,12 @@ import android.widget.ImageView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.nhom3_crypto_client.R;
+import com.example.nhom3_crypto_client.model.SystemNotificationModel;
+import com.example.nhom3_crypto_client.view_model.LoginViewModel;
 
 public class Thuc_OTPActivity extends AppCompatActivity {
+
+    private LoginViewModel loginViewModel;
 
     private EditText otp1;
     private EditText otp2;
@@ -48,10 +52,25 @@ public class Thuc_OTPActivity extends AppCompatActivity {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Thuc_OTPActivity.this, Thuc_SignUpActivity.class);
-                startActivity(intent);
+                String sum = getOtpSum();
+                System.out.println("abc" + sum);
+
+                finish();
             }
         });
+    }
+
+    private String getOtpSum() {
+        String value1 = otp1.getText().toString();
+        String value2 = otp2.getText().toString();
+        String value3 = otp3.getText().toString();
+        String value4 = otp4.getText().toString();
+        String value5 = otp5.getText().toString();
+        String value6 = otp6.getText().toString();
+
+        String sum = value1 + value2 + value3 + value4 + value5 + value6;
+
+        return sum;
     }
 
     private void setupOtpEditText(final EditText currentEditText, final EditText nextEditText, final EditText previousEditText) {
@@ -89,6 +108,20 @@ public class Thuc_OTPActivity extends AppCompatActivity {
                     return true;
                 }
                 return false;
+            }
+        });
+    }
+
+    public void abc (String sum){
+
+        Intent intent = getIntent();
+
+        String setPhonenumber = String.valueOf(intent.getStringExtra("phonenumber"));
+
+        loginViewModel.register2(setPhonenumber, sum, new SystemNotificationModel.OkCallback() {
+            @Override
+            public void handle() {
+                finish();
             }
         });
     }
