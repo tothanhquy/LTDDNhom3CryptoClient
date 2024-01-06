@@ -382,9 +382,9 @@ public class QuyViewTradingCommandActivity extends AppCompatActivity {
     }
     private void setEditContainer(){
         quyViewTradingCommandActivityEditCommandContainer.setVisibility(View.GONE);
-        quyViewTradingCommandActivityEditCommandContainerOpenPrice.setText(""+tradingCommandDetails.openPrice);
+        quyViewTradingCommandActivityEditCommandContainerOpenPrice.setText("$"+tradingCommandDetails.openPrice);
         quyViewTradingCommandActivityEditCommandContainerOpenTime.setText(General.convertTimeToDateTime(tradingCommandDetails.openTime));
-        quyViewTradingCommandActivityEditCommandContainerValue.setText(""+tradingCommandDetails.moneyNumber+" X "+tradingCommandDetails.leverage);
+        quyViewTradingCommandActivityEditCommandContainerValue.setText("$"+tradingCommandDetails.moneyNumber+" X "+tradingCommandDetails.leverage);
         
         quyViewTradingCommandActivityEditCommandContainerEnableTPSL.setChecked(tradingCommandDetails.enableTpSl);
         if(tradingCommandDetails.enableTpSl){
@@ -593,11 +593,11 @@ public class QuyViewTradingCommandActivity extends AppCompatActivity {
         }
 
         quyViewTradingCommandActivityCloseTradingCommandContainerSumValue.setText(""+(long)tradingCommandDetails.moneyNumber+" X "+tradingCommandDetails.leverage);
-        quyViewTradingCommandActivityCloseTradingCommandContainerOpenPrice.setText(""+String.format("%.2f", tradingCommandDetails.openPrice));
+        quyViewTradingCommandActivityCloseTradingCommandContainerOpenPrice.setText("$"+String.format("%.2f", tradingCommandDetails.openPrice));
         quyViewTradingCommandActivityCloseTradingCommandContainerOpenTime.setText(General.convertTimeToDateTime(tradingCommandDetails.openTime));
-        quyViewTradingCommandActivityCloseTradingCommandContainerClosePrice.setText(""+String.format("%.2f", tradingCommandDetails.closePrice));
+        quyViewTradingCommandActivityCloseTradingCommandContainerClosePrice.setText("$"+String.format("%.2f", tradingCommandDetails.closePrice));
         quyViewTradingCommandActivityCloseTradingCommandContainerCloseTime.setText(General.convertTimeToDateTime(tradingCommandDetails.closeTime));
-        quyViewTradingCommandActivityCloseTradingCommandContainerCommission.setText("Hoa hồng: "+(long)tradingCommandDetails.commission);
+        quyViewTradingCommandActivityCloseTradingCommandContainerCommission.setText("Hoa hồng: $"+(long)tradingCommandDetails.commission);
 
         quyViewTradingCommandActivityCloseTradingCommandContainer.setVisibility(View.VISIBLE);
         quyViewTradingCommandActivityOpenTradingCommandContainer.setVisibility(View.GONE);
