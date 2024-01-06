@@ -1,5 +1,6 @@
 package com.example.nhom3_crypto_client.view;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -9,22 +10,56 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 
 import com.example.nhom3_crypto_client.R;
+import com.example.nhom3_crypto_client.core.General;
 import com.example.nhom3_crypto_client.model.SystemNotificationModel;
+import com.example.nhom3_crypto_client.view.custom_dialog.QuyVerifyOtpDialog;
 import com.example.nhom3_crypto_client.view_model.LoginViewModel;
 
 public class Thuc_ResetPasswordActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
+    EditText phonenumber;
+    EditText passwordView;
 
+    private void setRender() {
+        // Set alert error
+        loginViewModel.notification().observe(this, new Observer<SystemNotificationModel>() {
+            @Override
+            public void onChanged(SystemNotificationModel it) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (it != null) {
+                            General.showNotification(Thuc_ResetPasswordActivity.this, it);
+                        }
+                    }
+                });
+            }
+        });
+
+        // Set alert notification
+    }
+
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.thuc_activity_reset_password);
+
+        phonenumber = findViewById(R.id.phonenumber);
+        passwordView = findViewById(R.id.newpassword);
+
+        System.out.println(phonenumber);
+        System.out.println(passwordView);
+
+        loginViewModel = new LoginViewModel(getApplicationContext());
         ResetPassword();
+        setRender();
     }
-    public void ResetPassword(){
+    public void ResetPassword() {
         final TextView signin = findViewById(R.id.signin);
         final TextView signup = findViewById(R.id.signup);
         final EditText phonenumber = findViewById(R.id.phonenumber);
@@ -59,22 +94,124 @@ public class Thuc_ResetPasswordActivity extends AppCompatActivity {
 
                 if (setNewPassword.isEmpty() || setPhonenumber.isEmpty() || setConfirmNewPassword.isEmpty()) {
                     Toast.makeText(Thuc_ResetPasswordActivity.this, "Bạn đang bỏ trống", Toast.LENGTH_SHORT).show();
-                    if (setConfirmNewPassword != setNewPassword){
-                        Toast.makeText(Thuc_ResetPasswordActivity.this, "Xác nhận mật khẩu sai", Toast.LENGTH_LONG).show();
-
-                    }
                 } else {
-                    loginViewModel.resetPassword(setPhonenumber, setNewPassword, setConfirmNewPassword, new SystemNotificationModel.OkCallback() {
-                        @Override
-                        public void handle() {
-                            Intent intent = new Intent(Thuc_ResetPasswordActivity.this, Thuc_OTPActivity.class);
-                            intent.putExtra("phonenumber", setPhonenumber);
-                            startActivity(intent);
-                        }
-                    });
+                    if (!setConfirmNewPassword.equals(setNewPassword)) {
+                        Toast.makeText(Thuc_ResetPasswordActivity.this, "Xác nhận mật khẩu sai", Toast.LENGTH_LONG).show();
+                    }else resetPassword1(setPhonenumber, setNewPassword);
                 }
 
             }
         });
+    }
+
+    public void resetPassword1(String phonenumber, String newpassword){
+        loginViewModel.resetPassword(phonenumber, newpassword, new SystemNotificationModel.OkCallback() {
+            @Override
+            public void handle() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        openOTP();
+                    }
+                });
+
+            }
+        }, new SystemNotificationModel.OkCallback() {
+            @Override
+            public void handle() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(Thuc_ResetPasswordActivity.this, "fail", Toast.LENGTH_LONG).show();
+
+                    }
+                });
+
+            }
+        });
+    }
+    public void openOTP(){
+        QuyVerifyOtpDialog quyVerifyOtpDialog = new QuyVerifyOtpDialog(this);
+        quyVerifyOtpDialog.setHandleCallback(new QuyVerifyOtpDialog.OkCallback() {
+            @Override
+            public void handle(String otp) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        quyVerifyOtpDialog.hide();
+                        String setNumberphone = phonenumber.getText().toString();
+                        loginViewModel.resetPassword2(setNumberphone, otp, new SystemNotificationModel.OkCallback() {
+
+                            @Override
+                            public void handle() {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(Thuc_ResetPasswordActivity.this, "Đổi mật khẩu thành công", Toast.LENGTH_LONG).show();
+                                        finish();
+                                    }
+                                });
+                            }
+                        }, new SystemNotificationModel.OkCallback() {
+                            @Override
+                            public void handle() {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        quyVerifyOtpDialog.show();
+                                    }
+                                });
+
+                            }
+                        });
+                    }
+                });
+
+            }
+        });
+        quyVerifyOtpDialog.setResendCallback(new QuyVerifyOtpDialog.OkCallback() {
+            @Override
+            public void handle(String otp) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+//                        quyVerifyOtpDialog.hide();
+                        System.out.println("ABC");
+                        System.out.println(phonenumber);
+                        System.out.println(passwordView);
+
+                        String setNumberphone = phonenumber.getText().toString();
+                        String setPassword = passwordView.getText().toString();
+                        loginViewModel.resetPassword(setNumberphone, setPassword , new SystemNotificationModel.OkCallback() {
+                            @Override
+                            public void handle() {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+//                                        quyVerifyOtpDialog.show();
+                                    }
+                                });
+
+                            }
+                        }, new SystemNotificationModel.OkCallback() {
+                            @Override
+                            public void handle() {
+                              runOnUiThread(new Runnable() {
+                                  @Override
+                                  public void run() {
+//                                      quyVerifyOtpDialog.show();
+                                  }
+                              });
+
+
+                            }
+                        });
+                        ;
+                    }
+                });
+
+            }
+        });
+        quyVerifyOtpDialog.show();
     }
 }

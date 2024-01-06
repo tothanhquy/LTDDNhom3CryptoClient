@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#fff"
-    tools:context=".OTPActivity">
+    android:background="#fff">
 
     <ImageView
         android:id="@+id/back"
@@ -135,6 +134,7 @@
         android:textSize="16dp"
         android:textStyle="bold"
         android:textColor="#0171CA"
+        android:id="@+id/resend"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
