@@ -2,14 +2,15 @@ package com.example.nhom3_crypto_client.model.response;
 
 
 public class QuyTradingCommandResponseModel {
-    public static class Created{
+    public static class Created {
         public String newId;
 
         public Created(String newId) {
             this.newId = newId;
         }
     }
-    public static class AutoClose{
+
+    public static class AutoClose {
         public String id;
 
         public AutoClose(String id) {
@@ -17,21 +18,21 @@ public class QuyTradingCommandResponseModel {
         }
     }
 
-    public static class TradingCommandDetails{
+    public static class TradingCommandDetails {
         public String id;
         public String buyOrSell;
         public float coinNumber = 0;
         public float moneyNumber = 0;
         public int leverage = 1;
-        public float openPrice=0;
+        public float openPrice = 0;
         public long openTime;
-        public float closePrice=0;
+        public float closePrice = 0;
         public long closeTime;
         public boolean enableTpSl = false;
         public float takeProfit = 0;
         public float stopLoss = 0;
         public String coinId;
-        public float finalProfit=0;
+        public float finalProfit = 0;
         public boolean isOpen = true;
         public float commission = 0;
 
@@ -54,7 +55,6 @@ public class QuyTradingCommandResponseModel {
             this.commission = commission;
         }
     }
-
 
 
 }

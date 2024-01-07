@@ -20,6 +20,7 @@ public class QuyProfileResponseModel {
     }
     public static class Profile{
         public String id;
+
         public String name;
         public String avatar;
         public float moneyNow=0;

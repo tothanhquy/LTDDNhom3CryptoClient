@@ -40,6 +40,7 @@ import com.example.nhom3_crypto_client.model.response.QuyProfileResponseModel;
 import com.example.nhom3_crypto_client.service.CoinService;
 import com.example.nhom3_crypto_client.service.ServiceConnections;
 import com.example.nhom3_crypto_client.service.ServiceCreatedCallback;
+import com.example.nhom3_crypto_client.view.custom_dialog.QuyEditBinhVerifyPinDialog;
 import com.example.nhom3_crypto_client.view.custom_dialog.QuyVerifyOtpDialog;
 import com.example.nhom3_crypto_client.view.custom_dialog.QuyVerifyPinDialog;
 import com.example.nhom3_crypto_client.view_model.BaseViewModel;
@@ -82,6 +83,13 @@ public class QuyMainActivityTradingFragment extends Fragment {
     View quyMainActivityTradingFragmentCreateCommandContainerOpenCommandButton;
     ImageView quyMainActivityTradingFragmentInterestedIcon;
     LinearLayout loadingLayout;
+
+    ImageView quyMainActivityTradingFragmentMiniInfoSumIcon;
+    LinearLayout quyMainActivityTradingFragmentMiniInfoSumLayout;
+    ImageView quyMainActivityTradingFragmentMiniInfoReadyMoneyIcon;
+    LinearLayout quyMainActivityTradingFragmentMiniInfoReadyMoneyLayout;
+    ImageView quyMainActivityTradingFragmentMiniInfoTradingCommandNumberIcon;
+    LinearLayout quyMainActivityTradingFragmentMiniInfoTradingCommandNumberLayout;
 
 
     QuyProfileResponseModel.MiniProfile miniProfile;
@@ -152,7 +160,9 @@ public class QuyMainActivityTradingFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_quy_main_activity_trading, container, false);
+        System.out.println("View =view.findViewById(R.i");
         coinChartFragmentView =view.findViewById(R.id.quyMainActivityTradingFragmentCoinChartFragmentContainer);
+        System.out.println("ById(R.id.quyMainActivityTradin");
         miniInfoSumMoney = view.findViewById(R.id.quyMainActivityTradingFragmentMiniInfoSum);
         miniInfoReadyMoney = view.findViewById(R.id.quyMainActivityTradingFragmentMiniInfoReadyMoney);
         miniInfoTradingCommandNumber = view.findViewById(R.id.quyMainActivityTradingFragmentMiniInfoTradingCommandNumber);
@@ -179,6 +189,13 @@ public class QuyMainActivityTradingFragment extends Fragment {
         quyMainActivityTradingFragmentCreateCommandContainerOpenCommandButton = view.findViewById(R.id.quyMainActivityTradingFragmentCreateCommandContainerOpenCommandButton);
 
         quyMainActivityTradingFragmentInterestedIcon = view.findViewById(R.id.quyMainActivityTradingFragmentInterestedIcon);
+
+        quyMainActivityTradingFragmentMiniInfoSumIcon = view.findViewById(R.id.quyMainActivityTradingFragmentMiniInfoSumIcon);
+        quyMainActivityTradingFragmentMiniInfoSumLayout = view.findViewById(R.id.quyMainActivityTradingFragmentMiniInfoSumLayout);
+        quyMainActivityTradingFragmentMiniInfoReadyMoneyIcon = view.findViewById(R.id.quyMainActivityTradingFragmentMiniInfoReadyMoneyIcon);
+        quyMainActivityTradingFragmentMiniInfoReadyMoneyLayout = view.findViewById(R.id.quyMainActivityTradingFragmentMiniInfoReadyMoneyLayout);
+        quyMainActivityTradingFragmentMiniInfoTradingCommandNumberIcon = view.findViewById(R.id.quyMainActivityTradingFragmentMiniInfoTradingCommandNumberIcon);
+        quyMainActivityTradingFragmentMiniInfoTradingCommandNumberLayout = view.findViewById(R.id.quyMainActivityTradingFragmentMiniInfoTradingCommandNumberLayout);
 
         loadingLayout = view.findViewById(R.id.loadingLayout);
 
@@ -334,8 +351,49 @@ public class QuyMainActivityTradingFragment extends Fragment {
                 toggleInterestedCoin();
             }
         });
-
-
+        quyMainActivityTradingFragmentCoinInfoIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, QuyCoinListActivity.class);
+                changeCoinLauncher.launch(intent);
+            }
+        });
+        quyMainActivityTradingFragmentMiniInfoSumIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sumMoneyOpen();
+            }
+        });
+        quyMainActivityTradingFragmentMiniInfoSumLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sumMoneyOpen();
+            }
+        });
+        quyMainActivityTradingFragmentMiniInfoReadyMoneyIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                moneyNowOpen();
+            }
+        });
+        quyMainActivityTradingFragmentMiniInfoReadyMoneyLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                moneyNowOpen();
+            }
+        });
+        quyMainActivityTradingFragmentMiniInfoTradingCommandNumberIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                commandNumberOpen();
+            }
+        });
+        quyMainActivityTradingFragmentMiniInfoTradingCommandNumberLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                commandNumberOpen();
+            }
+        });
 
     }
 
@@ -460,8 +518,8 @@ public class QuyMainActivityTradingFragment extends Fragment {
         quyProfileViewModel.getMiniInfo(new LoadMiniProfileOk());
     }
     private void setMiniInfo(){
-        miniInfoSumMoney.setText(miniProfile.moneyNow+miniProfile.moneyInvested+miniProfile.moneyProfitNow+"");
-        miniInfoReadyMoney.setText(miniProfile.moneyNow+"");
+        miniInfoSumMoney.setText("$ "+String.format("%.2f",((miniProfile.moneyNow+miniProfile.moneyInvested+miniProfile.moneyProfitNow)/1000f))+" K");
+        miniInfoReadyMoney.setText("$ "+String.format("%.2f",((miniProfile.moneyNow)/1000f))+" K");
         miniInfoTradingCommandNumber.setText(miniProfile.openTradingCommandNumber+"");
         loadInterestedCoinStatus();
     }
@@ -482,7 +540,7 @@ public class QuyMainActivityTradingFragment extends Fragment {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                miniInfoSumMoney.setText(miniProfile.moneyNow+miniProfile.moneyInvested+miniProfile.moneyProfitNow+"");
+                miniInfoSumMoney.setText("$ "+String.format("%.2f",((miniProfile.moneyNow+miniProfile.moneyInvested+miniProfile.moneyProfitNow)/1000f))+" K");
             }
         });
     }
@@ -554,12 +612,13 @@ public class QuyMainActivityTradingFragment extends Fragment {
     private void setCoinInfo(CoinServiceModel.CoinNow coin){
         quyMainActivityTradingFragmentCoinInfoName.setText(coin.name);
         General.setImageUrl(context,quyMainActivityTradingFragmentCoinInfoIcon,coin.icon);
-        quyMainActivityTradingFragmentCoinInfoPrice.setText(""+coin.priceUsd);
-        quyMainActivityTradingFragmentCoinInfoChange24h.setText(""+coin.changePercent24Hr);
+        quyMainActivityTradingFragmentCoinInfoPrice.setText(String.format("%.2f", coin.priceUsd));
         if(coin.changePercent24Hr>=0){
             quyMainActivityTradingFragmentCoinInfoChange24h.setTextColor(Color.GREEN);
+            quyMainActivityTradingFragmentCoinInfoChange24h.setText(String.format("%.2f", coin.changePercent24Hr)+"%");
         }else{
             quyMainActivityTradingFragmentCoinInfoChange24h.setTextColor(Color.RED);
+            quyMainActivityTradingFragmentCoinInfoChange24h.setText(String.format("%.2f", coin.changePercent24Hr)+"%");
         }
     }
     private void updateCoinInfo(CoinServiceModel.CoinNow coin){
@@ -567,12 +626,13 @@ public class QuyMainActivityTradingFragment extends Fragment {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    quyMainActivityTradingFragmentCoinInfoPrice.setText(""+coin.priceUsd);
-                    quyMainActivityTradingFragmentCoinInfoChange24h.setText(""+coin.changePercent24Hr);
+                    quyMainActivityTradingFragmentCoinInfoPrice.setText(""+String.format("%.2f", coin.priceUsd));
                     if(coin.changePercent24Hr>=0){
                         quyMainActivityTradingFragmentCoinInfoChange24h.setTextColor(Color.GREEN);
+                        quyMainActivityTradingFragmentCoinInfoChange24h.setText("+"+String.format("%.2f", coin.changePercent24Hr)+"%");
                     }else{
                         quyMainActivityTradingFragmentCoinInfoChange24h.setTextColor(Color.RED);
+                        quyMainActivityTradingFragmentCoinInfoChange24h.setText(""+String.format("%.2f", coin.changePercent24Hr)+"%");
                     }
                 }
             });
@@ -643,11 +703,11 @@ public class QuyMainActivityTradingFragment extends Fragment {
 
     private void openVerifyPinAndContinue(){
 
-        QuyVerifyPinDialog quyVerifyPinDialog = new QuyVerifyPinDialog(getContext());
-        quyVerifyPinDialog.setHandleCallback(new QuyVerifyPinDialog.OkCallback() {
+        QuyEditBinhVerifyPinDialog verifyPinDialog = new QuyEditBinhVerifyPinDialog(getContext());
+        verifyPinDialog.setHandleCallback(new QuyEditBinhVerifyPinDialog.OkCallback() {
             @Override
             public void handle(String pin) {
-                quyVerifyPinDialog.hide();
+                verifyPinDialog.hide();
                 quyTradingCommandViewModel.checkVerifyPin(pin, new BaseViewModel.OkCallback() {
                     @Override
                     public void handle(String data) {
@@ -665,7 +725,8 @@ public class QuyMainActivityTradingFragment extends Fragment {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                quyVerifyPinDialog.show();
+                                verifyPinDialog.clearPin();
+                                verifyPinDialog.show();
                             }
                         });
 
@@ -673,7 +734,7 @@ public class QuyMainActivityTradingFragment extends Fragment {
                 });
             }
         });
-        quyVerifyPinDialog.show();
+        verifyPinDialog.show();
     }
 
     private void openVerifyOtpAndContinue(){
@@ -733,5 +794,16 @@ public class QuyMainActivityTradingFragment extends Fragment {
 
     }
 
-
+    public void sumMoneyOpen(){
+        Intent intent = new Intent(getActivity(), Binh_BalanceTransactionActivity.class);
+        startActivity(intent);
+    }
+    public void moneyNowOpen(){
+        Intent intent = new Intent(getActivity(), Binh_BriefActivity.class);
+        startActivity(intent);
+    }
+    public void commandNumberOpen(){
+        Intent intent = new Intent(getActivity(), Ban_CommandActivity.class);
+        startActivity(intent);
+    }
 }

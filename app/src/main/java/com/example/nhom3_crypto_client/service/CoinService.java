@@ -16,6 +16,8 @@ import com.example.nhom3_crypto_client.model.CoinServiceModel;
 import com.example.nhom3_crypto_client.model.socket.SocketServiceEventsModel;
 import com.example.nhom3_crypto_client.view.BaseActivity;
 import com.example.nhom3_crypto_client.view.ExampleActivity;
+import com.example.nhom3_crypto_client.view_model.BaseViewModel;
+import com.example.nhom3_crypto_client.view_model.QuyCoinViewModel;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -24,6 +26,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 
 public class CoinService extends Service {
+    private QuyCoinViewModel quyCoinViewModel;
     private String socketName = "coin-service";
     private SocketService socketService;
     private Boolean isBoundSocketService;
@@ -137,6 +140,19 @@ public class CoinService extends Service {
         serviceConnection = new ServiceConnections.SocketServiceConnection(serviceCreatedCallback);
         Intent intent = new Intent(this, SocketService.class);
         bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+
+        quyCoinViewModel = new QuyCoinViewModel(getApplicationContext());
+        loadFirstTime();
+    }
+
+    private void loadFirstTime(){
+        quyCoinViewModel.getAll(new BaseViewModel.OkCallback() {
+            @Override
+            public void handle(String data) {
+                coinsNow = new Gson().fromJson(data, CoinServiceModel.CoinsNow.class);
+                System.out.println("private void loadFirstTime(){");
+            }
+        });
     }
 
     @Override

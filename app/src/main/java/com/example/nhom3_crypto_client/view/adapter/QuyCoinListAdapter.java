@@ -51,7 +51,7 @@ public class QuyCoinListAdapter extends RecyclerView.Adapter<QuyCoinListAdapter.
             public int compare(CoinServiceModel.CoinNow o1, CoinServiceModel.CoinNow o2){
                 if(o1.changePercent24Hr == o2.changePercent24Hr)
                     return 0;
-                return o1.changePercent24Hr < o2.changePercent24Hr ? -1*sortStatus : 1*sortStatus;
+                return o1.changePercent24Hr < o2.changePercent24Hr ? 1*sortStatus : -1*sortStatus;
             }
         });
     }
@@ -124,12 +124,14 @@ public class QuyCoinListAdapter extends RecyclerView.Adapter<QuyCoinListAdapter.
 
         public void bindData(CoinServiceModel.CoinNow item, Context context, int position) throws IOException {
             name.setText(item.name);
-            price.setText(""+item.priceUsd);
-            changePercent.setText(""+item.changePercent24Hr);
+            price.setText("$ "+String.format("%.2f", item.priceUsd));
+
             if(item.changePercent24Hr>=0){
                 changePercent.setTextColor(Color.GREEN);
+                changePercent.setText("+ "+String.format("%.2f", item.changePercent24Hr)+"%");
             }else{
                 changePercent.setTextColor(Color.RED);
+                changePercent.setText(String.format("%.2f", item.changePercent24Hr)+"%");
             }
 
             General.setImageUrl(context,icon,item.icon);
