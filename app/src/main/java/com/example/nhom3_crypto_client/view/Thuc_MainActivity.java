@@ -104,6 +104,11 @@ public class Thuc_MainActivity extends AppCompatActivity {
 //                            finish();
 
                         }
+                    }, new SystemNotificationModel.OkCallback() {
+                        @Override
+                        public void handle() {
+
+                        }
                     });
 
                 }

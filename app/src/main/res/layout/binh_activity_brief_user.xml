@@ -32,8 +32,7 @@
                 app:cardCornerRadius="50dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
+                app:layout_constraintTop_toTopOf="parent">>
                 <ImageView
                     android:id="@+id/image_brief_user"
                     android:layout_width="wrap_content"
@@ -41,7 +40,7 @@
                     android:scaleType="centerCrop"
                     android:src="@drawable/binh_ic_user"
                     app:srcCompat="@drawable/abc" />
-
+            </androidx.cardview.widget.CardView>
 
 
             <TextView
