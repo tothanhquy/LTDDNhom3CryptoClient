@@ -107,7 +107,7 @@ public class QuyMainActivityTradingFragment extends Fragment {
         }
         @Override
         public void createdComplete() {
-
+            loadCoinInfo();
         }
     }
 
@@ -181,13 +181,7 @@ public class QuyMainActivityTradingFragment extends Fragment {
         quyMainActivityTradingFragmentInterestedIcon = view.findViewById(R.id.quyMainActivityTradingFragmentInterestedIcon);
 
         loadingLayout = view.findViewById(R.id.loadingLayout);
-        return view;
-    }
 
-
-    @Override
-    public void onStart() {
-        super.onStart();
         coinChartFragment = QuyCoinChartFragment.newInstance(this.coinId, 0L, context);
         coinChartFragment.setChangeCoinLauncher(changeCoinLauncher);
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
@@ -198,11 +192,19 @@ public class QuyMainActivityTradingFragment extends Fragment {
 //        transaction.addToBackStack(null);
         // Commit the transaction
         transaction.commitAllowingStateLoss();
+
+        return view;
+    }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
         setObserve();
         setInitView();
         setEvents();
         loadMiniProfile();
-        loadCoinInfo();
     }
 
     private void setInitView(){

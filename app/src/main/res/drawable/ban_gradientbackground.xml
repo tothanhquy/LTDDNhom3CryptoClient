@@ -1,9 +1,9 @@
 <!-- res/drawable/custom_background.xml -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <gradient
-        android:startColor="#F184FE"
-        android:endColor="#60C3FE"
-        android:angle="0"/>
+        android:startColor="#EB87FE"
+        android:endColor="#26A0F3"
+        android:angle="90"/>
     <corners android:radius="8dp" />
 
 </shape>

@@ -31,7 +31,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class QuyMainActivity extends AppCompatActivity {
-    QuyMainActivityHomeFragment quyMainActivityHomeFragment;
+    BanEditMainActivityHomeFragment banEditMainActivityHomeFragment;
     QuyMainActivityInterestedCoinsFragment quyMainActivityInterestedCoinsFragment;
     QuyMainActivityTradingFragment quyMainActivityTradingFragment;
     QuyMainActivityProfileFragment quyMainActivityProfileFragment;
@@ -99,14 +99,16 @@ public class QuyMainActivity extends AppCompatActivity {
         String[] tabTitles = {"Home","Yêu thích" ,"Giao dịch", "Hồ sơ"};//put titles based on your need
         int[] tabIcons = {R.drawable.quy_icon_checked,R.drawable.quy_icon_checked, R.drawable.quy_icon_checked, R.drawable.quy_icon_checked};
 
-        quyMainActivityHomeFragment = new QuyMainActivityHomeFragment();
+        banEditMainActivityHomeFragment = new BanEditMainActivityHomeFragment();
+        banEditMainActivityHomeFragment.setEditInfoNavigation(homeEditInfoNavigation);
         quyMainActivityInterestedCoinsFragment = new QuyMainActivityInterestedCoinsFragment(getApplicationContext(),InterestedCoinsChangeObject,OpenViewCoinObject);
         quyMainActivityTradingFragment = new QuyMainActivityTradingFragment(getApplicationContext(),changeCoinLauncher,InterestedCoinsChangeObject);
         quyMainActivityProfileFragment = new QuyMainActivityProfileFragment();
 
-        ArrayList<Fragment> fragments = new ArrayList<>(Arrays.asList(quyMainActivityHomeFragment, quyMainActivityInterestedCoinsFragment,quyMainActivityTradingFragment, quyMainActivityProfileFragment));
+        ArrayList<Fragment> fragments = new ArrayList<>(Arrays.asList(banEditMainActivityHomeFragment, quyMainActivityInterestedCoinsFragment,quyMainActivityTradingFragment, quyMainActivityProfileFragment));
         ViewPager2 viewPager2 = findViewById(R.id.quyMainViewPager);
         viewPager2Adapter = new ViewPager2Adapter(getSupportFragmentManager(),getLifecycle(),viewPager2,fragments);
+        viewPager2.setOffscreenPageLimit(2);
         viewPager2.setAdapter(viewPager2Adapter);
         TabLayout tabLayout = findViewById(R.id.quyMainTabLayout);
         viewPager2.setUserInputEnabled(false);
@@ -169,4 +171,20 @@ public class QuyMainActivity extends AppCompatActivity {
         }
 
     }
+
+
+    BanEditMainActivityHomeFragment.EditInfoNavigation homeEditInfoNavigation = new BanEditMainActivityHomeFragment.EditInfoNavigation() {
+        @Override
+        public void navigation() {
+            //set open edit layout
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    viewPager2Adapter.changeLayout(3);
+                }
+            });
+
+        }
+    };
 }

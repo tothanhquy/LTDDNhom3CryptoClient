@@ -1,12 +1,10 @@
 package com.example.nhom3_crypto_client.view;
 
-import android.renderscript.Sampler;
-
-public class Ban_OpenCommand {
+public class Ban_CloseCommand {
     public String Id="";
     public String CoinId=" ";
     public String CoinName=" ";
-    public Float Value=0f;
+    public float Value = 0f;
     public String Leverage=" ";
     public String CoinImage=" ";
     public String BuyOrSell=" ";
@@ -15,7 +13,7 @@ public class Ban_OpenCommand {
     public float moneynumber;
     public long time;
 
-    public Ban_OpenCommand(String id, String coinId, String coinName, Float value, String leverage, String coinImage, String buyOrSell, float openPrice, float coinNumber, float moneynumber, long time) {
+    public Ban_CloseCommand(String id, String coinId, String coinName, float value, String leverage, String coinImage, String buyOrSell, float openPrice, float coinNumber, float moneynumber, long time) {
         Id = id;
         CoinId = coinId;
         CoinName = coinName;
