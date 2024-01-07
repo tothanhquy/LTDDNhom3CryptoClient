@@ -799,7 +799,7 @@ public class QuyMainActivityTradingFragment extends Fragment {
         startActivity(intent);
     }
     public void moneyNowOpen(){
-        Intent intent = new Intent(getActivity(), Binh_BriefActivity.class);
+        Intent intent = new Intent(getActivity(), Binh_ProfileActivity.class);
         startActivity(intent);
     }
     public void commandNumberOpen(){
