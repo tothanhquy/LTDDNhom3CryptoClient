@@ -40,7 +40,7 @@ public class ExampleActivity extends BaseActivity {
     }
 
     public void Login(View view){
-        loginViewModel.login("123", "abc", new Login1());
+//        loginViewModel.login("123", "abc", new Login1());
     }
 
     public class Login1 implements SystemNotificationModel.OkCallback{

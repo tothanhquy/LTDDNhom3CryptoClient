@@ -13,6 +13,7 @@ import androidx.lifecycle.Observer;
 
 import com.example.nhom3_crypto_client.R;
 import com.example.nhom3_crypto_client.model.SystemNotificationModel;
+import com.example.nhom3_crypto_client.view.custom_dialog.QuyVerifyOtpDialog;
 import com.example.nhom3_crypto_client.view_model.LoginViewModel;
 
 public class Thuc_SignUpActivity extends AppCompatActivity {
@@ -43,6 +44,7 @@ public class Thuc_SignUpActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.thuc_activity_signup);
+        loginViewModel = new LoginViewModel(getApplicationContext());
         Signup();
         setRender();
     }
@@ -82,21 +84,83 @@ public class Thuc_SignUpActivity extends AppCompatActivity {
 
                 if (setCreatePassword.isEmpty() || setPhonenumber.isEmpty() || setConfirmCreatePassword.isEmpty() || setName.isEmpty()) {
                     Toast.makeText(Thuc_SignUpActivity.this, "Bạn đang bỏ trống", Toast.LENGTH_SHORT).show();
-                    if(setConfirmCreatePassword != setCreatePassword){
-                        Toast.makeText(Thuc_SignUpActivity.this, "Xác nhận mật khẩu sai", Toast.LENGTH_LONG).show();
-                    }
+
                 } else {
-                    loginViewModel.register(setPhonenumber, setCreatePassword, setConfirmCreatePassword, setName, new SystemNotificationModel.OkCallback() {
-                        @Override
-                        public void handle() {
-                            Intent intent = new Intent(Thuc_SignUpActivity.this, Thuc_OTPActivity.class);
-                            intent.putExtra("phonenumber", setPhonenumber);
-                            startActivity(intent);
-                        }
-                    });
+                    if(!setConfirmCreatePassword.equals(setCreatePassword) ){
+                        Toast.makeText(Thuc_SignUpActivity.this, "Xác nhận mật khẩu sai", Toast.LENGTH_LONG).show();
+                    }else {
+                        openOTP();
+                    }
+
                 }
 
             }
         });
+
+    }
+
+    public void openOTP(){
+        QuyVerifyOtpDialog quyVerifyOtpDialog = new QuyVerifyOtpDialog(this);
+        quyVerifyOtpDialog.setHandleCallback(new QuyVerifyOtpDialog.OkCallback() {
+            @Override
+            public void handle(String otp) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        quyVerifyOtpDialog.hide();
+                        final EditText createPassword = findViewById(R.id.createpassword);
+                        final EditText phonenumber = findViewById(R.id.phonenumber);
+                        final EditText name = findViewById(R.id.text);
+                        String setCreatePassword = createPassword.getText().toString();
+                        String setNumberphone = phonenumber.getText().toString();
+                        String setName = name.getText().toString();
+                        loginViewModel.register2(setNumberphone, otp, new SystemNotificationModel.OkCallback() {
+                            @Override
+                            public void handle() {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        finish();
+                                    }
+                                });
+                            }
+                        }, new SystemNotificationModel.OkCallback() {
+                            @Override
+                            public void handle() {
+                                quyVerifyOtpDialog.show();
+                            }
+                        });
+                    }
+                });
+
+            }
+        });
+        quyVerifyOtpDialog.setResendCallback(new QuyVerifyOtpDialog.OkCallback() {
+            @Override
+            public void handle(String otp) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        quyVerifyOtpDialog.hide();
+                        final EditText phonenumber = findViewById(R.id.phonenumber);
+                        String setNumberphone = phonenumber.getText().toString();
+                        loginViewModel.resend(setNumberphone, new SystemNotificationModel.OkCallback() {
+                            @Override
+                            public void handle() {
+                                quyVerifyOtpDialog.show();
+                            }
+                        }, new SystemNotificationModel.OkCallback() {
+                            @Override
+                            public void handle() {
+                                quyVerifyOtpDialog.show();
+                            }
+                        })
+                        ;
+                    }
+                });
+
+            }
+        });
+        quyVerifyOtpDialog.show();
     }
 }

@@ -20,11 +20,18 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.graphics.PorterDuff;
+import android.os.Handler;
+import android.view.View;
+import android.widget.TextView;
 
 import com.example.nhom3_crypto_client.R;
+import com.example.nhom3_crypto_client.core.General;
 import com.example.nhom3_crypto_client.service.CoinService;
 import com.example.nhom3_crypto_client.service.ServiceConnections;
 import com.example.nhom3_crypto_client.service.ServiceCreatedCallback;
+import com.example.nhom3_crypto_client.view_model.BaseViewModel;
+import com.example.nhom3_crypto_client.view_model.QuyAccountViewModel;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -34,11 +41,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class QuyMainActivity extends AppCompatActivity {
+public class QuyMainActivity extends BaseActivity {
     QuyMainActivityHomeFragment quyMainActivityHomeFragment;
     QuyMainActivityInterestedCoinsFragment quyMainActivityInterestedCoinsFragment;
     QuyMainActivityTradingFragment quyMainActivityTradingFragment;
     BinhMainActivityProfileFragment binhMainActivityProfileFragment;
+
+    QuyAccountViewModel quyAccountViewModel;
 
 
     private String REGISTER_COIN_SERVICE_NAME = "main-activity";
@@ -98,10 +107,17 @@ public class QuyMainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quy_main);
+        getSupportActionBar().hide();
+
+        quyAccountViewModel = new QuyAccountViewModel(getApplicationContext());
 
 
-        String[] tabTitles = {"Home","Yêu thích" ,"Giao dịch", "Hồ sơ"};//put titles based on your need
-        int[] tabIcons = {R.drawable.quy_icon_checked,R.drawable.quy_icon_checked, R.drawable.quy_icon_checked, R.drawable.quy_icon_checked};
+        View[] tabItem = {
+                super.getCustomViewTabLayout(R.drawable.quy_home, "Home"),
+                super.getCustomViewTabLayout(R.drawable.quy_interested_coin, "Yêu thích"),
+                super.getCustomViewTabLayout(R.drawable.quy_trading_coin, "Giao dịch"),
+                super.getCustomViewTabLayout(R.drawable.quy_profile, "Hồ sơ")
+        };
 
         quyMainActivityHomeFragment = new QuyMainActivityHomeFragment();
         quyMainActivityInterestedCoinsFragment = new QuyMainActivityInterestedCoinsFragment(getApplicationContext(),InterestedCoinsChangeObject,OpenViewCoinObject);
@@ -116,17 +132,36 @@ public class QuyMainActivity extends AppCompatActivity {
         viewPager2.setAdapter(viewPager2Adapter);
         TabLayout tabLayout = findViewById(R.id.quyMainTabLayout);
         viewPager2.setUserInputEnabled(false);
+
         new TabLayoutMediator(tabLayout, viewPager2,
                 ((tab, position) -> {
-                    tab.setText(tabTitles[position]);
-                    tab.setIcon(tabIcons[position]);
+                    tab.setCustomView(tabItem[position]);
                 }
             )).attach();
 
         CoinServiceCreatedCallback serviceCreatedCallback = new CoinServiceCreatedCallback();
         serviceConnection = new ServiceConnections.CoinServiceConnection(serviceCreatedCallback);
-        Intent intent = new Intent(this, CoinService.class);
+        Intent intent = new Intent(QuyMainActivity.this, CoinService.class);
         bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+
+        checkAuthAndContinue();
+    }
+
+    private void checkAuthAndContinue(){
+        quyAccountViewModel.checkAuth(new BaseViewModel.OkCallback() {
+            @Override
+            public void handle(String data) {
+                if(data.equals("false")){
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(QuyMainActivity.this, Thuc_MainActivity.class);
+                            startActivity(intent);
+                        }
+                    });
+                }
+            }
+        });
     }
 
 

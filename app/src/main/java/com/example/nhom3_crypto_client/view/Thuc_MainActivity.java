@@ -13,8 +13,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 
 import com.example.nhom3_crypto_client.R;
+import com.example.nhom3_crypto_client.api.API;
 import com.example.nhom3_crypto_client.model.SystemNotificationModel;
 import com.example.nhom3_crypto_client.service.SocketService;
+import com.example.nhom3_crypto_client.view.custom_dialog.QuyVerifyOtpDialog;
+import com.example.nhom3_crypto_client.view_model.BaseViewModel;
 import com.example.nhom3_crypto_client.view_model.LoginViewModel;
 
 
@@ -54,6 +57,7 @@ public class Thuc_MainActivity extends AppCompatActivity {
         Signin();
         setRender();
     }
+
 
     public void Signin () {
         final EditText password = findViewById(R.id.password);
@@ -101,10 +105,31 @@ public class Thuc_MainActivity extends AppCompatActivity {
 
                         }
                     });
+
                 }
 
             }
         });
     }
 
+    public void login(String phonenumber, String password){
+        loginViewModel.login(phonenumber, password, new SystemNotificationModel.OkCallback() {
+            @Override
+            public void handle() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(Thuc_MainActivity.this, "Đăng nhập thành công", Toast.LENGTH_LONG).show();
+                        Intent intent = new Intent(Thuc_MainActivity.this, QuyMainActivity.class);
+                        startActivity(intent);
+                    }
+                });
+            }
+        }, new SystemNotificationModel.OkCallback() {
+            @Override
+            public void handle() {
+                Toast.makeText(Thuc_MainActivity.this, "Đăng nhập thành công", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
 }

@@ -18,30 +18,103 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:elevation="1dp"
-            android:orientation="horizontal">
+            android:layout_margin="10dp"
+            app:cardCornerRadius="10dp"
+            app:contentPadding="5dp">
 
-            <TextView
-                android:id="@+id/quyMainActivityTradingFragmentMiniInfoSum"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:elevation="1dp"
+                android:gravity="center"
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/quyMainActivityTradingFragmentMiniInfoReadyMoney"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                <ImageView
+                    android:id="@+id/quyMainActivityTradingFragmentMiniInfoSumIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    app:srcCompat="@drawable/quy_sum_money" />
 
-            <TextView
-                android:id="@+id/quyMainActivityTradingFragmentMiniInfoTradingCommandNumber"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-        </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/quyMainActivityTradingFragmentMiniInfoSumLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tổng" />
+
+                    <TextView
+                        android:id="@+id/quyMainActivityTradingFragmentMiniInfoSum"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+
+                <ImageView
+                    android:id="@+id/quyMainActivityTradingFragmentMiniInfoReadyMoneyIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    app:srcCompat="@drawable/quy_money_now" />
+
+                <LinearLayout
+                    android:id="@+id/quyMainActivityTradingFragmentMiniInfoReadyMoneyLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Hiện có" />
+
+                    <TextView
+                        android:id="@+id/quyMainActivityTradingFragmentMiniInfoReadyMoney"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/quyMainActivityTradingFragmentMiniInfoTradingCommandNumberIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    app:srcCompat="@drawable/quy_command_number" />
+
+                <LinearLayout
+                    android:id="@+id/quyMainActivityTradingFragmentMiniInfoTradingCommandNumberLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sổ lệnh" />
+
+                    <TextView
+                        android:id="@+id/quyMainActivityTradingFragmentMiniInfoTradingCommandNumber"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/quyMainActivityTradingFragmentCoinChartFragmentContainer"
@@ -72,6 +145,7 @@
                         android:id="@+id/quyMainActivityTradingFragmentCoinInfoName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
                         android:text="TextView"
                         android:textStyle="bold" />
 
@@ -84,7 +158,7 @@
                         <ImageView
                             android:id="@+id/quyMainActivityTradingFragmentCoinInfoIcon"
                             android:layout_width="50dp"
-                            android:layout_height="wrap_content"
+                            android:layout_height="50dp"
                             android:adjustViewBounds="true"
                             tools:src="@tools:sample/avatars" />
 
@@ -92,6 +166,7 @@
                             android:id="@+id/quyMainActivityTradingFragmentCoinInfoPrice"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
                             android:text="TextView"
                             android:textSize="24sp"
                             android:textStyle="bold" />
@@ -100,6 +175,7 @@
                             android:id="@+id/quyMainActivityTradingFragmentCoinInfoChange24h"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
                             android:text="TextView" />
 
                         <Space
@@ -128,6 +204,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
                     android:layout_weight="1"
+                    android:backgroundTint="#FF3333"
                     android:text="Bán" />
 
                 <Button
@@ -136,6 +213,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
                     android:layout_weight="1"
+                    android:backgroundTint="#3BD391"
                     android:text="Mua" />
             </LinearLayout>
         </LinearLayout>
@@ -147,6 +225,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#00FFFFFF"
+        android:clickable="true"
         android:elevation="2dp"
         android:orientation="vertical"
         android:visibility="gone"
@@ -355,6 +434,7 @@
         android:id="@+id/loadingLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clickable="true"
         android:elevation="3dp"
         android:gravity="center"
         android:orientation="vertical"

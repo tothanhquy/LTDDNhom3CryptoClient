@@ -103,11 +103,11 @@ public class QuyMainActivityInterestedCoinsFragment extends Fragment {
 
         loadingLayout = view.findViewById(R.id.loadingLayout);
 
-        String[] tabTitles = {"Coins","Top tăng giá" ,"Top giảm giá"};
-        int[] tabIcons = {
-                R.drawable.quy_icon_checked,
-                R.drawable.quy_icon_checked,
-                R.drawable.quy_icon_checked};
+        View[] tabItem = {
+                BaseActivity.getCustomViewTabLayout(getActivity().getApplicationContext(),R.drawable.quy_cryptocurrency, "Coins"),
+                BaseActivity.getCustomViewTabLayout(getActivity().getApplicationContext(),R.drawable.quy_increase_coin, "Top tăng giá"),
+                BaseActivity.getCustomViewTabLayout(getActivity().getApplicationContext(),R.drawable.quy_decrease_coin, "Top giảm giá")
+        };
 
         normalList = new QuyCoinListFragment(getContext(),QuyCoinListFragment.SortStatus.None);
         normalList.setChooseCallback(new ChooseCallback());
@@ -125,8 +125,7 @@ public class QuyMainActivityInterestedCoinsFragment extends Fragment {
         viewPager2.setUserInputEnabled(true);
         new TabLayoutMediator(tabLayout, viewPager2,
                 ((tab, position) -> {
-                    tab.setText(tabTitles[position]);
-                    tab.setIcon(tabIcons[position]);
+                    tab.setCustomView(tabItem[position]);
                 }
                 )).attach();
 

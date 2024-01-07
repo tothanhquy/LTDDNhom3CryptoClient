@@ -111,18 +111,4 @@ public class Thuc_OTPActivity extends AppCompatActivity {
             }
         });
     }
-
-    public void abc (String sum){
-
-        Intent intent = getIntent();
-
-        String setPhonenumber = String.valueOf(intent.getStringExtra("phonenumber"));
-
-        loginViewModel.register2(setPhonenumber, sum, new SystemNotificationModel.OkCallback() {
-            @Override
-            public void handle() {
-                finish();
-            }
-        });
-    }
 }
