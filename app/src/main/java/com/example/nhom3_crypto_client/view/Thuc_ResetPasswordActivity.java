@@ -123,7 +123,6 @@ public class Thuc_ResetPasswordActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         Toast.makeText(Thuc_ResetPasswordActivity.this, "fail", Toast.LENGTH_LONG).show();
-
                     }
                 });
 

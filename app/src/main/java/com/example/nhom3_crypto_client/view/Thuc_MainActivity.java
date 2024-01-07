@@ -90,13 +90,33 @@ public class Thuc_MainActivity extends AppCompatActivity {
                 if (setPassword.isEmpty() || setPhonenumber.isEmpty()) {
                     Toast.makeText(Thuc_MainActivity.this, "Bạn đang bỏ trống", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(Thuc_MainActivity.this, "Thành công", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(Thuc_MainActivity.this, QuyMainActivity.class);
-                    startActivity(intent);
+//                    Toast.makeText(Thuc_MainActivity.this, "Thành công", Toast.LENGTH_SHORT).show();
+                    login(setPhonenumber, setPassword);
+
                 }
 
             }
         });
     }
 
+    public void login(String phonenumber, String password){
+        loginViewModel.login(phonenumber, password, new SystemNotificationModel.OkCallback() {
+            @Override
+            public void handle() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(Thuc_MainActivity.this, "Đăng nhập thành công", Toast.LENGTH_LONG).show();
+                        Intent intent = new Intent(Thuc_MainActivity.this, QuyMainActivity.class);
+                        startActivity(intent);
+                    }
+                });
+            }
+        }, new SystemNotificationModel.OkCallback() {
+            @Override
+            public void handle() {
+                Toast.makeText(Thuc_MainActivity.this, "Đăng nhập thành công", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
 }
