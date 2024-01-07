@@ -19,8 +19,17 @@ import java.util.ArrayList;
 public class Ban_CloseAdapter extends RecyclerView.Adapter<Ban_CloseAdapter.ViewCustom> {
     private ArrayList<Ban_CloseCommand> closecommand;
 
-    public Ban_CloseAdapter(Context context) {
+    OpenCallback openCallback;
+
+    public static interface OpenCallback{
+        public void open(String commandId);
+    }
+
+
+
+    public Ban_CloseAdapter(Context context,OpenCallback openCallback) {
         this.context = context;
+        this.openCallback = openCallback;
     }
 
     Context context;
@@ -82,6 +91,12 @@ public class Ban_CloseAdapter extends RecyclerView.Adapter<Ban_CloseAdapter.View
                 ImgArrow.setImageResource(R.drawable.ban_arrowdown);
             }
             Time.setText(General.convertTimeToDateTime(item.time));
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    openCallback.open(item.Id);
+                }
+            });
         }
     }
 }

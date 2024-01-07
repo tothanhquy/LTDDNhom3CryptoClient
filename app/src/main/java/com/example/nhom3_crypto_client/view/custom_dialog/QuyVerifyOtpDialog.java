@@ -89,7 +89,6 @@ public class QuyVerifyOtpDialog extends Dialog {
             public void onClick(View v) {
                 String sum = getOtpSum();
                 resendCallback.handle(sum);
-                System.out.println("đã print");
             }
         });
         btn.setOnClickListener(new View.OnClickListener() {
@@ -102,14 +101,21 @@ public class QuyVerifyOtpDialog extends Dialog {
             }
         });
 
-
-
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dismiss();
             }
         });
+    }
+    public void clearAndFocus(){
+        otp1.setText("");
+        otp2.setText("");
+        otp3.setText("");
+        otp4.setText("");
+        otp5.setText("");
+        otp6.setText("");
+        otp1.forceLayout();
     }
 
     private String getOtpSum() {

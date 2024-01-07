@@ -9,6 +9,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentManager;
@@ -60,6 +62,11 @@ public class QuyMainActivityTradingFragment extends Fragment {
     TextView miniInfoSumMoney, miniInfoReadyMoney, miniInfoTradingCommandNumber;
     Context context;
     private QuyMainActivity.InterestedCoinsChange interestedCoinsChange;
+    private QuyMainActivity.ReloadProfile reloadProfileObject;
+
+    public void setReloadProfileObject(QuyMainActivity.ReloadProfile reloadProfileObject) {
+        this.reloadProfileObject = reloadProfileObject;
+    }
 
     TextView quyMainActivityTradingFragmentCoinInfoName;
     ImageView quyMainActivityTradingFragmentCoinInfoIcon;
@@ -142,10 +149,6 @@ public class QuyMainActivityTradingFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-    @Override
     public void onDestroy() {
         super.onDestroy();
         if (isBoundCoinService) {
@@ -160,9 +163,7 @@ public class QuyMainActivityTradingFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_quy_main_activity_trading, container, false);
-        System.out.println("View =view.findViewById(R.i");
         coinChartFragmentView =view.findViewById(R.id.quyMainActivityTradingFragmentCoinChartFragmentContainer);
-        System.out.println("ById(R.id.quyMainActivityTradin");
         miniInfoSumMoney = view.findViewById(R.id.quyMainActivityTradingFragmentMiniInfoSum);
         miniInfoReadyMoney = view.findViewById(R.id.quyMainActivityTradingFragmentMiniInfoReadyMoney);
         miniInfoTradingCommandNumber = view.findViewById(R.id.quyMainActivityTradingFragmentMiniInfoTradingCommandNumber);
@@ -213,14 +214,13 @@ public class QuyMainActivityTradingFragment extends Fragment {
         return view;
     }
 
-
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        setObserve();
         setInitView();
         setEvents();
+        setObserve();
         loadMiniProfile();
     }
 
@@ -234,7 +234,7 @@ public class QuyMainActivityTradingFragment extends Fragment {
     }
 
     public void setObserve(){
-        quyProfileViewModel.notification().observe(this, new Observer<SystemNotificationModel>() {
+        quyProfileViewModel.notification().observe(getActivity(), new Observer<SystemNotificationModel>() {
             @Override
             public void onChanged(SystemNotificationModel systemNotificationModel) {
                 if(systemNotificationModel!=null){
@@ -247,7 +247,7 @@ public class QuyMainActivityTradingFragment extends Fragment {
                 }
             }
         });
-        quyProfileViewModel.isLoading().observe(this, new Observer<Boolean>() {
+        quyProfileViewModel.isLoading().observe(getActivity(), new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean isLoading) {
                 getActivity().runOnUiThread(new Runnable() {
@@ -262,7 +262,7 @@ public class QuyMainActivityTradingFragment extends Fragment {
                 });
             }
         });
-        quyTradingCommandViewModel.notification().observe(this, new Observer<SystemNotificationModel>() {
+        quyTradingCommandViewModel.notification().observe(getActivity(), new Observer<SystemNotificationModel>() {
             @Override
             public void onChanged(SystemNotificationModel systemNotificationModel) {
                 if(systemNotificationModel!=null){
@@ -275,7 +275,7 @@ public class QuyMainActivityTradingFragment extends Fragment {
                 }
             }
         });
-        quyTradingCommandViewModel.isLoading().observe(this, new Observer<Boolean>() {
+        quyTradingCommandViewModel.isLoading().observe(getActivity(), new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean isLoading) {
                 getActivity().runOnUiThread(new Runnable() {
@@ -373,13 +373,13 @@ public class QuyMainActivityTradingFragment extends Fragment {
         quyMainActivityTradingFragmentMiniInfoReadyMoneyIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                moneyNowOpen();
+                sumMoneyOpen();
             }
         });
         quyMainActivityTradingFragmentMiniInfoReadyMoneyLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                moneyNowOpen();
+                sumMoneyOpen();
             }
         });
         quyMainActivityTradingFragmentMiniInfoTradingCommandNumberIcon.setOnClickListener(new View.OnClickListener() {
@@ -447,6 +447,7 @@ public class QuyMainActivityTradingFragment extends Fragment {
         });
     }
     private void resetInputValueGeneral(){
+        System.out.println(" void resetInputValueGeneral(){");
         quyMainActivityTradingFragmentCreateCommandContainerLeverage.setSelection(0);
         quyMainActivityTradingFragmentCreateCommandContainerInputMoney.setText("0");
         quyMainActivityTradingFragmentCreateCommandContainerSeekBarMoney.setProgress(0);
@@ -457,6 +458,7 @@ public class QuyMainActivityTradingFragment extends Fragment {
         setTempSumMoney();
     }
     private void openCreateCommandContainer(boolean isBuy){
+        System.out.println("teCommandContainer(boolean isBuy){");
         quyMainActivityTradingFragmentCreateCommandContainerSwitchBuySell.setChecked(isBuy);
         resetInputValueGeneral();
         quyMainActivityTradingFragmentCreateCommandContainer.setVisibility(View.VISIBLE);
@@ -612,10 +614,10 @@ public class QuyMainActivityTradingFragment extends Fragment {
     private void setCoinInfo(CoinServiceModel.CoinNow coin){
         quyMainActivityTradingFragmentCoinInfoName.setText(coin.name);
         General.setImageUrl(context,quyMainActivityTradingFragmentCoinInfoIcon,coin.icon);
-        quyMainActivityTradingFragmentCoinInfoPrice.setText(String.format("%.2f", coin.priceUsd));
+        quyMainActivityTradingFragmentCoinInfoPrice.setText("$ "+String.format("%.2f", coin.priceUsd));
         if(coin.changePercent24Hr>=0){
             quyMainActivityTradingFragmentCoinInfoChange24h.setTextColor(Color.GREEN);
-            quyMainActivityTradingFragmentCoinInfoChange24h.setText(String.format("%.2f", coin.changePercent24Hr)+"%");
+            quyMainActivityTradingFragmentCoinInfoChange24h.setText("+"+String.format("%.2f", coin.changePercent24Hr)+"%");
         }else{
             quyMainActivityTradingFragmentCoinInfoChange24h.setTextColor(Color.RED);
             quyMainActivityTradingFragmentCoinInfoChange24h.setText(String.format("%.2f", coin.changePercent24Hr)+"%");
@@ -626,7 +628,7 @@ public class QuyMainActivityTradingFragment extends Fragment {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    quyMainActivityTradingFragmentCoinInfoPrice.setText(""+String.format("%.2f", coin.priceUsd));
+                    quyMainActivityTradingFragmentCoinInfoPrice.setText("$ "+String.format("%.2f", coin.priceUsd));
                     if(coin.changePercent24Hr>=0){
                         quyMainActivityTradingFragmentCoinInfoChange24h.setTextColor(Color.GREEN);
                         quyMainActivityTradingFragmentCoinInfoChange24h.setText("+"+String.format("%.2f", coin.changePercent24Hr)+"%");
@@ -714,7 +716,7 @@ public class QuyMainActivityTradingFragment extends Fragment {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                openVerifyOtpAndContinue();
+                                openVerifyOtpAndContinue(pin);
                             }
                         });
 
@@ -737,7 +739,7 @@ public class QuyMainActivityTradingFragment extends Fragment {
         verifyPinDialog.show();
     }
 
-    private void openVerifyOtpAndContinue(){
+    private void openVerifyOtpAndContinue(String pin){
         String buyOrSell = quyMainActivityTradingFragmentCreateCommandContainerSwitchBuySell.isChecked()?"buy":"sell";
         long money = 0L;
         int leverage = 1;
@@ -773,6 +775,7 @@ public class QuyMainActivityTradingFragment extends Fragment {
                             public void run() {
                                 quyMainActivityTradingFragmentCreateCommandContainer.setVisibility(View.GONE);
                                 loadMiniProfile();
+                                reloadProfileObject.reload();
                             }
                         });
 
@@ -790,6 +793,37 @@ public class QuyMainActivityTradingFragment extends Fragment {
                 });
             }
         });
+        quyVerifyOtpDialog.setResendCallback(new QuyVerifyOtpDialog.OkCallback() {
+            @Override
+            public void handle(String otp) {
+                quyVerifyOtpDialog.hide();
+                quyTradingCommandViewModel.checkVerifyPin(pin, new BaseViewModel.OkCallback() {
+                    @Override
+                    public void handle(String data) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                quyVerifyOtpDialog.clearAndFocus();
+                                quyVerifyOtpDialog.show();
+                            }
+                        });
+
+                    }
+                }, new BaseViewModel.OkCallback() {
+                    @Override
+                    public void handle(String data) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                quyVerifyOtpDialog.show();
+                            }
+                        });
+
+                    }
+                });
+            }
+        });
+
         quyVerifyOtpDialog.show();
 
     }
@@ -798,10 +832,10 @@ public class QuyMainActivityTradingFragment extends Fragment {
         Intent intent = new Intent(getActivity(), Binh_BalanceTransactionActivity.class);
         startActivity(intent);
     }
-    public void moneyNowOpen(){
-        Intent intent = new Intent(getActivity(), Binh_ProfileActivity.class);
-        startActivity(intent);
-    }
+//    public void moneyNowOpen(){
+//        Intent intent = new Intent(getActivity(), Binh_ProfileActivity.class);
+//        startActivity(intent);
+//    }
     public void commandNumberOpen(){
         Intent intent = new Intent(getActivity(), Ban_CommandActivity.class);
         startActivity(intent);

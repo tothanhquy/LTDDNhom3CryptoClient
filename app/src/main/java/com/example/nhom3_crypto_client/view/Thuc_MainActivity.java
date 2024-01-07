@@ -1,5 +1,6 @@
 package com.example.nhom3_crypto_client.view;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
@@ -9,25 +10,26 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 
 import com.example.nhom3_crypto_client.R;
 import com.example.nhom3_crypto_client.api.API;
+import com.example.nhom3_crypto_client.core.General;
 import com.example.nhom3_crypto_client.model.SystemNotificationModel;
 import com.example.nhom3_crypto_client.service.SocketService;
 import com.example.nhom3_crypto_client.view.custom_dialog.QuyVerifyOtpDialog;
 import com.example.nhom3_crypto_client.view_model.BaseViewModel;
 import com.example.nhom3_crypto_client.view_model.LoginViewModel;
+import com.example.nhom3_crypto_client.view_model.QuyAccountViewModel;
 
 
 public class Thuc_MainActivity extends AppCompatActivity {
 
-    private SocketService socketService;
-    private Boolean isBoundSocketService;
-    private ServiceConnection serviceConnection;
-
     private LoginViewModel loginViewModel;
+    private QuyAccountViewModel quyAccountViewModel;
 
     private void setRender() {
         // Set alert error
@@ -38,7 +40,20 @@ public class Thuc_MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         if (it != null) {
-                            Toast.makeText(Thuc_MainActivity.this, it.content, Toast.LENGTH_SHORT).show();
+                            General.showNotification(Thuc_MainActivity.this, it);
+                        }
+                    }
+                });
+            }
+        });
+        quyAccountViewModel.notification().observe(this, new Observer<SystemNotificationModel>() {
+            @Override
+            public void onChanged(SystemNotificationModel it) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (it != null) {
+                            General.showNotification(Thuc_MainActivity.this, it);
                         }
                     }
                 });
@@ -54,8 +69,22 @@ public class Thuc_MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.thuc_activity_main);
         loginViewModel = new LoginViewModel(getApplicationContext());
+        quyAccountViewModel = new QuyAccountViewModel(getApplicationContext());
         Signin();
         setRender();
+        chechAuth();
+    }
+
+    private void chechAuth(){
+        quyAccountViewModel.checkAuth(new BaseViewModel.OkCallback() {
+            @Override
+            public void handle(String data) {
+                if(data.equals("true")){
+
+                gotoMain();
+                }
+            }
+        });
     }
 
 
@@ -83,36 +112,14 @@ public class Thuc_MainActivity extends AppCompatActivity {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 String setPassword = password.getText().toString();
                 String setPhonenumber = phonenumber.getText().toString();
 
                 if (setPassword.isEmpty() || setPhonenumber.isEmpty()) {
                     Toast.makeText(Thuc_MainActivity.this, "Bạn đang bỏ trống", Toast.LENGTH_SHORT).show();
                 } else {
-                    loginViewModel.login(setPhonenumber, setPassword, new SystemNotificationModel.OkCallback() {
-                        @Override
-                        public void handle() {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(Thuc_MainActivity.this, "ngu", Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(Thuc_MainActivity.this, QuyMainActivity.class);
-                                    startActivity(intent);
-                                }
-                            });
-//                            finish();
-
-                        }
-                    }, new SystemNotificationModel.OkCallback() {
-                        @Override
-                        public void handle() {
-
-                        }
-                    });
-
+                    login(setPhonenumber,setPassword);
                 }
-
             }
         });
     }
@@ -124,17 +131,37 @@ public class Thuc_MainActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(Thuc_MainActivity.this, "Đăng nhập thành công", Toast.LENGTH_LONG).show();
-                        Intent intent = new Intent(Thuc_MainActivity.this, QuyMainActivity.class);
-                        startActivity(intent);
+                        gotoMain();
                     }
                 });
             }
         }, new SystemNotificationModel.OkCallback() {
             @Override
             public void handle() {
-                Toast.makeText(Thuc_MainActivity.this, "Đăng nhập thành công", Toast.LENGTH_LONG).show();
+
             }
         });
     }
+
+    private void gotoMain(){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(Thuc_MainActivity.this, QuyMainActivity.class);
+                gotoMainActivity.launch(intent);
+            }
+        });
+
+    }
+
+    ActivityResultLauncher<Intent> gotoMainActivity = registerForActivityResult(
+        new ActivityResultContracts.StartActivityForResult(), o -> {
+            Intent intent = o.getData();
+            if(intent!=null){
+                boolean isLogout = intent.getBooleanExtra("isLogout",false);
+                if(!isLogout)finishAffinity();
+            }else{
+                finishAffinity();
+            }
+        });
 }

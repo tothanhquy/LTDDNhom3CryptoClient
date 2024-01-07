@@ -8,6 +8,8 @@ import android.graphics.Paint;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 
@@ -118,6 +120,17 @@ public class QuyCoinChartFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        setOptionView();
+        setObserve();
+        setupCandleStickChart();
+        setupLineChart();
+    }
+
+
     private void setOptionView() {
         coinName.setText(coinId);
         coinName.setOnClickListener(new View.OnClickListener() {
@@ -129,12 +142,13 @@ public class QuyCoinChartFragment extends Fragment {
 
         loadFirst=false;
         List<String> intervalLabels = new ArrayList<String>(Arrays.asList("M5","M15","M30","H1","H2","H6","H12","D1"));
-        ArrayAdapter<String> intervalAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, intervalLabels);
+        ArrayAdapter<String> intervalAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_dropdown_item, intervalLabels);
         interval.setAdapter(intervalAdapter);
         interval.setSelection(0);
         interval.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                System.out.println("interval.setOnItemSelectedListener(new AdapterVie"+loadFirst);
                 if(loadFirst)loadData();
             }
 
@@ -145,12 +159,14 @@ public class QuyCoinChartFragment extends Fragment {
         });
 
         List<String> typeLabels = new ArrayList<String>(Arrays.asList("Candle","Line"));
-        ArrayAdapter<String> typeAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, typeLabels);
+        ArrayAdapter<String> typeAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_dropdown_item, typeLabels);
         type.setAdapter(typeAdapter);
         type.setSelection(0);
+        type.animate().cancel();
         type.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                System.out.println("type.setOnItemSelectedListener(new AdapterView.OnItemSelected");
                 if(adapterView.getSelectedItem().toString().equals("Candle")){
                     candleStickChart.setVisibility(View.VISIBLE);
                     lineChart.setVisibility(View.GONE);
@@ -190,18 +206,9 @@ public class QuyCoinChartFragment extends Fragment {
         public void handle(String coinId);
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        setOptionView();
-        setObserve();
-        setupCandleStickChart();
-        setupLineChart();
-//        loadData();
-    }
 
     public void setObserve(){
-        quyCoinViewModel.notification().observe(this, new Observer<SystemNotificationModel>() {
+        quyCoinViewModel.notification().observe(getActivity(), new Observer<SystemNotificationModel>() {
             @Override
             public void onChanged(SystemNotificationModel systemNotificationModel) {
                 if(systemNotificationModel!=null){
@@ -214,7 +221,7 @@ public class QuyCoinChartFragment extends Fragment {
                 }
             }
         });
-        quyCoinViewModel.isLoading().observe(this, new Observer<Boolean>() {
+        quyCoinViewModel.isLoading().observe(getActivity(), new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean isLoading) {
                 getActivity().runOnUiThread(new Runnable() {
@@ -291,6 +298,7 @@ public class QuyCoinChartFragment extends Fragment {
     private void loadData() {
         String typeStr = type.getSelectedItem().toString().toLowerCase();
         intervalStr = interval.getSelectedItem().toString().toLowerCase();
+        System.out.println(typeStr+":"+intervalStr);
         if(typeStr.equals("candle")){
             quyCoinViewModel.loadChart(typeStr,coinId,intervalStr,""+getStartTimeBaseInterval(intervalStr),endTime==0L?"now":endTime+"", new HandleCandleChartResponse());
         }else{

@@ -191,6 +191,14 @@ public class Binh_ProfileActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        findViewById(R.id.btnViewCommand).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Binh_ProfileActivity.this, Quy_GuestCommandsActivity.class);
+                intent.putExtra("userId",userId);
+                startActivity(intent);
+            }
+        });
     }
 
 

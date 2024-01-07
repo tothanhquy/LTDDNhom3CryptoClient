@@ -1,9 +1,13 @@
 package com.example.nhom3_crypto_client.view;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.Service;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
@@ -34,8 +38,12 @@ import androidx.lifecycle.Observer;
 
 import com.example.nhom3_crypto_client.R;
 import com.example.nhom3_crypto_client.core.General;
+import com.example.nhom3_crypto_client.model.CoinServiceModel;
 import com.example.nhom3_crypto_client.model.SystemNotificationModel;
 import com.example.nhom3_crypto_client.model.response.QuyProfileResponseModel;
+import com.example.nhom3_crypto_client.service.CoinService;
+import com.example.nhom3_crypto_client.service.ServiceConnections;
+import com.example.nhom3_crypto_client.service.ServiceCreatedCallback;
 import com.example.nhom3_crypto_client.view_model.BaseViewModel;
 import com.example.nhom3_crypto_client.view_model.BinhProfileViewModel;
 import com.github.mikephil.charting.charts.PieChart;
@@ -75,22 +83,41 @@ public class BinhMainActivityProfileFragment extends Fragment {
     QuyProfileResponseModel.Profile profileDetails;
     LinearLayout loadingLayout;
 
+    private QuyMainActivity.ReloadProfile reloadProfileObject;
+
+    public void setReloadProfileObject(QuyMainActivity.ReloadProfile reloadProfileObject) {
+        this.reloadProfileObject = reloadProfileObject;
+    }
+
     //
     ImageView btnUserRank;
     public int betterPercent;
 
-    public BinhMainActivityProfileFragment() {
-        // Required empty public constructor
+    private String REGISTER_COIN_SERVICE_NAME = "main-activity-profile-fragment";
+    private CoinService coinService;
+    private Boolean isBoundCoinService=false;
+    private ServiceConnection serviceConnection;
+    private Context context;
+
+    private class CoinServiceCreatedCallback implements ServiceCreatedCallback {
+        @Override
+        public void setService(Service service) {
+            coinService = (CoinService) service;
+        }
+        @Override
+        public void setIsBound(Boolean isBound) {
+            isBoundCoinService = isBound;
+        }
+        @Override
+        public void createdComplete() {
+            loadData();
+        }
     }
 
-//    public static QuyMainActivityProfileFragment newInstance(String param1, String param2) {
-//        QuyMainActivityProfileFragment fragment = new QuyMainActivityProfileFragment();
-//        Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
-//        fragment.setArguments(args);
-//        return fragment;
-//    }
+    public BinhMainActivityProfileFragment(Context context) {
+        this.context = context;
+
+    }
 
     @Override
     public void onStart() {
@@ -129,17 +156,15 @@ public class BinhMainActivityProfileFragment extends Fragment {
         btnSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getContext(), Binh_SettingActivity.class);
-                startActivity(intent);
+                openSettingCallback.handle();
             }
         });
-
 
         profileViewModel = new BinhProfileViewModel(getContext());
 
         //
         setObserve();
-        loadData();
+//        loadData();
 
         //
         btnUserRank.setOnClickListener(new View.OnClickListener() {
@@ -150,20 +175,28 @@ public class BinhMainActivityProfileFragment extends Fragment {
                 startActivity(intent);
             }
         });
+
+        CoinServiceCreatedCallback serviceCreatedCallback = new CoinServiceCreatedCallback();
+        serviceConnection = new ServiceConnections.CoinServiceConnection(serviceCreatedCallback);
+        Intent intent = new Intent(context, CoinService.class);
+        context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-//            mParam1 = getArguments().getString(ARG_PARAM1);
-//            mParam2 = getArguments().getString(ARG_PARAM2);
+    }
+    public void onDestroy() {
+        super.onDestroy();
+        if (isBoundCoinService) {
+            coinService.removeEventListener(REGISTER_COIN_SERVICE_NAME);
+            context.unbindService(serviceConnection);
+            isBoundCoinService = false;
         }
-
-
     }
 
+    @SuppressLint("MissingInflatedId")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -204,6 +237,14 @@ public class BinhMainActivityProfileFragment extends Fragment {
 
         //
         btnUserRank = view.findViewById(R.id.btn_brief_rank);
+
+        view.findViewById(R.id.btnViewCommand).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), Ban_CommandActivity.class);
+                getActivity().startActivity(intent);
+            }
+        });
 
         return view;
     }
@@ -265,15 +306,13 @@ public class BinhMainActivityProfileFragment extends Fragment {
 
     }
 
-    private void loadData() {
+    public void loadData() {
      /*   Intent intent = getIntent();
         userId = intent.getStringExtra("id");*/
         profileViewModel.getInfo("mine", new BaseViewModel.OkCallback() {
             @Override
             public void handle(String data) {
-                System.out.println(data);
                 profileDetails = new Gson().fromJson(data, QuyProfileResponseModel.Profile.class);
-                System.out.println(profileDetails);
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -349,8 +388,8 @@ public class BinhMainActivityProfileFragment extends Fragment {
                     profileViewModel.postChangeName(newName, new BaseViewModel.OkCallback() {
                         @Override
                         public void handle(String data) {
-                            txtBriefUserName.setText(newName);
-                            editNameDialog.dismiss();
+//                            txtBriefUserName.setText(newName);
+                            reloadProfileObject.reload();
                         }
                     });
                 }
@@ -423,20 +462,9 @@ public class BinhMainActivityProfileFragment extends Fragment {
         profileViewModel.postImage(bitmap, new BaseViewModel.OkCallback() {
             @Override
             public void handle(String data) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        General.showNotification(getContext(), new SystemNotificationModel(SystemNotificationModel.Type.Info, "", "Up ảnh thành công", null));
-                    }
-                });
+                reloadProfileObject.reload();
             }
         });
-    }
-
-    ActivityResultLauncher<Intent> profileOpenChoseLauncher;
-
-    public void setProfileOpenChose(ActivityResultLauncher<Intent> profileOpenChoseLauncher) {
-        this.profileOpenChoseLauncher = profileOpenChoseLauncher;
     }
 
     public static interface OpenChooseImageActivity {
@@ -449,5 +477,31 @@ public class BinhMainActivityProfileFragment extends Fragment {
         this.openChooseImageActivity = openChooseImageActivity;
     }
 
+    QuyMainActivity.OpenSettingCallback openSettingCallback;
 
+    public void setOpenSettingCallbackObject(QuyMainActivity.OpenSettingCallback openSettingCallback) {
+        this.openSettingCallback = openSettingCallback;
+    }
+
+    private void updateMiniInfoSumMoney(ArrayList<CoinServiceModel.CoinNow> coins){
+        profileDetails.moneyProfitNow = 0f;
+        for (int i = 0; i < profileDetails.openCommandItems.size(); i++) {
+            int indCoin = -1;
+            for (int j = 0; j < coins.size(); j++) {
+                if(coins.get(j).id.equals(profileDetails.openCommandItems.get(i).coinId)){
+                    indCoin=j;
+                    break;
+                }
+            }
+            if(indCoin!=-1){
+                profileDetails.moneyProfitNow+=(coins.get(indCoin).priceUsd-profileDetails.openCommandItems.get(i).openPrice)*profileDetails.openCommandItems.get(i).coinNumber*(profileDetails.openCommandItems.get(i).buyOrSell.equals("buy")?1f:-1f);
+            }
+        }
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                txtBriefIncome.setText("$ "+String.format("%.2f",((profileDetails.moneyNow)/1000f))+" K");
+            }
+        });
+    }
 }

@@ -313,10 +313,10 @@
                         android:layout_marginEnd="8dp"
                         android:clickable="false"
 
+                        android:progressDrawable="@drawable/binh_seekbar_edit"
+                        android:thumb="@null"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        android:thumb="@null"
-                        android:progressDrawable="@drawable/binh_seekbar_edit"
                         app:layout_constraintTop_toBottomOf="@+id/textView22" />
 
                     <TextView
@@ -333,6 +333,14 @@
                         app:layout_constraintVertical_bias="0.51" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <Button
+                    android:id="@+id/btnViewCommand"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:text="Xem sổ lệnh" />
 
 
             </LinearLayout>

@@ -25,7 +25,7 @@ public class QuyAccountViewModel extends BaseViewModel{
             API.RequestParams params = new API.RequestParams();
             params.add("userId","123");
 
-            API.ResponseAPI response = API.get(context,"/coins/getAll",params);
+            API.ResponseAPI response = API.get(context,"/account/checkAuth",params);
             if(response.status== API.ResponseAPI.Status.Fail){
                 okCallback.handle("false");
 //                _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Error,response.error));
