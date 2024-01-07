@@ -12,11 +12,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 
 import com.example.nhom3_crypto_client.R;
+import com.example.nhom3_crypto_client.core.General;
 import com.example.nhom3_crypto_client.model.SystemNotificationModel;
 import com.example.nhom3_crypto_client.view.custom_dialog.QuyVerifyOtpDialog;
 import com.example.nhom3_crypto_client.view_model.LoginViewModel;
 
 public class Thuc_SignUpActivity extends AppCompatActivity {
+    EditText phoneNumber,createPassword,confirmCreatePassword,name;
 
     private LoginViewModel loginViewModel;
 
@@ -29,7 +31,7 @@ public class Thuc_SignUpActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         if (it != null) {
-                            Toast.makeText(Thuc_SignUpActivity.this, it.content, Toast.LENGTH_SHORT).show();
+                            General.showNotification(Thuc_SignUpActivity.this, it);
                         }
                     }
                 });
@@ -50,10 +52,10 @@ public class Thuc_SignUpActivity extends AppCompatActivity {
     }
 
     public void Signup(){
-        final EditText phonenumber = findViewById(R.id.phonenumber);
-        final EditText createpassword = findViewById(R.id.createpassword);
-        final EditText confirmcreatepassword = findViewById(R.id.confirmcreatepassword);
-        final EditText text = findViewById(R.id.text);
+        phoneNumber = findViewById(R.id.phonenumber);
+        createPassword = findViewById(R.id.createpassword);
+        confirmCreatePassword = findViewById(R.id.confirmcreatepassword);
+        name = findViewById(R.id.text);
         final Button btnSignup = findViewById(R.id.btnSignup);
         final TextView signin = findViewById(R.id.signin);
         final TextView resetpassword = findViewById((R.id.resetpassword));
@@ -61,8 +63,7 @@ public class Thuc_SignUpActivity extends AppCompatActivity {
         signin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Thuc_SignUpActivity.this, Thuc_MainActivity.class);
-                startActivity(intent);
+                finish();
             }
         });
 
@@ -77,19 +78,18 @@ public class Thuc_SignUpActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                String setPhonenumber = phonenumber.getText().toString();
-                String setCreatePassword = createpassword.getText().toString();
-                String setConfirmCreatePassword = confirmcreatepassword.getText().toString();
-                String setName = text.getText().toString();
+                String setPhonenumber = phoneNumber.getText().toString();
+                String setCreatePassword = createPassword.getText().toString();
+                String setConfirmCreatePassword = confirmCreatePassword.getText().toString();
+                String setName = name.getText().toString();
 
                 if (setCreatePassword.isEmpty() || setPhonenumber.isEmpty() || setConfirmCreatePassword.isEmpty() || setName.isEmpty()) {
                     Toast.makeText(Thuc_SignUpActivity.this, "Bạn đang bỏ trống", Toast.LENGTH_SHORT).show();
-
                 } else {
                     if(!setConfirmCreatePassword.equals(setCreatePassword) ){
                         Toast.makeText(Thuc_SignUpActivity.this, "Xác nhận mật khẩu sai", Toast.LENGTH_LONG).show();
                     }else {
-                        openOTP();
+                        signup1(setPhonenumber,setCreatePassword, setName);
                     }
 
                 }
@@ -97,6 +97,15 @@ public class Thuc_SignUpActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void signup1(String numberPhone, String password, String name){
+        loginViewModel.register(numberPhone, password, name, new SystemNotificationModel.OkCallback() {
+            @Override
+            public void handle() {
+                openOTP();
+            }
+        });
     }
 
     public void openOTP(){
@@ -108,12 +117,7 @@ public class Thuc_SignUpActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         quyVerifyOtpDialog.hide();
-                        final EditText createPassword = findViewById(R.id.createpassword);
-                        final EditText phonenumber = findViewById(R.id.phonenumber);
-                        final EditText name = findViewById(R.id.text);
-                        String setCreatePassword = createPassword.getText().toString();
-                        String setNumberphone = phonenumber.getText().toString();
-                        String setName = name.getText().toString();
+                        String setNumberphone = phoneNumber.getText().toString();
                         loginViewModel.register2(setNumberphone, otp, new SystemNotificationModel.OkCallback() {
                             @Override
                             public void handle() {

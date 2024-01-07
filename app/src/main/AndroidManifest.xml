@@ -42,12 +42,12 @@
         <activity
             android:name=".view.QuyMainActivity"
             android:exported="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
 
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
         </activity>
 
         <activity
@@ -67,7 +67,10 @@
         <activity
             android:name=".view.Thuc_MainActivity"
             android:exported="true" >
-
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".view.Binh_RankActivity"
@@ -121,6 +124,10 @@
 
         <activity
             android:name=".view.Binh_SettingActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".view.Quy_GuestCommandsActivity"
             android:exported="false" />
     </application>
 

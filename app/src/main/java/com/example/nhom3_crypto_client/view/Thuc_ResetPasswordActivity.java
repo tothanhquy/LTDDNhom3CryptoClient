@@ -22,7 +22,7 @@ public class Thuc_ResetPasswordActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
     EditText phonenumber;
-    EditText passwordView;
+    EditText newpassword;
 
     private void setRender() {
         // Set alert error
@@ -50,10 +50,7 @@ public class Thuc_ResetPasswordActivity extends AppCompatActivity {
         setContentView(R.layout.thuc_activity_reset_password);
 
         phonenumber = findViewById(R.id.phonenumber);
-        passwordView = findViewById(R.id.newpassword);
-
-        System.out.println(phonenumber);
-        System.out.println(passwordView);
+        newpassword = findViewById(R.id.newpassword);
 
         loginViewModel = new LoginViewModel(getApplicationContext());
         ResetPassword();
@@ -62,8 +59,8 @@ public class Thuc_ResetPasswordActivity extends AppCompatActivity {
     public void ResetPassword() {
         final TextView signin = findViewById(R.id.signin);
         final TextView signup = findViewById(R.id.signup);
-        final EditText phonenumber = findViewById(R.id.phonenumber);
-        final EditText newpassword = findViewById(R.id.newpassword);
+        phonenumber = findViewById(R.id.phonenumber);
+        newpassword = findViewById(R.id.newpassword);
         final EditText confirmnewpassword = findViewById(R.id.confirmnewpassword);
         final Button btn = findViewById(R.id.btn);
 
@@ -71,18 +68,17 @@ public class Thuc_ResetPasswordActivity extends AppCompatActivity {
         signin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Thuc_ResetPasswordActivity.this, Thuc_MainActivity.class);
-                startActivity(intent);
+                finish();
             }
         });
 
-        signup.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Thuc_ResetPasswordActivity.this, Thuc_SignUpActivity.class);
-                startActivity(intent);
-            }
-        });
+//        signup.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(Thuc_ResetPasswordActivity.this, Thuc_SignUpActivity.class);
+//                startActivity(intent);
+//            }
+//        });
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,7 +118,7 @@ public class Thuc_ResetPasswordActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(Thuc_ResetPasswordActivity.this, "fail", Toast.LENGTH_LONG).show();
+
                     }
                 });
 
@@ -146,7 +142,6 @@ public class Thuc_ResetPasswordActivity extends AppCompatActivity {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        Toast.makeText(Thuc_ResetPasswordActivity.this, "Đổi mật khẩu thành công", Toast.LENGTH_LONG).show();
                                         finish();
                                     }
                                 });
@@ -174,20 +169,16 @@ public class Thuc_ResetPasswordActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-//                        quyVerifyOtpDialog.hide();
-                        System.out.println("ABC");
-                        System.out.println(phonenumber);
-                        System.out.println(passwordView);
-
+                        quyVerifyOtpDialog.hide();
                         String setNumberphone = phonenumber.getText().toString();
-                        String setPassword = passwordView.getText().toString();
+                        String setPassword = newpassword.getText().toString();
                         loginViewModel.resetPassword(setNumberphone, setPassword , new SystemNotificationModel.OkCallback() {
                             @Override
                             public void handle() {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-//                                        quyVerifyOtpDialog.show();
+                                        quyVerifyOtpDialog.show();
                                     }
                                 });
 
@@ -198,7 +189,7 @@ public class Thuc_ResetPasswordActivity extends AppCompatActivity {
                               runOnUiThread(new Runnable() {
                                   @Override
                                   public void run() {
-//                                      quyVerifyOtpDialog.show();
+                                      quyVerifyOtpDialog.show();
                                   }
                               });
 

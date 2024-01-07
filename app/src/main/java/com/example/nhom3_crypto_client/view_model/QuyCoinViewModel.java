@@ -22,6 +22,7 @@ public class QuyCoinViewModel extends BaseViewModel{
 
     private void loadChartAPI(String type, String coidId, String interval, String start, String end ,BaseViewModel.OkCallback okCallback){
         try{
+            System.out.println("ate void loadChartAPI(String type, String coidId,");
             API.RequestParams params = new API.RequestParams();
             params.add("coinId",coidId);
             params.add("interval",interval);

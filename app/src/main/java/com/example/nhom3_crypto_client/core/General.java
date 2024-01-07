@@ -46,11 +46,11 @@ public class General {
         builder.show();
     }
     public static void setImageUrl(Context context, ImageView image, String url){
-        Picasso.with(context).load(url).into(image);
+        Picasso.with(context).load(url).placeholder(R.drawable.quy_cryptocurrency).error(R.drawable.quy_cryptocurrency).into(image);
     }
     public static void setAvatarUrl(Context context, ImageView image, String name){
         String url = API.SERVER_URL_AND_PORT+"/resource/account/avatar/"+name;
-        Picasso.with(context).load(url).into(image);
+        Picasso.with(context).load(url).error(R.drawable.binh_ic_user).into(image);
     }
     public static String convertTimeToDateTime(long milliSeconds){
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm");

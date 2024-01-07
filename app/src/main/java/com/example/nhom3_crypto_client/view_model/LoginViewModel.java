@@ -35,11 +35,11 @@ public class LoginViewModel extends BaseViewModel{
 
             API.ResponseAPI response = API.post(context,"/account/login",requestBody);
             if(response.status== API.ResponseAPI.Status.Fail){
-                _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Error,response.error));
-                failCallback.handle();
+                _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Error,"",response.error,failCallback));
+//                failCallback.handle();
             }else{
                 API.setAuth(context,response.data);
-                _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Info,okCallback));
+//                _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Info,okCallback));
                 okCallback.handle();
             }
         }catch(Exception e){
@@ -104,8 +104,8 @@ public class LoginViewModel extends BaseViewModel{
 
             API.ResponseAPI response = API.post(context,"/account/registerStep2",requestBody);
             if(response.status== API.ResponseAPI.Status.Fail){
-                failOkCallback.handle();
-                _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Error,response.error));
+//                failOkCallback.handle();
+                _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Error,"",response.error,failOkCallback));
             }else{
                 okCallback.handle();
                 _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Info,okCallback));
@@ -173,8 +173,8 @@ public class LoginViewModel extends BaseViewModel{
             if(response.status== API.ResponseAPI.Status.Fail){
                 _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Error,"",response.error,failCallback));
             }else{
-                okCallback.handle();
-//                _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Info,"", "OK",okCallback));
+//                okCallback.handle();
+                _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Info,"", "Thay đổi password thành công.",okCallback));
             }
         }catch(Exception e){
             System.out.println(e);
@@ -202,9 +202,9 @@ public class LoginViewModel extends BaseViewModel{
 
             API.ResponseAPI response = API.post(context,"/account/registerStep1Resend",requestBody);
             if(response.status== API.ResponseAPI.Status.Fail){
-                _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Error,response.error));
+                _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Error,"",response.error,failCallback));
             }else{
-                _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Info,okCallback));
+                _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Info,"","Đã gửi lại OTP",okCallback));
             }
         }catch(Exception e){
             System.out.println(e);

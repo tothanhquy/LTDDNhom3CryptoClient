@@ -1,30 +1,43 @@
 package com.example.nhom3_crypto_client.view;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.InputType;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 
 import com.example.nhom3_crypto_client.R;
 import com.example.nhom3_crypto_client.core.General;
 import com.example.nhom3_crypto_client.model.SystemNotificationModel;
+import com.example.nhom3_crypto_client.view.custom_dialog.QuyEditBinhVerifyPinDialog;
 import com.example.nhom3_crypto_client.view_model.BaseViewModel;
 import com.example.nhom3_crypto_client.view_model.BinhProfileViewModel;
 
 public class Binh_SettingActivity extends AppCompatActivity {
 
     private Button btnLogout;
+    private Button btnLogoutAll;
     private Button btnChangePin;
+    private ProgressBar progressBar;
     private BinhProfileViewModel profileViewModel;
 
 
 
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,13 +47,15 @@ public class Binh_SettingActivity extends AppCompatActivity {
         profileViewModel = new BinhProfileViewModel(getApplicationContext());
 
         btnLogout = findViewById(R.id.btn_setting_logout);
+        btnLogoutAll = findViewById(R.id.btn_setting_logout_all);
         btnChangePin = findViewById(R.id.btn_setting_change_pin);
+        progressBar = findViewById(R.id.progressBar3);
 
         //
         btnChangePin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showChangPinDiaLog();
+                showGetPassword();
             }
         });
 
@@ -49,14 +64,35 @@ public class Binh_SettingActivity extends AppCompatActivity {
         btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                profileViewModel.postLogout(new BaseViewModel.OkCallback() {
+                profileViewModel.postLogout(false, new BaseViewModel.OkCallback() {
                     @Override
                     public void handle(String data) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(Binh_SettingActivity.this,"sssssssssssss",
-                                        Toast.LENGTH_SHORT).show();
+                                Intent intent2 = new Intent();
+                                intent2.putExtra("isLogout",true);
+                                setResult(Activity.RESULT_OK,intent2);
+                                finish();
+                            }
+                        });
+                    }
+                });
+            }
+        });
+        btnLogoutAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                profileViewModel.postLogout(true, new BaseViewModel.OkCallback() {
+                    @Override
+                    public void handle(String data) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent2 = new Intent();
+                                intent2.putExtra("isLogout",true);
+                                setResult(Activity.RESULT_OK,intent2);
+                                finish();
                             }
                         });
                     }
@@ -83,107 +119,66 @@ public class Binh_SettingActivity extends AppCompatActivity {
                 }
             }
         });
+        profileViewModel.isLoading().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean isLoading) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(isLoading==true){
+                            progressBar.setVisibility(View.VISIBLE);
+                        }else{
+                            progressBar.setVisibility(View.GONE);
+                        }
+                    }
+                });
+            }
+        });
 
     }
     //dialog mã pin
-    private void showChangPinDiaLog() {
+    private void showGetPinDiaLog(String password) {
         // new dialog
-        Dialog editPinDialog = new Dialog(this);
-        editPinDialog.setContentView(R.layout.binh_dialog_pin_code);
-        LinearLayout pinCodeLayout = editPinDialog.findViewById(R.id.pin_code_input_layout);
-
-        // mã pin
-        View[] pinCodeViews = new View[]{
-                editPinDialog.findViewById(R.id.pin_code_1),
-                editPinDialog.findViewById(R.id.pin_code_2),
-                editPinDialog.findViewById(R.id.pin_code_3),
-                editPinDialog.findViewById(R.id.pin_code_4)
-        };
-
-        //  Button 0->9
-        for (int i = 0; i <= 9; i++) {
-            int btnId = getResources().getIdentifier("btn" + i, "id", getPackageName());
-            Button button = editPinDialog.findViewById(btnId);
-            int finalI = i;
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    handlePinButtonClick(finalI, pinCodeViews, pinCodeLayout);
-                }
-            });
-        }
-
-        // btnClear
-        Button btnClear = editPinDialog.findViewById(R.id.btn_clear);
-        btnClear.setOnClickListener(new View.OnClickListener() {
+        QuyEditBinhVerifyPinDialog dialog = new QuyEditBinhVerifyPinDialog(this);
+        dialog.setHandleCallback(new QuyEditBinhVerifyPinDialog.OkCallback() {
             @Override
-            public void onClick(View view) {
-                handleClearButtonClick(pinCodeViews, pinCodeLayout);
+            public void handle(String pin) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        dialog.hide();
+                        profileViewModel.editPin(pin, password, new BaseViewModel.OkCallback() {
+                            @Override
+                            public void handle(String data) {
+
+                            }
+                        });
+                    }
+                });
+
             }
         });
-
-
-        Button btnClearAll = editPinDialog.findViewById(R.id.btn_clear_all);
-        btnClearAll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                clearEnteredPin(pinCodeViews);
+        dialog.show();
+    }
+    private void showGetPassword(){
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Nhập mật khẩu");
+        EditText input = new EditText(this);
+        input.setHint("Mật khẩu");
+        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        alert.setView(input);
+        alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            //@Override
+            public void onClick(DialogInterface dialog, int which) {
+                String password = input.getText().toString();
+                showGetPinDiaLog(password);
             }
         });
-
-        // Hiển thị dialog
-        editPinDialog.show();
-    }
-
-    // Xử lý khi Button 0-9 được nhấn
-    private void handlePinButtonClick(int pin, View[] pinCodeViews, LinearLayout pinCodeLayout) {
-        for (View pinCodeView : pinCodeViews) {
-            if (pinCodeView.getTag() == null) {
-                pinCodeView.setBackgroundResource(R.drawable.binh_view_circle_pin_code2);
-                pinCodeView.setTag(pin);
-                checkAndShowToast(pinCodeViews);
-                break;
-            }
-        }
+        alert.setCancelable(true);
+        alert.show();
 
     }
 
-    // btnClear
-    private void handleClearButtonClick(View[] pinCodeViews, LinearLayout pinCodeLayout) {
-        for (int i = pinCodeViews.length - 1; i >= 0; i--) {
-            if (pinCodeViews[i].getTag() != null) {
-                pinCodeViews[i].setBackgroundResource(R.drawable.binh_view_circle_pin_code);
-                pinCodeViews[i].setTag(null);
-                break;
-            }
-        }
-    }
-
-    // Kiểm tra
-    private void checkAndShowToast(View[] pinCodeViews) {
-        StringBuilder enteredPin = new StringBuilder();
-        for (View pinCodeView : pinCodeViews) {
-            if (pinCodeView.getTag() != null) {
-                enteredPin.append(pinCodeView.getTag());
-            }
-        }
-        // Replace "1234" with your desired correct PIN
-        String correctPin = "1234";
-        if (enteredPin.length() == 4 && enteredPin.toString().equals(correctPin)) {
-            Toast.makeText(this, "Correct PIN", Toast.LENGTH_SHORT).show();
-        } else if (enteredPin.length() == 4) {
-            Toast.makeText(this, "Incorrect PIN", Toast.LENGTH_SHORT).show();
-
-        }
-    }
-
-    // Clear all pin
-    private void clearEnteredPin(View[] pinCodeViews) {
-        for (View pinCodeView : pinCodeViews) {
-            pinCodeView.setBackgroundResource(R.drawable.binh_view_circle_pin_code);
-            pinCodeView.setTag(null);
-        }
-    }
 
     // Xử lý sự kiện khi nút quay lại được bấm (actionBar)
     @Override

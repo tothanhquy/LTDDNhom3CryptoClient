@@ -1,16 +1,21 @@
 package com.example.nhom3_crypto_client.view;
 
-import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.nhom3_crypto_client.R;
 import com.example.nhom3_crypto_client.core.General;
@@ -22,27 +27,21 @@ import com.example.nhom3_crypto_client.service.ServiceConnections;
 import com.example.nhom3_crypto_client.service.ServiceCreatedCallback;
 import com.example.nhom3_crypto_client.view_model.BanCommandViewModel;
 import com.example.nhom3_crypto_client.view_model.BaseViewModel;
+import com.google.android.material.tabs.TabLayout;
 import com.google.gson.Gson;
 
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 
-
-public class Ban_CloseFragment extends Fragment {
-    Context context;
+public class Quy_GuestCommandsActivity extends AppCompatActivity {
     BanCommandViewModel banCommandViewModel;
     private ArrayList<Ban_CloseCommand> closeCommands = new ArrayList<>();
     BanTradingCommandModel.CloseTradingCommandList commandResponses;
     RecyclerView recyclerView;
     ProgressBar progressBar;
     Ban_CloseAdapter closeAdapter;
+//    String userId;
 
-    private String REGISTER_COIN_SERVICE_NAME = "ban-open-trading-fragment";
+    private String REGISTER_COIN_SERVICE_NAME = "quy-guest-trading-commands-activity";
     private CoinService coinService;
     private Boolean isBoundCoinService=false;
     private ServiceConnection serviceConnection;
@@ -62,42 +61,43 @@ public class Ban_CloseFragment extends Fragment {
         }
     }
 
-
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.ban_fragment_close);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("Sổ lệnh");
 
-        banCommandViewModel = new BanCommandViewModel(getContext());
+        banCommandViewModel = new BanCommandViewModel(getApplicationContext());
         setObserve();
 
-        Ban_CloseFragment.CoinServiceCreatedCallback serviceCreatedCallback = new Ban_CloseFragment.CoinServiceCreatedCallback();
+        CoinServiceCreatedCallback serviceCreatedCallback = new CoinServiceCreatedCallback();
         serviceConnection = new ServiceConnections.CoinServiceConnection(serviceCreatedCallback);
-        Intent intent = new Intent(getActivity(), CoinService.class);
-        getActivity().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-    }
-    @SuppressLint("MissingInflatedId")
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.ban_fragment_close, container, false);
-        recyclerView = view.findViewById(R.id.listCloseItem);
-        progressBar = view.findViewById(R.id.LoadCloseList);
-        closeAdapter = new Ban_CloseAdapter(getContext(),openObject);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(closeAdapter);
-        return view;
-    }
+        Intent intent = new Intent(Quy_GuestCommandsActivity.this, CoinService.class);
+        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
 
+        recyclerView = findViewById(R.id.listCloseItem);
+        progressBar = findViewById(R.id.LoadCloseList);
+        closeAdapter = new Ban_CloseAdapter(getApplicationContext(),openObject);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        recyclerView.setAdapter(closeAdapter);
+    }
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId()==android.R.id.home){
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
     private Ban_CloseAdapter.OpenCallback openObject = new Ban_CloseAdapter.OpenCallback() {
         @Override
         public void open(String commandId) {
-            getActivity().runOnUiThread(new Runnable() {
+            runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Intent intent = new Intent(getActivity(), QuyViewTradingCommandActivity.class);
+                    Intent intent = new Intent(Quy_GuestCommandsActivity.this, QuyViewTradingCommandActivity.class);
                     intent.putExtra("id", commandId);
-                    getActivity().startActivity(intent);
+                    startActivity(intent);
                 }
             });
 
@@ -115,7 +115,7 @@ public class Ban_CloseFragment extends Fragment {
         super.onDestroy();
         if (isBoundCoinService) {
             coinService.removeEventListener(REGISTER_COIN_SERVICE_NAME);
-            getActivity().unbindService(serviceConnection);
+            unbindService(serviceConnection);
             isBoundCoinService = false;
         }
     }
@@ -125,10 +125,10 @@ public class Ban_CloseFragment extends Fragment {
             @Override
             public void onChanged(SystemNotificationModel systemNotificationModel) {
                 if(systemNotificationModel!=null){
-                    getActivity().runOnUiThread(new Runnable() {
+                    runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            General.showNotification(getContext(),systemNotificationModel);
+                            General.showNotification(Quy_GuestCommandsActivity.this,systemNotificationModel);
                         }
                     });
                 }
@@ -137,7 +137,7 @@ public class Ban_CloseFragment extends Fragment {
         banCommandViewModel.isLoading().observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean isLoading) {
-                getActivity().runOnUiThread(new Runnable() {
+                runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         if(isLoading==true){
@@ -160,11 +160,13 @@ public class Ban_CloseFragment extends Fragment {
         });
     }
     private void loadCommands(ArrayList<CoinServiceModel.CoinNow> coins){
-        banCommandViewModel.getList("mine", false, new BaseViewModel.OkCallback() {
+        String userId = getIntent().getStringExtra("userId");
+
+        banCommandViewModel.getList(userId, false, new BaseViewModel.OkCallback() {
             @Override
             public void handle(String data) {
                 commandResponses = new Gson().fromJson(data, BanTradingCommandModel.CloseTradingCommandList.class);
-                getActivity().runOnUiThread(new Runnable() {
+                runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         setCommands(coins);
@@ -195,16 +197,4 @@ public class Ban_CloseFragment extends Fragment {
             closeCommands.add(new Ban_CloseCommand(item.id,coin.id,coin.name,item.finalProfit,""+item.leverage, coin.icon,item.buyOrSell, item.openPrice, 1f, item.moneyNumber,item.closeTime));
         };
     }
-
-    private float getProfitNow(String buyOrSell, float priceNow, float openPrice, float coinNumber){
-        float profitNow;
-        if(buyOrSell.equals("buy")){
-            profitNow = (priceNow-openPrice)*coinNumber;
-        }else{
-            profitNow = (-priceNow+openPrice)*coinNumber;
-        }
-        return profitNow;
-    }
-
-
 }
