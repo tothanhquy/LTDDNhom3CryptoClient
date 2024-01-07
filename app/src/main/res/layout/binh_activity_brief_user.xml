@@ -128,10 +128,12 @@
             android:orientation="horizontal">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="190dp"
+                android:layout_width="0dp"
                 android:layout_height="240dp"
                 android:layout_marginLeft="5dp"
                 android:layout_marginTop="0dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
                 android:background="@drawable/binh_custom_background_element">
 
 
@@ -257,10 +259,11 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <LinearLayout
-                android:layout_width="200dp"
+                android:layout_width="0dp"
                 android:layout_height="240dp"
-                android:layout_marginLeft="10dp"
                 android:layout_marginTop="0dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
                 android:background="@drawable/binh_custom_background_element"
                 android:orientation="vertical">
 
@@ -453,7 +456,7 @@
                 android:layout_marginTop="4dp"
                 android:text="Số tiền giao dịch tối đa"
                 android:textAlignment="viewStart"
-                android:textColor="@color/gray"
+                android:textColor="@color/black"
                 android:textSize="9sp"
                 app:layout_constraintStart_toEndOf="@+id/image_diamond"
                 app:layout_constraintTop_toBottomOf="@+id/txt_brief_money_max" />
@@ -466,7 +469,7 @@
                 android:layout_marginTop="4dp"
                 android:text="Số tiền giao dịch trung bình"
                 android:textAlignment="viewStart"
-                android:textColor="@color/gray"
+                android:textColor="@color/black"
                 android:textSize="9sp"
                 app:layout_constraintStart_toEndOf="@+id/image_light"
                 app:layout_constraintTop_toBottomOf="@+id/txt_brief_money_average" />
@@ -479,7 +482,7 @@
                 android:layout_marginTop="4dp"
                 android:text="Lợi nhuận tối đa"
                 android:textAlignment="center"
-                android:textColor="@color/gray"
+                android:textColor="@color/black"
                 android:textSize="9sp"
                 app:layout_constraintStart_toEndOf="@+id/image_money"
                 app:layout_constraintTop_toBottomOf="@+id/txt_brief_profit_max" />
@@ -492,7 +495,7 @@
                 android:layout_marginTop="4dp"
                 android:text="Lỗ tối đa"
                 android:textAlignment="center"
-                android:textColor="@color/gray"
+                android:textColor="@color/black"
                 android:textSize="9sp"
                 app:layout_constraintStart_toEndOf="@+id/image_arrow"
                 app:layout_constraintTop_toBottomOf="@+id/txt_brief_money_loss_max" />

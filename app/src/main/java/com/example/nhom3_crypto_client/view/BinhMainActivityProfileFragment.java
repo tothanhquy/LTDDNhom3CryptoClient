@@ -114,9 +114,9 @@ public class BinhMainActivityProfileFragment extends Fragment {
         }
     }
 
+
     public BinhMainActivityProfileFragment(Context context) {
         this.context = context;
-
     }
 
     @Override
@@ -254,16 +254,17 @@ public class BinhMainActivityProfileFragment extends Fragment {
         //
         General.setAvatarUrl(getContext(), userImageView, profileDetails.avatar);
         txtBriefUserName.setText(profileDetails.name);
-        txtBriefIncome.setText("$" + profileDetails.moneyProfitNow);
-        txtBriefInvested.setText("$" + profileDetails.moneyInvested);
-        txtBriefAvailable.setText("$" + profileDetails.moneyNow);
+        txtBriefIncome.setText("$" + String.format("%.2f", profileDetails.moneyProfitNow));
+
+        txtBriefInvested.setText("$" + String.format("%.2f", profileDetails.moneyInvested));
+        txtBriefAvailable.setText("$" + String.format("%.2f", profileDetails.moneyNow));
 
         txtBriefRate.setText(">" + 100 * (profileDetails.totalNumber - profileDetails.topNumber) / profileDetails.totalNumber + "%");
 
-        txtBriefMoneyAverage.setText("$" + profileDetails.tradingCommandMoneyAvg);
-        txtBriefMoneyMax.setText("$" + profileDetails.tradingCommandMoneyMaximum);
-        txtBriefMoneyProfitMax.setText("$" + profileDetails.tradingCommandProfitMaximum);
-        txtBriefMoneyLosstMax.setText("$" + profileDetails.tradingCommandLossMaximum);
+        txtBriefMoneyAverage.setText("$" + String.format("%.2f", profileDetails.tradingCommandMoneyAvg));
+        txtBriefMoneyMax.setText("$" + String.format("%.2f", profileDetails.tradingCommandMoneyMaximum));
+        txtBriefMoneyProfitMax.setText("$" + String.format("%.2f", profileDetails.tradingCommandProfitMaximum));
+        txtBriefMoneyLosstMax.setText("$" + String.format("%.2f", profileDetails.tradingCommandLossMaximum));
         if (profileDetails.tradingCommandNumber == 0) {
             txtPercent.setText("0");
         } else {
@@ -280,8 +281,12 @@ public class BinhMainActivityProfileFragment extends Fragment {
         if (profileDetails.moneyProfitNow > 0) {
             entries.add(new PieEntry(profileDetails.moneyProfitNow, ""));
         }
-        entries.add(new PieEntry(profileDetails.moneyNow, ""));
-        entries.add(new PieEntry(profileDetails.moneyInvested, ""));
+        if (profileDetails.moneyNow > 0) {
+            entries.add(new PieEntry(profileDetails.moneyNow, ""));
+        }
+        if (profileDetails.moneyInvested > 0) {
+            entries.add(new PieEntry(profileDetails.moneyInvested, ""));
+        }
 
         PieDataSet pieDataSet = new PieDataSet(entries, "");
         pieDataSet.setColors(new int[]{R.color.incomeColor, R.color.availableColor, R.color.investedColor}, getContext());

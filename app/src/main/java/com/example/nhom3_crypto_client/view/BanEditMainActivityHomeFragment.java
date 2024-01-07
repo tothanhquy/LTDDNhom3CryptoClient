@@ -37,15 +37,22 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
+
 public class BanEditMainActivityHomeFragment extends Fragment {
     private ImageView btnCommand;
     private ImageView btnRating;
     private ImageView btnEditName;
+    private ImageView btnSafe;
+    private ImageView btnSetting;
+    private ImageView imgAvatar;
     private float originalScale;
-    private TextView sumMoney, moneyNow, moneyInvested, betterPercent, commandNumber, userName;
-    private ImageView userAvatar;
     private BinhProfileViewModel profileViewModel;
+    private TextView txtName, txtMoney, txtMoneyAvailable, txtMoneyInvested, txtCommandNumber, txtRatingNumber;
     QuyProfileResponseModel.Profile profileDetails;
+
+
+    public BanEditMainActivityHomeFragment() {
+    }
 
 
     private String REGISTER_COIN_SERVICE_NAME = "main-activity-home-fragment";
@@ -96,14 +103,18 @@ public class BanEditMainActivityHomeFragment extends Fragment {
         btnRating = view.findViewById(R.id.btnRating);
         btnEditName = view.findViewById(R.id.btnEditName);
 
-        sumMoney = view.findViewById(R.id.textView5);
-        moneyNow = view.findViewById(R.id.textView7);
-        moneyInvested = view.findViewById(R.id.textView9);
-        betterPercent = view.findViewById(R.id.textView11);
-        commandNumber = view.findViewById(R.id.textView4);
-        userName = view.findViewById(R.id.txtName);
-        userAvatar = view.findViewById(R.id.imageView2);
-
+        btnSafe = view.findViewById(R.id.btnSafe);
+        btnSetting = view.findViewById(R.id.btnSetting);
+        txtName = view.findViewById(R.id.txtName);
+        txtMoney = view.findViewById(R.id.txtMoney);
+        txtMoneyAvailable = view.findViewById(R.id.txtMoneyAvailable);
+        txtMoneyInvested = view.findViewById(R.id.txtMoneyInvested);
+        txtCommandNumber = view.findViewById(R.id.txtCommandNumber);
+        txtRatingNumber = view.findViewById(R.id.txtRattingNumber);
+        imgAvatar = view.findViewById(R.id.imgAvatar);
+        viewModel = new BinhProfileViewModel(getContext());
+        loadData();
+        setObserve();
 
         setButtonClickAnimation(btnCommand, new ButtonClickAnimationAction() {
             @Override
@@ -117,14 +128,34 @@ public class BanEditMainActivityHomeFragment extends Fragment {
                 startActivity(new Intent(getActivity(), Binh_RankActivity.class));
             }
         });
+        setButtonClickAnimation(btnSafe, new ButtonClickAnimationAction() {
+            @Override
+            public void action() {
+                startActivity(new Intent(getActivity(), Binh_BalanceTransactionActivity.class));
+            }
+        });
+        setButtonClickAnimation(btnSetting, new ButtonClickAnimationAction() {
+            @Override
+            public void action() {
+                startActivity(new Intent(getActivity(), Binh_SettingActivity.class));
+            }
+        });
         setButtonClickAnimation(btnEditName, new ButtonClickAnimationAction() {
             @Override
             public void action() {
                 editInfoNavigationObject.navigation();
             }
         });
+        setButtonClickAnimation(imgAvatar, new ButtonClickAnimationAction() {
+            @Override
+            public void action() {
+                editInfoNavigationObject.navigation();
+            }
+        });
+
         return view;
     }
+
 
     @Override
     public void onStart() {
@@ -196,14 +227,67 @@ public class BanEditMainActivityHomeFragment extends Fragment {
     public static interface EditInfoNavigation{
         public void navigation();
     }
+
     private EditInfoNavigation editInfoNavigationObject;
-    public void setEditInfoNavigation(EditInfoNavigation editInfoNavigation){
+
+    public void setEditInfoNavigation(EditInfoNavigation editInfoNavigation) {
         this.editInfoNavigationObject = editInfoNavigation;
     }
-    private interface ButtonClickAnimationAction{
+
+    private interface ButtonClickAnimationAction {
         public void action();
     }
-    private void setButtonClickAnimation( ImageView button, ButtonClickAnimationAction action) {
+
+    private void setProfile() {
+
+        //
+        General.setAvatarUrl(getContext(), imgAvatar, profileDetails.avatar);
+        txtName.setText(profileDetails.name);
+        txtMoneyInvested.setText("$" + String.format("%.2f", profileDetails.moneyInvested) +" K");
+        txtMoneyAvailable.setText("$" + String.format("%.2f", profileDetails.moneyNow)+" K");
+        float sumMoney = profileDetails.moneyInvested + profileDetails.moneyProfitNow + profileDetails.moneyNow;
+        txtMoney.setText("$" + String.format("%.2f", sumMoney)+ " K");
+        txtRatingNumber.setText(">" + 100 * (profileDetails.totalNumber - profileDetails.topNumber) / profileDetails.totalNumber + "%");
+        txtCommandNumber.setText("" + profileDetails.tradingCommandNumber);
+    }
+
+    private void loadData() {
+     /*   Intent intent = getIntent();
+        userId = intent.getStringExtra("id");*/
+        viewModel.getInfo("mine", new BaseViewModel.OkCallback() {
+            @Override
+            public void handle(String data) {
+                System.out.println(data);
+                profileDetails = new Gson().fromJson(data, QuyProfileResponseModel.Profile.class);
+                System.out.println(profileDetails);
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        setProfile();
+                    }
+                });
+
+            }
+        });
+    }
+
+    public void setObserve() {
+        viewModel.notification().observe(getActivity(), new Observer<SystemNotificationModel>() {
+            @Override
+            public void onChanged(SystemNotificationModel systemNotificationModel) {
+                if (systemNotificationModel != null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            General.showNotification(getContext(), systemNotificationModel);
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    private void setButtonClickAnimation(ImageView button, ButtonClickAnimationAction action) {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -231,6 +315,7 @@ public class BanEditMainActivityHomeFragment extends Fragment {
                         action.action();
 
                     }
+
                     private Animation getScaleAnimation(float fromScale, float toScale) {
                         Animation anim = new ScaleAnimation(
                                 fromScale, toScale, // Start and end values for the X axis scaling
