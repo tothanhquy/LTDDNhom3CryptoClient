@@ -42,7 +42,7 @@ import java.util.Arrays;
 import java.util.List;
 
 
-public class QuyMainActivity extends AppCompatActivity {
+public class QuyMainActivity extends BaseActivity {
     BanEditMainActivityHomeFragment banEditMainActivityHomeFragment;
 
 
@@ -130,7 +130,7 @@ public class QuyMainActivity extends AppCompatActivity {
         binhMainActivityProfileFragment.setOpenChooseImageActivity(openChooseImageActivity);
 
 
-        ArrayList<Fragment> fragments = new ArrayList<>(Arrays.asList(banEditMainActivityHomeFragment, quyMainActivityInterestedCoinsFragment,quyMainActivityTradingFragment, quyMainActivityProfileFragment));
+        ArrayList<Fragment> fragments = new ArrayList<>(Arrays.asList(banEditMainActivityHomeFragment, quyMainActivityInterestedCoinsFragment,quyMainActivityTradingFragment, binhMainActivityProfileFragment));
 
         ViewPager2 viewPager2 = findViewById(R.id.quyMainViewPager);
         viewPager2Adapter = new ViewPager2Adapter(getSupportFragmentManager(),getLifecycle(),viewPager2,fragments);
