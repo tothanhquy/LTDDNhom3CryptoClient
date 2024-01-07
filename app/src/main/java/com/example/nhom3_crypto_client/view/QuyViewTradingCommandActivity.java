@@ -179,9 +179,11 @@ public class QuyViewTradingCommandActivity extends AppCompatActivity {
 //
 //
 //
-////        Intent intent1 = getIntent();
-////        tradingCommandId = intent1.getStringExtra("id");
-        tradingCommandId = "65981e0f3207ed004c8badd2";
+
+        Intent intent1 = getIntent();
+        tradingCommandId = intent1.getStringExtra("id");
+//        tradingCommandId = "65831802eb7884668b3554d7";
+
 //        tradingCommandId = "658792596ae2ca5adaa9616a";
 //
         setObserve();

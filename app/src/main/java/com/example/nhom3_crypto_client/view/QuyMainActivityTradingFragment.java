@@ -115,7 +115,7 @@ public class QuyMainActivityTradingFragment extends Fragment {
         }
         @Override
         public void createdComplete() {
-
+            loadCoinInfo();
         }
     }
 
@@ -222,7 +222,6 @@ public class QuyMainActivityTradingFragment extends Fragment {
         setInitView();
         setEvents();
         loadMiniProfile();
-        loadCoinInfo();
     }
 
     private void setInitView(){

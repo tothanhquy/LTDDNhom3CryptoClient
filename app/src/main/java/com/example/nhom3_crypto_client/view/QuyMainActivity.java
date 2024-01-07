@@ -41,8 +41,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class QuyMainActivity extends BaseActivity {
-    QuyMainActivityHomeFragment quyMainActivityHomeFragment;
+
+public class QuyMainActivity extends AppCompatActivity {
+    BanEditMainActivityHomeFragment banEditMainActivityHomeFragment;
+
+
     QuyMainActivityInterestedCoinsFragment quyMainActivityInterestedCoinsFragment;
     QuyMainActivityTradingFragment quyMainActivityTradingFragment;
     BinhMainActivityProfileFragment binhMainActivityProfileFragment;
@@ -119,16 +122,19 @@ public class QuyMainActivity extends BaseActivity {
                 super.getCustomViewTabLayout(R.drawable.quy_profile, "Hồ sơ")
         };
 
-        quyMainActivityHomeFragment = new QuyMainActivityHomeFragment();
+        banEditMainActivityHomeFragment = new BanEditMainActivityHomeFragment();
+        banEditMainActivityHomeFragment.setEditInfoNavigation(homeEditInfoNavigation);
         quyMainActivityInterestedCoinsFragment = new QuyMainActivityInterestedCoinsFragment(getApplicationContext(),InterestedCoinsChangeObject,OpenViewCoinObject);
         quyMainActivityTradingFragment = new QuyMainActivityTradingFragment(getApplicationContext(),changeCoinLauncher,InterestedCoinsChangeObject);
         binhMainActivityProfileFragment = new BinhMainActivityProfileFragment();
         binhMainActivityProfileFragment.setOpenChooseImageActivity(openChooseImageActivity);
 
-        ArrayList<Fragment> fragments = new ArrayList<>(Arrays.asList(quyMainActivityHomeFragment, quyMainActivityInterestedCoinsFragment,quyMainActivityTradingFragment, binhMainActivityProfileFragment));
-//        ArrayList<Fragment> fragments = new ArrayList<>(Arrays.asList(quyMainActivityHomeFragment, quyMainActivityInterestedCoinsFragment, binhMainActivityProfileFragment));
+
+        ArrayList<Fragment> fragments = new ArrayList<>(Arrays.asList(banEditMainActivityHomeFragment, quyMainActivityInterestedCoinsFragment,quyMainActivityTradingFragment, quyMainActivityProfileFragment));
+
         ViewPager2 viewPager2 = findViewById(R.id.quyMainViewPager);
         viewPager2Adapter = new ViewPager2Adapter(getSupportFragmentManager(),getLifecycle(),viewPager2,fragments);
+        viewPager2.setOffscreenPageLimit(2);
         viewPager2.setAdapter(viewPager2Adapter);
         TabLayout tabLayout = findViewById(R.id.quyMainTabLayout);
         viewPager2.setUserInputEnabled(false);
@@ -259,4 +265,20 @@ public class QuyMainActivity extends BaseActivity {
         }
 
     }
+
+
+    BanEditMainActivityHomeFragment.EditInfoNavigation homeEditInfoNavigation = new BanEditMainActivityHomeFragment.EditInfoNavigation() {
+        @Override
+        public void navigation() {
+            //set open edit layout
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    viewPager2Adapter.changeLayout(3);
+                }
+            });
+
+        }
+    };
 }

@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -41,7 +42,7 @@
                     android:src="@drawable/binh_ic_user"
                     app:srcCompat="@drawable/abc" />
 
-            </androidx.cardview.widget.CardView>
+
 
             <TextView
                 android:id="@+id/txt_brief_user_name"
@@ -57,6 +58,7 @@
                 android:textStyle="bold"
                 app:layout_constraintStart_toEndOf="@+id/cardView_brief_user_image"
                 app:layout_constraintTop_toTopOf="parent" />
+
 
             <ImageView
                 android:id="@+id/btn_brief_setting"
@@ -79,6 +81,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/binh_ic_trophy" />
+
 
             <TextView
                 android:id="@+id/textView2"
