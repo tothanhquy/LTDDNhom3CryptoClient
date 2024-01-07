@@ -37,6 +37,7 @@ public class LoginViewModel extends BaseViewModel{
             if(response.status== API.ResponseAPI.Status.Fail){
                 _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Error,response.error));
             }else{
+                okCallback.handle();
                 _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Info,okCallback));
             }
         }catch(Exception e){

@@ -152,7 +152,9 @@ public class QuyMainActivityTradingFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_quy_main_activity_trading, container, false);
+        System.out.println("View =view.findViewById(R.i");
         coinChartFragmentView =view.findViewById(R.id.quyMainActivityTradingFragmentCoinChartFragmentContainer);
+        System.out.println("ById(R.id.quyMainActivityTradin");
         miniInfoSumMoney = view.findViewById(R.id.quyMainActivityTradingFragmentMiniInfoSum);
         miniInfoReadyMoney = view.findViewById(R.id.quyMainActivityTradingFragmentMiniInfoReadyMoney);
         miniInfoTradingCommandNumber = view.findViewById(R.id.quyMainActivityTradingFragmentMiniInfoTradingCommandNumber);
@@ -181,13 +183,7 @@ public class QuyMainActivityTradingFragment extends Fragment {
         quyMainActivityTradingFragmentInterestedIcon = view.findViewById(R.id.quyMainActivityTradingFragmentInterestedIcon);
 
         loadingLayout = view.findViewById(R.id.loadingLayout);
-        return view;
-    }
 
-
-    @Override
-    public void onStart() {
-        super.onStart();
         coinChartFragment = QuyCoinChartFragment.newInstance(this.coinId, 0L, context);
         coinChartFragment.setChangeCoinLauncher(changeCoinLauncher);
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
@@ -198,6 +194,15 @@ public class QuyMainActivityTradingFragment extends Fragment {
 //        transaction.addToBackStack(null);
         // Commit the transaction
         transaction.commitAllowingStateLoss();
+
+        return view;
+    }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
         setObserve();
         setInitView();
         setEvents();

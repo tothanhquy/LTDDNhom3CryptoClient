@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.example.nhom3_crypto_client.api.API;
 import com.example.nhom3_crypto_client.model.SystemNotificationModel;
 import com.squareup.picasso.Picasso;
 
@@ -31,6 +32,10 @@ public class General {
         builder.show();
     }
     public static void setImageUrl(Context context, ImageView image, String url){
+        Picasso.with(context).load(url).into(image);
+    }
+    public static void setAvatarUrl(Context context, ImageView image, String name){
+        String url = API.SERVER_URL_AND_PORT+"/resource/account/avatar/"+name;
         Picasso.with(context).load(url).into(image);
     }
     public static String convertTimeToDateTime(long milliSeconds){

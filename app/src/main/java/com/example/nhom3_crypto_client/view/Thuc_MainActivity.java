@@ -89,7 +89,16 @@ public class Thuc_MainActivity extends AppCompatActivity {
                     loginViewModel.login(setPhonenumber, setPassword, new SystemNotificationModel.OkCallback() {
                         @Override
                         public void handle() {
-                            finish();
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(Thuc_MainActivity.this, "ngu", Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(Thuc_MainActivity.this, QuyMainActivity.class);
+                                    startActivity(intent);
+                                }
+                            });
+//                            finish();
+
                         }
                     });
                 }

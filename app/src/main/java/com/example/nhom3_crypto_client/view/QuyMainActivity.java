@@ -5,7 +5,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
@@ -17,7 +16,10 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 
 import com.example.nhom3_crypto_client.R;
 import com.example.nhom3_crypto_client.service.CoinService;
@@ -26,6 +28,8 @@ import com.example.nhom3_crypto_client.service.ServiceCreatedCallback;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,7 +38,7 @@ public class QuyMainActivity extends AppCompatActivity {
     QuyMainActivityHomeFragment quyMainActivityHomeFragment;
     QuyMainActivityInterestedCoinsFragment quyMainActivityInterestedCoinsFragment;
     QuyMainActivityTradingFragment quyMainActivityTradingFragment;
-    QuyMainActivityProfileFragment quyMainActivityProfileFragment;
+    BinhMainActivityProfileFragment binhMainActivityProfileFragment;
 
 
     private String REGISTER_COIN_SERVICE_NAME = "main-activity";
@@ -102,9 +106,11 @@ public class QuyMainActivity extends AppCompatActivity {
         quyMainActivityHomeFragment = new QuyMainActivityHomeFragment();
         quyMainActivityInterestedCoinsFragment = new QuyMainActivityInterestedCoinsFragment(getApplicationContext(),InterestedCoinsChangeObject,OpenViewCoinObject);
         quyMainActivityTradingFragment = new QuyMainActivityTradingFragment(getApplicationContext(),changeCoinLauncher,InterestedCoinsChangeObject);
-        quyMainActivityProfileFragment = new QuyMainActivityProfileFragment();
+        binhMainActivityProfileFragment = new BinhMainActivityProfileFragment();
+        binhMainActivityProfileFragment.setOpenChooseImageActivity(openChooseImageActivity);
 
-        ArrayList<Fragment> fragments = new ArrayList<>(Arrays.asList(quyMainActivityHomeFragment, quyMainActivityInterestedCoinsFragment,quyMainActivityTradingFragment, quyMainActivityProfileFragment));
+        ArrayList<Fragment> fragments = new ArrayList<>(Arrays.asList(quyMainActivityHomeFragment, quyMainActivityInterestedCoinsFragment,quyMainActivityTradingFragment, binhMainActivityProfileFragment));
+//        ArrayList<Fragment> fragments = new ArrayList<>(Arrays.asList(quyMainActivityHomeFragment, quyMainActivityInterestedCoinsFragment, binhMainActivityProfileFragment));
         ViewPager2 viewPager2 = findViewById(R.id.quyMainViewPager);
         viewPager2Adapter = new ViewPager2Adapter(getSupportFragmentManager(),getLifecycle(),viewPager2,fragments);
         viewPager2.setAdapter(viewPager2Adapter);
@@ -145,6 +151,55 @@ public class QuyMainActivity extends AppCompatActivity {
                 //changeCoinOkCallback.handle(coinId);
             }
         });
+
+    ActivityResultLauncher<Intent> profileOpenChoseLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            o -> {
+                System.out.println("yResultLauncher<Intent> profileOpenChoseLauncher = registerF");
+                if (o.getResultCode() == Activity.RESULT_OK) {
+                    Intent data = o.getData();
+                    Bitmap selectedImage = null;
+                    if (BinhMainActivityProfileFragment.selectImageChooseOption == 1) {
+                        selectedImage = (Bitmap) data.getExtras().get("data");
+                        System.out.println(selectedImage);
+                    } else if (BinhMainActivityProfileFragment.selectImageChooseOption == 2) {
+                        Uri selectedImageUrl = data.getData();
+                        try {
+                            selectedImage = MediaStore.Images.Media.getBitmap(
+                                    getContentResolver(), selectedImageUrl);
+
+                        } catch (FileNotFoundException e) {
+                            throw new RuntimeException(e);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                    // Cập nhật ảnh cho cả userImageView và dialogImageView
+                    Bitmap finalSelectedImage = selectedImage;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            binhMainActivityProfileFragment.setChooseAvatarImage(finalSelectedImage);
+                        }
+                    });
+                }
+            }
+    );
+
+    BinhMainActivityProfileFragment.OpenChooseImageActivity openChooseImageActivity = new BinhMainActivityProfileFragment.OpenChooseImageActivity() {
+        @Override
+        public void open(int choose) {
+            if (choose==1) {
+                Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                profileOpenChoseLauncher.launch(takePicture);
+            } else if (choose==2) {
+                Intent pickPhoto = new Intent();
+                pickPhoto.setType("image/*");
+                pickPhoto.setAction(Intent.ACTION_GET_CONTENT);
+                profileOpenChoseLauncher.launch(pickPhoto);
+            }
+        }
+    };
     private class ViewPager2Adapter extends FragmentStateAdapter {
         ViewPager2 viewPager2;
         List<Fragment> fragments;
@@ -165,7 +220,7 @@ public class QuyMainActivity extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
-            return 4;
+            return 4 ;
         }
 
     }

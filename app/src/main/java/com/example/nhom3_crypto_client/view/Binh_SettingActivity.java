@@ -9,25 +9,58 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+
 import com.example.nhom3_crypto_client.R;
+import com.example.nhom3_crypto_client.core.General;
+import com.example.nhom3_crypto_client.model.SystemNotificationModel;
+import com.example.nhom3_crypto_client.view_model.BaseViewModel;
+import com.example.nhom3_crypto_client.view_model.BinhProfileViewModel;
+
 public class Binh_SettingActivity extends AppCompatActivity {
 
     private Button btnLogout;
     private Button btnChangePin;
+    private BinhProfileViewModel profileViewModel;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.binh_activity_setting);
 
+        //
+        profileViewModel = new BinhProfileViewModel(getApplicationContext());
 
         btnLogout = findViewById(R.id.btn_setting_logout);
         btnChangePin = findViewById(R.id.btn_setting_change_pin);
 
+        //
         btnChangePin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 showChangPinDiaLog();
+            }
+        });
+
+        setObserve();
+        //đăng xuất
+        btnLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                profileViewModel.postLogout(new BaseViewModel.OkCallback() {
+                    @Override
+                    public void handle(String data) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(Binh_SettingActivity.this,"sssssssssssss",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                });
             }
         });
 
@@ -36,6 +69,22 @@ public class Binh_SettingActivity extends AppCompatActivity {
     }
 
 
+    public void setObserve() {
+        profileViewModel.notification().observe(this, new Observer<SystemNotificationModel>() {
+            @Override
+            public void onChanged(SystemNotificationModel systemNotificationModel) {
+                if (systemNotificationModel != null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            General.showNotification(Binh_SettingActivity.this, systemNotificationModel);
+                        }
+                    });
+                }
+            }
+        });
+
+    }
     //dialog mã pin
     private void showChangPinDiaLog() {
         // new dialog
