@@ -112,7 +112,8 @@ public class BanEditMainActivityHomeFragment extends Fragment {
         txtCommandNumber = view.findViewById(R.id.txtCommandNumber);
         txtRatingNumber = view.findViewById(R.id.txtRattingNumber);
         imgAvatar = view.findViewById(R.id.imgAvatar);
-        viewModel = new BinhProfileViewModel(getContext());
+        profileViewModel = new BinhProfileViewModel(getContext());
+
         loadData();
         setObserve();
 
@@ -172,14 +173,14 @@ public class BanEditMainActivityHomeFragment extends Fragment {
     private void setProfile() {
         int betterPercentNumber = 100 * (profileDetails.totalNumber - profileDetails.topNumber) / profileDetails.totalNumber;
         //
-        General.setAvatarUrl(getContext(), userAvatar, profileDetails.avatar);
-        userName.setText(profileDetails.name);
-        sumMoney.setText("$" + String.format("%.2f",(profileDetails.moneyProfitNow+profileDetails.moneyNow+profileDetails.moneyInvested)/1000f)+" K");
-        moneyInvested.setText("$" + String.format("%.2f",profileDetails.moneyInvested/1000f)+" K");
-        moneyNow.setText("$" + String.format("%.2f",profileDetails.moneyNow/1000f)+" K");
+        General.setAvatarUrl(getContext(), imgAvatar, profileDetails.avatar);
+        txtName.setText(profileDetails.name);
+        txtMoney.setText("$" + String.format("%.2f",(profileDetails.moneyProfitNow+profileDetails.moneyNow+profileDetails.moneyInvested)/1000f)+" K");
+        txtMoneyInvested.setText("$" + String.format("%.2f",profileDetails.moneyInvested/1000f)+" K");
+        txtMoneyAvailable.setText("$" + String.format("%.2f",profileDetails.moneyNow/1000f)+" K");
 
-        betterPercent.setText(">" + betterPercentNumber + "%");
-        commandNumber.setText("" + profileDetails.tradingCommandNumber);
+        txtRatingNumber.setText(">" + betterPercentNumber + "%");
+        txtCommandNumber.setText("" + profileDetails.tradingCommandNumber);
     }
 
     public void loadData() {
@@ -209,7 +210,7 @@ public class BanEditMainActivityHomeFragment extends Fragment {
 
 
     public void setObserve() {
-        profileViewModel.notification().observe(this, new Observer<SystemNotificationModel>() {
+        profileViewModel.notification().observe(getActivity(), new Observer<SystemNotificationModel>() {
             @Override
             public void onChanged(SystemNotificationModel systemNotificationModel) {
                 if (systemNotificationModel != null) {
@@ -236,55 +237,6 @@ public class BanEditMainActivityHomeFragment extends Fragment {
 
     private interface ButtonClickAnimationAction {
         public void action();
-    }
-
-    private void setProfile() {
-
-        //
-        General.setAvatarUrl(getContext(), imgAvatar, profileDetails.avatar);
-        txtName.setText(profileDetails.name);
-        txtMoneyInvested.setText("$" + String.format("%.2f", profileDetails.moneyInvested) +" K");
-        txtMoneyAvailable.setText("$" + String.format("%.2f", profileDetails.moneyNow)+" K");
-        float sumMoney = profileDetails.moneyInvested + profileDetails.moneyProfitNow + profileDetails.moneyNow;
-        txtMoney.setText("$" + String.format("%.2f", sumMoney)+ " K");
-        txtRatingNumber.setText(">" + 100 * (profileDetails.totalNumber - profileDetails.topNumber) / profileDetails.totalNumber + "%");
-        txtCommandNumber.setText("" + profileDetails.tradingCommandNumber);
-    }
-
-    private void loadData() {
-     /*   Intent intent = getIntent();
-        userId = intent.getStringExtra("id");*/
-        viewModel.getInfo("mine", new BaseViewModel.OkCallback() {
-            @Override
-            public void handle(String data) {
-                System.out.println(data);
-                profileDetails = new Gson().fromJson(data, QuyProfileResponseModel.Profile.class);
-                System.out.println(profileDetails);
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        setProfile();
-                    }
-                });
-
-            }
-        });
-    }
-
-    public void setObserve() {
-        viewModel.notification().observe(getActivity(), new Observer<SystemNotificationModel>() {
-            @Override
-            public void onChanged(SystemNotificationModel systemNotificationModel) {
-                if (systemNotificationModel != null) {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            General.showNotification(getContext(), systemNotificationModel);
-                        }
-                    });
-                }
-            }
-        });
     }
 
     private void setButtonClickAnimation(ImageView button, ButtonClickAnimationAction action) {
@@ -356,7 +308,7 @@ public class BanEditMainActivityHomeFragment extends Fragment {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                sumMoney.setText("$ "+String.format("%.2f",((profileDetails.moneyNow+profileDetails.moneyInvested+profileDetails.moneyProfitNow)/1000f))+" K");
+                txtMoney.setText("$ "+String.format("%.2f",((profileDetails.moneyNow+profileDetails.moneyInvested+profileDetails.moneyProfitNow)/1000f))+" K");
             }
         });
     }

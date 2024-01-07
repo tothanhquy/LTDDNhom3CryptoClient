@@ -1,6 +1,9 @@
 package com.example.nhom3_crypto_client.view;
 
+import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
@@ -15,10 +18,14 @@ import android.widget.Toast;
 
 import com.example.nhom3_crypto_client.R;
 import com.example.nhom3_crypto_client.core.General;
+import com.example.nhom3_crypto_client.model.CoinServiceModel;
 import com.example.nhom3_crypto_client.model.SystemNotificationModel;
 import com.example.nhom3_crypto_client.model.response.BinhTransactionHistoryResponseModel;
 import com.example.nhom3_crypto_client.model.response.QuyProfileResponseModel;
 import com.example.nhom3_crypto_client.model.response.QuyTradingCommandResponseModel;
+import com.example.nhom3_crypto_client.service.CoinService;
+import com.example.nhom3_crypto_client.service.ServiceConnections;
+import com.example.nhom3_crypto_client.service.ServiceCreatedCallback;
 import com.example.nhom3_crypto_client.view.adapter.BinhRankTopUserAdapter;
 import com.example.nhom3_crypto_client.view.adapter.BinhTransactionHistoryAdapter;
 import com.example.nhom3_crypto_client.view_model.BaseViewModel;
@@ -35,6 +42,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 
 public class Binh_BalanceTransactionActivity extends AppCompatActivity {
@@ -53,6 +61,26 @@ public class Binh_BalanceTransactionActivity extends AppCompatActivity {
     //
     private BinhProfileViewModel profileViewModel;
     QuyProfileResponseModel.Profile profileDetails;
+
+    private String REGISTER_COIN_SERVICE_NAME = "binh-money-history-activity";
+    private CoinService coinService;
+    private Boolean isBoundCoinService=false;
+    private ServiceConnection serviceConnection;
+
+    private class CoinServiceCreatedCallback implements ServiceCreatedCallback {
+        @Override
+        public void setService(Service service) {
+            coinService = (CoinService) service;
+        }
+        @Override
+        public void setIsBound(Boolean isBound) {
+            isBoundCoinService = isBound;
+        }
+        @Override
+        public void createdComplete() {
+            loadData2();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,9 +106,22 @@ public class Binh_BalanceTransactionActivity extends AppCompatActivity {
         setObserve();
         loadData();
 
-        loadData2();
+        CoinServiceCreatedCallback serviceCreatedCallback = new CoinServiceCreatedCallback();
+        serviceConnection = new ServiceConnections.CoinServiceConnection(serviceCreatedCallback);
+        Intent intent = new Intent(Binh_BalanceTransactionActivity.this, CoinService.class);
+        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+
+//        loadData2();
     }
 
+    public void onDestroy() {
+        super.onDestroy();
+        if (isBoundCoinService) {
+            coinService.removeEventListener(REGISTER_COIN_SERVICE_NAME);
+            unbindService(serviceConnection);
+            isBoundCoinService = false;
+        }
+    }
     private void initViews() {
 
         txtBalanceExcessMoney = findViewById(R.id.txt_balance_excess_money);
@@ -108,6 +149,20 @@ public class Binh_BalanceTransactionActivity extends AppCompatActivity {
     private void setObserve() {
         // Set alert error
         viewModel.notification().observe(this, new Observer<SystemNotificationModel>() {
+            @Override
+            public void onChanged(SystemNotificationModel it) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (it != null) {
+                            Toast.makeText(Binh_BalanceTransactionActivity.this, it.content, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        });
+
+        profileViewModel.notification().observe(this, new Observer<SystemNotificationModel>() {
             @Override
             public void onChanged(SystemNotificationModel it) {
                 runOnUiThread(new Runnable() {
@@ -152,7 +207,15 @@ public class Binh_BalanceTransactionActivity extends AppCompatActivity {
                         setProfile();
                     }
                 });
-
+                ArrayList<String> coinIds = new ArrayList<>(profileDetails.openCommandItems.stream().map(e->e.coinId).collect(Collectors.toList()));
+                if(coinIds.size()!=0){
+                    coinService.addEventListener(coinIds, REGISTER_COIN_SERVICE_NAME,"mini-profile", new CoinServiceModel.EventCallbackInterface() {
+                        @Override
+                        public void handle(ArrayList<CoinServiceModel.CoinNow> coins) {
+                            updateMiniInfoSumMoney(coins);
+                        }
+                    });
+                }
             }
         });
     }
@@ -199,5 +262,28 @@ public class Binh_BalanceTransactionActivity extends AppCompatActivity {
             actionBar.setHomeAsUpIndicator(upArrow);
             actionBar.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
         }
+    }
+
+    private void updateMiniInfoSumMoney(ArrayList<CoinServiceModel.CoinNow> coins){
+        profileDetails.moneyProfitNow = 0f;
+        for (int i = 0; i < profileDetails.openCommandItems.size(); i++) {
+            int indCoin = -1;
+            for (int j = 0; j < coins.size(); j++) {
+                if(coins.get(j).id.equals(profileDetails.openCommandItems.get(i).coinId)){
+                    indCoin=j;
+                    break;
+                }
+            }
+            if(indCoin!=-1){
+                profileDetails.moneyProfitNow+=(coins.get(indCoin).priceUsd-profileDetails.openCommandItems.get(i).openPrice)*profileDetails.openCommandItems.get(i).coinNumber*(profileDetails.openCommandItems.get(i).buyOrSell.equals("buy")?1f:-1f);
+            }
+        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                txtBalanceAvailable.setText("$" + String.format("%.2f", profileDetails.moneyNow));
+                txtBalanceExcessMoney.setText("$ "+String.format("%.2f",((profileDetails.moneyNow+profileDetails.moneyInvested+profileDetails.moneyProfitNow)/1000f))+" K");
+            }
+        });
     }
 }
