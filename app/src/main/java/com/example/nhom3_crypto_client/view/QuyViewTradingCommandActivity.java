@@ -722,7 +722,7 @@ public class QuyViewTradingCommandActivity extends AppCompatActivity {
 
     private long getCommission(float money, int leverage, long openTime){
         if(leverage==1)return 0L;
-        return (long)(money*leverage*0.0001f*((System.currentTimeMillis()-openTime)/(1000*60*60*24)+1));
+        return (long)(money*leverage*0.0005f*((System.currentTimeMillis()-openTime)/(1000*60*60*24)+1));
     }
 
     private void updateOpenProfitNow(){

@@ -481,7 +481,7 @@ public class QuyMainActivityTradingFragment extends Fragment {
             leverage = Integer.parseInt(quyMainActivityTradingFragmentCreateCommandContainerLeverage.getSelectedItem().toString());
             money = Long.parseLong(quyMainActivityTradingFragmentCreateCommandContainerInputMoney.getText().toString());
             if(leverage!=1){
-                commission = getCommission(money,leverage);//0.01%
+                commission = getCommission(money,leverage);//0.05%
             }
         }catch(Exception e){}
         quyMainActivityTradingFragmentCreateCommandContainerSumMoney.setText("Khối lượng: "+money*leverage);
@@ -643,7 +643,7 @@ public class QuyMainActivityTradingFragment extends Fragment {
 
     private long getCommission(long money, int leverage){
         if(leverage==1)return 0L;
-        return (long)(money*leverage*0.0001f);
+        return (long)(money*leverage*0.0005f);
     }
     private void checkCommandAndContinue(){
         long money = 0L;

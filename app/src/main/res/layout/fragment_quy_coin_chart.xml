@@ -32,6 +32,7 @@
                 android:id="@+id/quyCoinChartCoinNameSpinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="5"
                 android:backgroundTint="#80009688"
                 android:maxWidth="1000dp"
                 android:maxLength="100"
