@@ -104,11 +104,10 @@ public class Ban_CloseFragment extends Fragment {
         }
     };
 
-    @Override
-    public void onStart() {
-        super.onStart();
-
-
+    public void reloadData() {
+        if(isBoundCoinService){
+            loadCoins();
+        }
     }
 
     public void onDestroy() {
@@ -189,11 +188,14 @@ public class Ban_CloseFragment extends Fragment {
     }
 
     private void convertResponseModelToBan_CloseCommand(ArrayList<CoinServiceModel.CoinNow> coins){
-        for (int i = 0; i < commandResponses.items.size(); i++) {
-            BanTradingCommandModel.CloseTradingCommandItem item = commandResponses.items.get(i);
-            CoinServiceModel.CoinNow coin = getCoinById(coins, item.coinId);
-            closeCommands.add(new Ban_CloseCommand(item.id,coin.id,coin.name,item.finalProfit,""+item.leverage, coin.icon,item.buyOrSell, item.openPrice, 1f, item.moneyNumber,item.closeTime));
-        };
+        if(closeCommands.size()!=commandResponses.items.size()){
+            closeCommands = new ArrayList<>();
+            for (int i = 0; i < commandResponses.items.size(); i++) {
+                BanTradingCommandModel.CloseTradingCommandItem item = commandResponses.items.get(i);
+                CoinServiceModel.CoinNow coin = getCoinById(coins, item.coinId);
+                closeCommands.add(new Ban_CloseCommand(item.id,coin.id,coin.name,item.finalProfit,""+item.leverage, coin.icon,item.buyOrSell, item.openPrice, 1f, item.moneyNumber,item.closeTime));
+            };
+        }
     }
 
     private float getProfitNow(String buyOrSell, float priceNow, float openPrice, float coinNumber){

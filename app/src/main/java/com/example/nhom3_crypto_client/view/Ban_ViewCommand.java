@@ -6,21 +6,27 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 public class Ban_ViewCommand extends FragmentStateAdapter {
-
+    Ban_OpenFragment ban_openFragment;
+    Ban_CloseFragment ban_closeFragment;
     public Ban_ViewCommand(@NonNull FragmentActivity fragmentActivity) {
         super(fragmentActivity);
+        ban_openFragment = new Ban_OpenFragment();
+        ban_closeFragment = new Ban_CloseFragment();
+    }
+
+    public void reloadData(){
+        ban_openFragment.reloadData();
+        ban_closeFragment.reloadData();
     }
 
     @NonNull
     @Override
     public Fragment createFragment(int position) {
         switch (position){
-            case 0:
-                return new Ban_OpenFragment();
             case 1:
-                return new Ban_CloseFragment();
+                return ban_closeFragment;
             default:
-                return new Ban_OpenFragment();
+                return ban_openFragment;
         }
     }
 

@@ -516,7 +516,7 @@ public class QuyMainActivityTradingFragment extends Fragment {
             }
         }
     }
-    private void loadMiniProfile(){
+    public void loadMiniProfile(){
         quyProfileViewModel.getMiniInfo(new LoadMiniProfileOk());
     }
     private void setMiniInfo(){

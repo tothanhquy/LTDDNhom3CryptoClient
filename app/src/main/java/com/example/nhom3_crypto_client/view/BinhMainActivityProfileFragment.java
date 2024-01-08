@@ -56,6 +56,7 @@ import com.google.gson.Gson;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class BinhMainActivityProfileFragment extends Fragment {
 
@@ -299,7 +300,7 @@ public class BinhMainActivityProfileFragment extends Fragment {
         pieChart.animateY(1000);
 
         // Đặt văn bản và làm đậm màu sắc
-        pieChart.setCenterText("$" + String.valueOf((int) sumMoney) + "K");
+        pieChart.setCenterText("$" + String.format("%.2f",sumMoney/1000f) + "K");
         pieChart.setCenterTextColor(Color.parseColor("#FF000000"));
         pieChart.setCenterTextSize(16f);
         // Trước hết, lấy đối tượng Legend từ PieChart
@@ -324,7 +325,15 @@ public class BinhMainActivityProfileFragment extends Fragment {
                         setProfile();
                     }
                 });
-
+                ArrayList<String> coinIds = new ArrayList<>(profileDetails.openCommandItems.stream().map(e->e.coinId).collect(Collectors.toList()));
+                if(coinIds.size()!=0){
+                    coinService.addEventListener(coinIds, REGISTER_COIN_SERVICE_NAME,"mini-profile", new CoinServiceModel.EventCallbackInterface() {
+                        @Override
+                        public void handle(ArrayList<CoinServiceModel.CoinNow> coins) {
+                            updateMiniInfoSumMoney(coins);
+                        }
+                    });
+                }
             }
         });
     }
@@ -505,7 +514,13 @@ public class BinhMainActivityProfileFragment extends Fragment {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                txtBriefIncome.setText("$ "+String.format("%.2f",((profileDetails.moneyNow)/1000f))+" K");
+                pieChart.getData().getDataSet().getEntryForIndex(0).setY((int)profileDetails.moneyProfitNow);
+                pieChart.getData().notifyDataChanged();
+                pieChart.notifyDataSetChanged();
+                pieChart.invalidate(); // Refresh the chart
+
+                txtBriefIncome.setText("$ "+String.format("%.2f",((profileDetails.moneyProfitNow)/1000f))+" K");
+                pieChart.setCenterText("$" + String.format("%.2f",(profileDetails.moneyInvested + profileDetails.moneyProfitNow + profileDetails.moneyNow)/1000f) + "K");
             }
         });
     }

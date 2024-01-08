@@ -308,7 +308,7 @@ public class BanEditMainActivityHomeFragment extends Fragment {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                txtMoney.setText("$ "+String.format("%.2f",((profileDetails.moneyNow+profileDetails.moneyInvested+profileDetails.moneyProfitNow)/1000f))+" K");
+                txtMoney.setText("$ "+String.format("%.2f",(profileDetails.moneyNow+profileDetails.moneyInvested+profileDetails.moneyProfitNow)/1000f)+" K");
             }
         });
     }

@@ -133,6 +133,8 @@ public class QuyViewTradingCommandActivity extends AppCompatActivity {
     QuyTradingCommandResponseModel.TradingCommandDetails tradingCommandDetails;
     CoinServiceModel.CoinNow coin;
 
+    float profitNow=0f;
+
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -513,11 +515,11 @@ public class QuyViewTradingCommandActivity extends AppCompatActivity {
             }catch(Exception e){}
         }
         if(enableTpSl){
-            if(tp<tradingCommandDetails.moneyNumber-getCommission(tradingCommandDetails.moneyNumber,tradingCommandDetails.leverage,tradingCommandDetails.openTime)){
+            if(tp<tradingCommandDetails.moneyNumber+profitNow-getCommission(tradingCommandDetails.moneyNumber,tradingCommandDetails.leverage,tradingCommandDetails.openTime)){
                 General.showNotification(this,new SystemNotificationModel(SystemNotificationModel.Type.Warning,"Chốt lời không ít hơn giá trị hiện tại."));
                 return;
             }
-            if(sl>tradingCommandDetails.moneyNumber-getCommission(tradingCommandDetails.moneyNumber,tradingCommandDetails.leverage,tradingCommandDetails.openTime)){
+            if(sl>tradingCommandDetails.moneyNumber+profitNow-getCommission(tradingCommandDetails.moneyNumber,tradingCommandDetails.leverage,tradingCommandDetails.openTime)){
                 General.showNotification(this,new SystemNotificationModel(SystemNotificationModel.Type.Warning,"Cắt lỗ không lớn hơn giá trị hiện tại."));
                 return;
             }
@@ -726,7 +728,6 @@ public class QuyViewTradingCommandActivity extends AppCompatActivity {
     }
 
     private void updateOpenProfitNow(){
-        float profitNow;
         if(tradingCommandDetails.buyOrSell.equals("buy")){
             profitNow = (coin.priceUsd-tradingCommandDetails.openPrice)*tradingCommandDetails.coinNumber;
         }else{
