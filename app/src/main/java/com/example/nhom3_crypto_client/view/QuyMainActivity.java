@@ -130,7 +130,9 @@ public class QuyMainActivity extends BaseActivity {
         binhMainActivityProfileFragment.setOpenChooseImageActivity(openChooseImageActivity);
 
 
+
         ArrayList<Fragment> fragments = new ArrayList<>(Arrays.asList(banEditMainActivityHomeFragment, quyMainActivityInterestedCoinsFragment,quyMainActivityTradingFragment, binhMainActivityProfileFragment));
+
 
         ViewPager2 viewPager2 = findViewById(R.id.quyMainViewPager);
         viewPager2Adapter = new ViewPager2Adapter(getSupportFragmentManager(),getLifecycle(),viewPager2,fragments);
