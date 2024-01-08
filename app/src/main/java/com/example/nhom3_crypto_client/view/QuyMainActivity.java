@@ -119,6 +119,7 @@ public class QuyMainActivity extends BaseActivity {
 
         banEditMainActivityHomeFragment = new BanEditMainActivityHomeFragment(getApplicationContext());
         banEditMainActivityHomeFragment.setEditInfoNavigation(homeEditInfoNavigation);
+        banEditMainActivityHomeFragment.setOpenSettingCallbackObject(openSettingCallbackOj);
         quyMainActivityInterestedCoinsFragment = new QuyMainActivityInterestedCoinsFragment(getApplicationContext(),InterestedCoinsChangeObject,OpenViewCoinObject);
         quyMainActivityTradingFragment = new QuyMainActivityTradingFragment(getApplicationContext(),changeCoinLauncher,InterestedCoinsChangeObject);
         quyMainActivityTradingFragment.setReloadProfileObject(reloadProfileObject);
@@ -130,11 +131,12 @@ public class QuyMainActivity extends BaseActivity {
 
 
         ArrayList<Fragment> fragments = new ArrayList<>(Arrays.asList(banEditMainActivityHomeFragment, quyMainActivityInterestedCoinsFragment,quyMainActivityTradingFragment, binhMainActivityProfileFragment));
+//        ArrayList<Fragment> fragments = new ArrayList<>(Arrays.asList(quyMainActivityTradingFragment,banEditMainActivityHomeFragment, quyMainActivityInterestedCoinsFragment, binhMainActivityProfileFragment));
 
 
         ViewPager2 viewPager2 = findViewById(R.id.quyMainViewPager);
         viewPager2Adapter = new ViewPager2Adapter(getSupportFragmentManager(),getLifecycle(),viewPager2,fragments);
-        viewPager2.setOffscreenPageLimit(2);
+        viewPager2.setOffscreenPageLimit(3);
         viewPager2.setAdapter(viewPager2Adapter);
         TabLayout tabLayout = findViewById(R.id.quyMainTabLayout);
         viewPager2.setUserInputEnabled(false);
@@ -274,15 +276,22 @@ public class QuyMainActivity extends BaseActivity {
     };
     ActivityResultLauncher<Intent> openSettingLauncher = registerForActivityResult(
         new ActivityResultContracts.StartActivityForResult(), o -> {
-            Intent intent = o.getData();
-            boolean isLogout = intent.getBooleanExtra("isLogout",false);
-                System.out.println("boolean isLogout = intent.getBooleanExtra(\"isLogout\",false);"+isLogout);
-            if(isLogout) {
-                Intent intent2 = new Intent();
-                intent2.putExtra("isLogout",true);
-                setResult(Activity.RESULT_OK,intent2);
-                finish();
-            }
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Intent intent = o.getData();
+                    if(intent!=null){
+                        boolean isLogout = intent.getBooleanExtra("isLogout",false);
+                        if(isLogout) {
+                            Intent intent2 = new Intent();
+                            intent2.putExtra("isLogout",true);
+                            setResult(Activity.RESULT_OK,intent2);
+                            finish();
+                        }
+                    }
+                }
+            });
+
         });
 
     public static interface ReloadProfile{

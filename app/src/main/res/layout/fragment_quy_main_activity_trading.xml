@@ -167,7 +167,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="10dp"
-                            android:text="TextView"
+                            android:layout_weight="1"
+                            android:minWidth="0dp"
                             android:textSize="24sp"
                             android:textStyle="bold" />
 
@@ -176,10 +177,11 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="10dp"
-                            android:text="TextView" />
+                            android:layout_weight="1"
+                            android:maxWidth="10000dp" />
 
                         <Space
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1" />
 

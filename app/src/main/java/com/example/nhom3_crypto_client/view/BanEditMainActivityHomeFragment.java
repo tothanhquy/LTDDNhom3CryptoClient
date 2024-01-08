@@ -138,7 +138,7 @@ public class BanEditMainActivityHomeFragment extends Fragment {
         setButtonClickAnimation(btnSetting, new ButtonClickAnimationAction() {
             @Override
             public void action() {
-                startActivity(new Intent(getActivity(), Binh_SettingActivity.class));
+                openSettingCallback.handle();
             }
         });
         setButtonClickAnimation(btnEditName, new ButtonClickAnimationAction() {
@@ -311,5 +311,11 @@ public class BanEditMainActivityHomeFragment extends Fragment {
                 txtMoney.setText("$ "+String.format("%.2f",((profileDetails.moneyNow+profileDetails.moneyInvested+profileDetails.moneyProfitNow)/1000f))+" K");
             }
         });
+    }
+
+    QuyMainActivity.OpenSettingCallback openSettingCallback;
+
+    public void setOpenSettingCallbackObject(QuyMainActivity.OpenSettingCallback openSettingCallback) {
+        this.openSettingCallback = openSettingCallback;
     }
 }
