@@ -732,6 +732,7 @@ public class QuyViewTradingCommandActivity extends AppCompatActivity {
         }else{
             profitNow = (-coin.priceUsd+tradingCommandDetails.openPrice)*tradingCommandDetails.coinNumber;
         }
+        System.out.println("profitNow");
         if(profitNow>0){
             quyViewTradingCommandActivityOpenTradingCommandContainerProfitNow.setText("$+"+String.format("%.2f", profitNow));
             quyViewTradingCommandActivityOpenTradingCommandContainerProfitNow.setTextColor(Color.GREEN);
