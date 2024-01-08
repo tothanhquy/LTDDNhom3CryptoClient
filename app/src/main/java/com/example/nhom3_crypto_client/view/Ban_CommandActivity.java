@@ -2,9 +2,11 @@ package com.example.nhom3_crypto_client.view;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 import com.example.nhom3_crypto_client.R;
@@ -19,6 +21,10 @@ public class Ban_CommandActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ban_command_main);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("Sổ lệnh");
+
+
         tabLayout= findViewById(R.id.tabLayout);
         viewPager2= findViewById((R.id.ViewPage2));
         viewCommand= new Ban_ViewCommand(this);
@@ -53,5 +59,12 @@ public class Ban_CommandActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId()==android.R.id.home){
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

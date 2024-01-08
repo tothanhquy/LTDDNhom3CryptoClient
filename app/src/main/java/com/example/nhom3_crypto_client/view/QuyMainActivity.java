@@ -50,9 +50,6 @@ public class QuyMainActivity extends BaseActivity {
     QuyMainActivityTradingFragment quyMainActivityTradingFragment;
     BinhMainActivityProfileFragment binhMainActivityProfileFragment;
 
-    QuyAccountViewModel quyAccountViewModel;
-
-
     private String REGISTER_COIN_SERVICE_NAME = "main-activity";
     private CoinService coinService;
     private Boolean isBoundCoinService=false;
@@ -112,8 +109,6 @@ public class QuyMainActivity extends BaseActivity {
         setContentView(R.layout.activity_quy_main);
         getSupportActionBar().hide();
 
-        quyAccountViewModel = new QuyAccountViewModel(getApplicationContext());
-
 
         View[] tabItem = {
                 super.getCustomViewTabLayout(R.drawable.quy_home, "Home"),
@@ -122,12 +117,15 @@ public class QuyMainActivity extends BaseActivity {
                 super.getCustomViewTabLayout(R.drawable.quy_profile, "Hồ sơ")
         };
 
-        banEditMainActivityHomeFragment = new BanEditMainActivityHomeFragment();
+        banEditMainActivityHomeFragment = new BanEditMainActivityHomeFragment(getApplicationContext());
         banEditMainActivityHomeFragment.setEditInfoNavigation(homeEditInfoNavigation);
         quyMainActivityInterestedCoinsFragment = new QuyMainActivityInterestedCoinsFragment(getApplicationContext(),InterestedCoinsChangeObject,OpenViewCoinObject);
         quyMainActivityTradingFragment = new QuyMainActivityTradingFragment(getApplicationContext(),changeCoinLauncher,InterestedCoinsChangeObject);
-        binhMainActivityProfileFragment = new BinhMainActivityProfileFragment();
+        quyMainActivityTradingFragment.setReloadProfileObject(reloadProfileObject);
+        binhMainActivityProfileFragment = new BinhMainActivityProfileFragment(getApplicationContext());
         binhMainActivityProfileFragment.setOpenChooseImageActivity(openChooseImageActivity);
+        binhMainActivityProfileFragment.setOpenSettingCallbackObject(openSettingCallbackOj);
+        binhMainActivityProfileFragment.setReloadProfileObject(reloadProfileObject);
 
 
 
@@ -152,26 +150,7 @@ public class QuyMainActivity extends BaseActivity {
         Intent intent = new Intent(QuyMainActivity.this, CoinService.class);
         bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
 
-        checkAuthAndContinue();
     }
-
-    private void checkAuthAndContinue(){
-        quyAccountViewModel.checkAuth(new BaseViewModel.OkCallback() {
-            @Override
-            public void handle(String data) {
-                if(data.equals("false")){
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = new Intent(QuyMainActivity.this, Thuc_MainActivity.class);
-                            startActivity(intent);
-                        }
-                    });
-                }
-            }
-        });
-    }
-
 
     @Override
     protected void onDestroy() {
@@ -198,7 +177,6 @@ public class QuyMainActivity extends BaseActivity {
     ActivityResultLauncher<Intent> profileOpenChoseLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             o -> {
-                System.out.println("yResultLauncher<Intent> profileOpenChoseLauncher = registerF");
                 if (o.getResultCode() == Activity.RESULT_OK) {
                     Intent data = o.getData();
                     Bitmap selectedImage = null;
@@ -281,6 +259,40 @@ public class QuyMainActivity extends BaseActivity {
                 }
             });
 
+        }
+    };
+
+    public static interface OpenSettingCallback{
+        public void handle();
+    }
+    private OpenSettingCallback openSettingCallbackOj = new OpenSettingCallback() {
+        @Override
+        public void handle() {
+            Intent intent = new Intent(QuyMainActivity.this, Binh_SettingActivity.class);
+            openSettingLauncher.launch(intent);
+        }
+    };
+    ActivityResultLauncher<Intent> openSettingLauncher = registerForActivityResult(
+        new ActivityResultContracts.StartActivityForResult(), o -> {
+            Intent intent = o.getData();
+            boolean isLogout = intent.getBooleanExtra("isLogout",false);
+                System.out.println("boolean isLogout = intent.getBooleanExtra(\"isLogout\",false);"+isLogout);
+            if(isLogout) {
+                Intent intent2 = new Intent();
+                intent2.putExtra("isLogout",true);
+                setResult(Activity.RESULT_OK,intent2);
+                finish();
+            }
+        });
+
+    public static interface ReloadProfile{
+        public void reload();
+    }
+    private ReloadProfile reloadProfileObject = new ReloadProfile() {
+        @Override
+        public void reload() {
+            banEditMainActivityHomeFragment.loadData();
+            binhMainActivityProfileFragment.loadData();
         }
     };
 }

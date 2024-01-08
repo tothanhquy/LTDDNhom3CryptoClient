@@ -1,7 +1,11 @@
 package com.example.nhom3_crypto_client.view;
 
 import android.annotation.SuppressLint;
+import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,11 +20,23 @@ import androidx.lifecycle.Observer;
 
 import com.example.nhom3_crypto_client.R;
 import com.example.nhom3_crypto_client.core.General;
+import com.example.nhom3_crypto_client.model.CoinServiceModel;
 import com.example.nhom3_crypto_client.model.SystemNotificationModel;
 import com.example.nhom3_crypto_client.model.response.QuyProfileResponseModel;
+import com.example.nhom3_crypto_client.service.CoinService;
+import com.example.nhom3_crypto_client.service.ServiceConnections;
+import com.example.nhom3_crypto_client.service.ServiceCreatedCallback;
 import com.example.nhom3_crypto_client.view_model.BaseViewModel;
 import com.example.nhom3_crypto_client.view_model.BinhProfileViewModel;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
 import com.google.gson.Gson;
+
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+
 
 public class BanEditMainActivityHomeFragment extends Fragment {
     private ImageView btnCommand;
@@ -30,29 +46,50 @@ public class BanEditMainActivityHomeFragment extends Fragment {
     private ImageView btnSetting;
     private ImageView imgAvatar;
     private float originalScale;
+    private BinhProfileViewModel profileViewModel;
     private TextView txtName, txtMoney, txtMoneyAvailable, txtMoneyInvested, txtCommandNumber, txtRatingNumber;
     QuyProfileResponseModel.Profile profileDetails;
-    private BinhProfileViewModel viewModel;
+
 
     public BanEditMainActivityHomeFragment() {
     }
 
 
-    public static BanEditMainActivityHomeFragment newInstance(String param1, String param2) {
-        BanEditMainActivityHomeFragment fragment = new BanEditMainActivityHomeFragment();
-//        Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
-//        fragment.setArguments(args);
-        return fragment;
+    private String REGISTER_COIN_SERVICE_NAME = "main-activity-home-fragment";
+    private CoinService coinService;
+    private Boolean isBoundCoinService=false;
+    private ServiceConnection serviceConnection;
+    private Context context;
+
+    private class CoinServiceCreatedCallback implements ServiceCreatedCallback {
+        @Override
+        public void setService(Service service) {
+            coinService = (CoinService) service;
+        }
+        @Override
+        public void setIsBound(Boolean isBound) {
+            isBoundCoinService = isBound;
+        }
+        @Override
+        public void createdComplete() {
+            loadData();
+        }
+    }
+
+    public BanEditMainActivityHomeFragment(Context context) {
+        this.context = context;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-//            mParam1 = getArguments().getString(ARG_PARAM1);
-//            mParam2 = getArguments().getString(ARG_PARAM2);
+    }
+    public void onDestroy() {
+        super.onDestroy();
+        if (isBoundCoinService) {
+            coinService.removeEventListener(REGISTER_COIN_SERVICE_NAME);
+            context.unbindService(serviceConnection);
+            isBoundCoinService = false;
         }
     }
 
@@ -65,6 +102,7 @@ public class BanEditMainActivityHomeFragment extends Fragment {
         btnCommand = view.findViewById(R.id.btnCommand);
         btnRating = view.findViewById(R.id.btnRating);
         btnEditName = view.findViewById(R.id.btnEditName);
+
         btnSafe = view.findViewById(R.id.btnSafe);
         btnSetting = view.findViewById(R.id.btnSetting);
         txtName = view.findViewById(R.id.txtName);
@@ -74,9 +112,11 @@ public class BanEditMainActivityHomeFragment extends Fragment {
         txtCommandNumber = view.findViewById(R.id.txtCommandNumber);
         txtRatingNumber = view.findViewById(R.id.txtRattingNumber);
         imgAvatar = view.findViewById(R.id.imgAvatar);
-        viewModel = new BinhProfileViewModel(getContext());
+        profileViewModel = new BinhProfileViewModel(getContext());
+
         loadData();
         setObserve();
+
         setButtonClickAnimation(btnCommand, new ButtonClickAnimationAction() {
             @Override
             public void action() {
@@ -117,46 +157,50 @@ public class BanEditMainActivityHomeFragment extends Fragment {
         return view;
     }
 
-    public static interface EditInfoNavigation {
-        public void navigation();
-    }
 
-    private EditInfoNavigation editInfoNavigationObject;
+    @Override
+    public void onStart() {
+        super.onStart();
+        profileViewModel = new BinhProfileViewModel(getContext());
+        setObserve();
 
-    public void setEditInfoNavigation(EditInfoNavigation editInfoNavigation) {
-        this.editInfoNavigationObject = editInfoNavigation;
-    }
-
-    private interface ButtonClickAnimationAction {
-        public void action();
+        CoinServiceCreatedCallback serviceCreatedCallback = new CoinServiceCreatedCallback();
+        serviceConnection = new ServiceConnections.CoinServiceConnection(serviceCreatedCallback);
+        Intent intent = new Intent(context, CoinService.class);
+        context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
     private void setProfile() {
-
+        int betterPercentNumber = 100 * (profileDetails.totalNumber - profileDetails.topNumber) / profileDetails.totalNumber;
         //
         General.setAvatarUrl(getContext(), imgAvatar, profileDetails.avatar);
         txtName.setText(profileDetails.name);
-        txtMoneyInvested.setText("$" + String.format("%.2f", profileDetails.moneyInvested) +" K");
-        txtMoneyAvailable.setText("$" + String.format("%.2f", profileDetails.moneyNow)+" K");
-        float sumMoney = profileDetails.moneyInvested + profileDetails.moneyProfitNow + profileDetails.moneyNow;
-        txtMoney.setText("$" + String.format("%.2f", sumMoney)+ " K");
-        txtRatingNumber.setText(">" + 100 * (profileDetails.totalNumber - profileDetails.topNumber) / profileDetails.totalNumber + "%");
+        txtMoney.setText("$" + String.format("%.2f",(profileDetails.moneyProfitNow+profileDetails.moneyNow+profileDetails.moneyInvested)/1000f)+" K");
+        txtMoneyInvested.setText("$" + String.format("%.2f",profileDetails.moneyInvested/1000f)+" K");
+        txtMoneyAvailable.setText("$" + String.format("%.2f",profileDetails.moneyNow/1000f)+" K");
+
+        txtRatingNumber.setText(">" + betterPercentNumber + "%");
         txtCommandNumber.setText("" + profileDetails.tradingCommandNumber);
     }
 
-    private void loadData() {
-     /*   Intent intent = getIntent();
-        userId = intent.getStringExtra("id");*/
-        viewModel.getInfo("mine", new BaseViewModel.OkCallback() {
+    public void loadData() {
+        profileViewModel.getInfo("mine", new BaseViewModel.OkCallback() {
             @Override
             public void handle(String data) {
-                System.out.println(data);
-                profileDetails = new Gson().fromJson(data, QuyProfileResponseModel.Profile.class);
-                System.out.println(profileDetails);
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        profileDetails = new Gson().fromJson(data, QuyProfileResponseModel.Profile.class);
                         setProfile();
+                        ArrayList<String> coinIds = new ArrayList<>(profileDetails.openCommandItems.stream().map(e->e.coinId).collect(Collectors.toList()));
+                        if(coinIds.size()!=0){
+                            coinService.addEventListener(coinIds, REGISTER_COIN_SERVICE_NAME,"mini-profile", new CoinServiceModel.EventCallbackInterface() {
+                                @Override
+                                public void handle(ArrayList<CoinServiceModel.CoinNow> coins) {
+                                    updateMiniInfoSumMoney(coins);
+                                }
+                            });
+                        }
                     }
                 });
 
@@ -164,8 +208,9 @@ public class BanEditMainActivityHomeFragment extends Fragment {
         });
     }
 
+
     public void setObserve() {
-        viewModel.notification().observe(getActivity(), new Observer<SystemNotificationModel>() {
+        profileViewModel.notification().observe(getActivity(), new Observer<SystemNotificationModel>() {
             @Override
             public void onChanged(SystemNotificationModel systemNotificationModel) {
                 if (systemNotificationModel != null) {
@@ -178,6 +223,20 @@ public class BanEditMainActivityHomeFragment extends Fragment {
                 }
             }
         });
+    }
+
+    public static interface EditInfoNavigation{
+        public void navigation();
+    }
+
+    private EditInfoNavigation editInfoNavigationObject;
+
+    public void setEditInfoNavigation(EditInfoNavigation editInfoNavigation) {
+        this.editInfoNavigationObject = editInfoNavigation;
+    }
+
+    private interface ButtonClickAnimationAction {
+        public void action();
     }
 
     private void setButtonClickAnimation(ImageView button, ButtonClickAnimationAction action) {
@@ -228,6 +287,28 @@ public class BanEditMainActivityHomeFragment extends Fragment {
 
                 // Start the animation
                 button.startAnimation(anim);
+            }
+        });
+    }
+
+    private void updateMiniInfoSumMoney(ArrayList<CoinServiceModel.CoinNow> coins){
+        profileDetails.moneyProfitNow = 0f;
+        for (int i = 0; i < profileDetails.openCommandItems.size(); i++) {
+            int indCoin = -1;
+            for (int j = 0; j < coins.size(); j++) {
+                if(coins.get(j).id.equals(profileDetails.openCommandItems.get(i).coinId)){
+                    indCoin=j;
+                    break;
+                }
+            }
+            if(indCoin!=-1){
+                profileDetails.moneyProfitNow+=(coins.get(indCoin).priceUsd-profileDetails.openCommandItems.get(i).openPrice)*profileDetails.openCommandItems.get(i).coinNumber*(profileDetails.openCommandItems.get(i).buyOrSell.equals("buy")?1f:-1f);
+            }
+        }
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                txtMoney.setText("$ "+String.format("%.2f",((profileDetails.moneyNow+profileDetails.moneyInvested+profileDetails.moneyProfitNow)/1000f))+" K");
             }
         });
     }

@@ -74,8 +74,13 @@ public class BinhProfileViewModel extends BaseViewModel {
             if (response.status == API.ResponseAPI.Status.Fail) {
                 _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Error, response.error));
             } else {
-                okCallback.handle(response.data);
-//                _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Info,"ok"));
+//                okCallback.handle(response.data);
+                _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Info, "", "Đổi tên thành công", new SystemNotificationModel.OkCallback() {
+                    @Override
+                    public void handle() {
+                        okCallback.handle("");
+                    }
+                }));
             }
 
 
@@ -126,7 +131,12 @@ public class BinhProfileViewModel extends BaseViewModel {
             if (response.status == API.ResponseAPI.Status.Fail) {
                 _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Error, response.error));
             } else {
-                okCallback.handle(response.data);
+                _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Info, "", "Đổi avatar thành công", new SystemNotificationModel.OkCallback() {
+                    @Override
+                    public void handle() {
+                        okCallback.handle("");
+                    }
+                }));
             }
         } catch (Exception e) {
             System.out.println(e);
@@ -140,15 +150,15 @@ public class BinhProfileViewModel extends BaseViewModel {
     // logout
 
 
-    public void postLogout(OkCallback okCallback) {
+    public void postLogout(boolean isLogoutAll, OkCallback okCallback) {
         if (isLoading().getValue()) return;
         _isLoading.postValue(true);
         new Thread(() -> {
-            postLogoutAPI(okCallback);
+            postLogoutAPI(isLogoutAll, okCallback);
         }).start();
     }
 
-    private void postLogoutAPI(OkCallback okCallback) {
+    private void postLogoutAPI(boolean isLogoutAll, OkCallback okCallback) {
         try {
 //            API.RequestParams params = new API.RequestParams();
             RequestBody requestBody = new MultipartBody.Builder()
@@ -156,7 +166,7 @@ public class BinhProfileViewModel extends BaseViewModel {
                     .addFormDataPart("acb","abc")
                     .build();
 
-            API.ResponseAPI response = API.post(context, "/account/logout", requestBody);
+            API.ResponseAPI response = API.post(context, "/account/"+(isLogoutAll?"logoutAll":"logout"), requestBody);
             if (response.status == API.ResponseAPI.Status.Fail) {
                 _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Error, response.error));
             } else {
@@ -172,5 +182,45 @@ public class BinhProfileViewModel extends BaseViewModel {
             _isLoading.postValue(false);
         }
     }
+
+    public void editPin(String pin, String password, OkCallback okCallback) {
+        if (isLoading().getValue()) return;
+        _isLoading.postValue(true);
+        new Thread(() -> {
+            editPinAPI(pin,password,okCallback);
+        }).start();
+    }
+
+    private void editPinAPI(String pin, String password, OkCallback okCallback) {
+        try {
+//            API.RequestParams params = new API.RequestParams();
+            RequestBody requestBody = new MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("tradePin",pin)
+                    .addFormDataPart("password",password)
+                    .build();
+
+            API.ResponseAPI response = API.post(context, "/account/editTradeAuth", requestBody);
+            if (response.status == API.ResponseAPI.Status.Fail) {
+                _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Error, response.error));
+            } else {
+//                okCallback.handle(response.data);
+                _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Info, "", "Đổi mã oin thành công.", new SystemNotificationModel.OkCallback() {
+                    @Override
+                    public void handle() {
+                        okCallback.handle("");
+                    }
+                }));
+            }
+
+
+        } catch (Exception e) {
+            System.out.println(e);
+            _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Error, "Lỗi hệ thống."));
+        } finally {
+            _isLoading.postValue(false);
+        }
+    }
+
 
 }

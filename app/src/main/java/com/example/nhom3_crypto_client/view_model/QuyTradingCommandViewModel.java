@@ -120,8 +120,13 @@ public class QuyTradingCommandViewModel extends BaseViewModel{
                     }
                 }));
             }else{
-                okCallback.handle(response.data);
-//                _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Info,"ok"));
+//                okCallback.handle(response.data);
+                _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Info, "", "Đã gửi OTP.", new SystemNotificationModel.OkCallback() {
+                    @Override
+                    public void handle() {
+                        okCallback.handle(response.data);
+                    }
+                }));
             }
         }catch(Exception e){
             System.out.println(e);

@@ -138,7 +138,7 @@ public class QuyViewTradingCommandActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quy_view_trading_command);
-        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         quyViewTradingCommandActivityCoinChartFragmentContainer = findViewById(R.id.quyViewTradingCommandActivityCoinChartFragmentContainer);
         quyViewTradingCommandActivityOpenTradingCommandContainer = findViewById(R.id.quyViewTradingCommandActivityOpenTradingCommandContainer);
@@ -413,7 +413,7 @@ public class QuyViewTradingCommandActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                closeCommandOpenVerifyOtpAndContinue();
+                                closeCommandOpenVerifyOtpAndContinue(pin);
                             }
                         });
 
@@ -436,7 +436,7 @@ public class QuyViewTradingCommandActivity extends AppCompatActivity {
         quyVerifyPinDialog.show();
     }
 
-    private void closeCommandOpenVerifyOtpAndContinue(){
+    private void closeCommandOpenVerifyOtpAndContinue(String pin){
         QuyVerifyOtpDialog quyVerifyOtpDialog = new QuyVerifyOtpDialog(this);
         quyVerifyOtpDialog.setHandleCallback(new QuyVerifyOtpDialog.OkCallback() {
             @Override
@@ -462,6 +462,36 @@ public class QuyViewTradingCommandActivity extends AppCompatActivity {
                                 quyVerifyOtpDialog.show();
                             }
                         });
+                    }
+                });
+            }
+        });
+        quyVerifyOtpDialog.setResendCallback(new QuyVerifyOtpDialog.OkCallback() {
+            @Override
+            public void handle(String otp) {
+                quyVerifyOtpDialog.hide();
+                quyTradingCommandViewModel.checkVerifyPin(pin, new BaseViewModel.OkCallback() {
+                    @Override
+                    public void handle(String data) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                quyVerifyOtpDialog.clearAndFocus();
+                                quyVerifyOtpDialog.show();
+                            }
+                        });
+
+                    }
+                }, new BaseViewModel.OkCallback() {
+                    @Override
+                    public void handle(String data) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                quyVerifyOtpDialog.show();
+                            }
+                        });
+
                     }
                 });
             }
@@ -507,7 +537,7 @@ public class QuyViewTradingCommandActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                editCommandOpenVerifyOtpAndContinue();
+                                editCommandOpenVerifyOtpAndContinue(pin);
                             }
                         });
 
@@ -530,7 +560,7 @@ public class QuyViewTradingCommandActivity extends AppCompatActivity {
         quyVerifyPinDialog.show();
     }
 
-    private void editCommandOpenVerifyOtpAndContinue(){
+    private void editCommandOpenVerifyOtpAndContinue(String pin){
         boolean enableTpSl = quyViewTradingCommandActivityEditCommandContainerEnableTPSL.isChecked();
         long tp = 0L;
         long sl = 0L;
@@ -572,6 +602,37 @@ public class QuyViewTradingCommandActivity extends AppCompatActivity {
                 });
             }
         });
+        quyVerifyOtpDialog.setResendCallback(new QuyVerifyOtpDialog.OkCallback() {
+            @Override
+            public void handle(String otp) {
+                quyVerifyOtpDialog.hide();
+                quyTradingCommandViewModel.checkVerifyPin(pin, new BaseViewModel.OkCallback() {
+                    @Override
+                    public void handle(String data) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                quyVerifyOtpDialog.clearAndFocus();
+                                quyVerifyOtpDialog.show();
+                            }
+                        });
+
+                    }
+                }, new BaseViewModel.OkCallback() {
+                    @Override
+                    public void handle(String data) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                quyVerifyOtpDialog.show();
+                            }
+                        });
+
+                    }
+                });
+            }
+        });
+
         quyVerifyOtpDialog.show();
     }
 
