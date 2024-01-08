@@ -53,7 +53,8 @@
             <Spinner
                 android:id="@+id/quyCoinChartCoinIntervalSpinner"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:spinnerMode="dialog" />
 
             <Space
                 android:layout_width="0dp"
@@ -63,7 +64,8 @@
             <Spinner
                 android:id="@+id/quyCoinChartCoinTypeSpinner"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:spinnerMode="dialog" />
 
             <Space
                 android:layout_width="0dp"

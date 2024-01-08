@@ -112,11 +112,10 @@ public class Ban_OpenFragment extends Fragment {
         }
     };
 
-    @Override
-    public void onStart() {
-        super.onStart();
-
-
+    public void reloadData() {
+        if(isBoundCoinService){
+            loadCoins();
+        }
     }
 
     public void onDestroy() {
@@ -190,7 +189,7 @@ public class Ban_OpenFragment extends Fragment {
 //        }
 //    }
 
-    private void loadCoins(){
+    public void loadCoins(){
         progressBar.setVisibility(View.VISIBLE);
         coinService.getAllCoins(new CoinService.GetAllWaitCallback() {
             @Override
@@ -216,9 +215,10 @@ public class Ban_OpenFragment extends Fragment {
     }
 
     private void setCommands(ArrayList<CoinServiceModel.CoinNow> coins){
-        convertResponseModelToBan_OpenCommand(coins);
-        openAdapter.setList(openCommands);
-        setUpdateRealTimePrice();
+        if(convertResponseModelToBan_OpenCommand(coins)){
+            openAdapter.setList(openCommands);
+            setUpdateRealTimePrice();
+        }
     }
 
     private void setUpdateRealTimePrice(){
@@ -250,17 +250,23 @@ public class Ban_OpenFragment extends Fragment {
         return null;
     }
 
-    private void convertResponseModelToBan_OpenCommand(ArrayList<CoinServiceModel.CoinNow> coins){
-        for (int i = 0; i < commandResponses.items.size(); i++) {
-            BanTradingCommandModel.OpenTradingCommandItem item = commandResponses.items.get(i);
-            CoinServiceModel.CoinNow coin = getCoinById(coins, item.coinId);
-            if(coin!=null){
-                float profitNow = getProfitNow(item.buyOrSell,coin.priceUsd,item.openPrice,item.coinNumber);
-                openCommands.add(new Ban_OpenCommand(item.id,coin.id,coin.name,profitNow,""+item.leverage, coin.icon,item.buyOrSell, item.openPrice, item.coinNumber, item.moneyNumber, item.openTime));
-            }else{
-                openCommands.add(new Ban_OpenCommand(item.id,coin.id,"Coin unknown",0f,""+item.leverage, coin.icon,item.buyOrSell, item.openPrice, item.coinNumber, item.moneyNumber, item.openTime));
-            }
-        };
+    private boolean convertResponseModelToBan_OpenCommand(ArrayList<CoinServiceModel.CoinNow> coins){
+        if(commandResponses.items.size()!=openCommands.size()){
+            openCommands = new ArrayList<>();
+            for (int i = 0; i < commandResponses.items.size(); i++) {
+                BanTradingCommandModel.OpenTradingCommandItem item = commandResponses.items.get(i);
+                CoinServiceModel.CoinNow coin = getCoinById(coins, item.coinId);
+                if(coin!=null){
+                    float profitNow = getProfitNow(item.buyOrSell,coin.priceUsd,item.openPrice,item.coinNumber);
+                    openCommands.add(new Ban_OpenCommand(item.id,coin.id,coin.name,profitNow,""+item.leverage, coin.icon,item.buyOrSell, item.openPrice, item.coinNumber, item.moneyNumber, item.openTime));
+                }else{
+                    openCommands.add(new Ban_OpenCommand(item.id,coin.id,"Coin unknown",0f,""+item.leverage, coin.icon,item.buyOrSell, item.openPrice, item.coinNumber, item.moneyNumber, item.openTime));
+                }
+            };
+            return true;
+        }else{
+            return false;
+        }
     }
 
     private float getProfitNow(String buyOrSell, float priceNow, float openPrice, float coinNumber){

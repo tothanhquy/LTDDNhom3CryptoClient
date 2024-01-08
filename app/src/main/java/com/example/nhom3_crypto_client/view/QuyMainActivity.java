@@ -27,9 +27,11 @@ import android.widget.TextView;
 
 import com.example.nhom3_crypto_client.R;
 import com.example.nhom3_crypto_client.core.General;
+import com.example.nhom3_crypto_client.model.socket.SocketServiceEventsModel;
 import com.example.nhom3_crypto_client.service.CoinService;
 import com.example.nhom3_crypto_client.service.ServiceConnections;
 import com.example.nhom3_crypto_client.service.ServiceCreatedCallback;
+import com.example.nhom3_crypto_client.service.SocketService;
 import com.example.nhom3_crypto_client.view_model.BaseViewModel;
 import com.example.nhom3_crypto_client.view_model.QuyAccountViewModel;
 import com.google.android.material.tabs.TabLayout;
@@ -70,6 +72,30 @@ public class QuyMainActivity extends BaseActivity {
         }
     }
 
+    private String REGISTER_SOCKET_SERVICE_NAME = "main-activity";
+    private SocketService socketService;
+    private Boolean isBoundSocketService;
+    private ServiceConnection socketServiceConnection = new ServiceConnections.SocketServiceConnection(new SocketServiceCreatedCallback());
+    private class SocketServiceCreatedCallback implements ServiceCreatedCallback{
+        @Override
+        public void setService(Service service) {
+            socketService = (SocketService) service;
+        }
+        @Override
+        public void setIsBound(Boolean isBound) {
+            isBoundSocketService = isBound;
+        }
+        @Override
+        public void createdComplete() {
+            System.out.println("SocketServiceCreatedCallback");
+            socketService.addEventListener(SocketServiceEventsModel.EventNames.Receive.AutoCloseTradingCommand, REGISTER_SOCKET_SERVICE_NAME, new SocketServiceEventsModel.EventCallbackInterface() {
+                @Override
+                public void handle(String data) {
+                    socketReloadProfile();
+                }
+            });
+        }
+    }
     private boolean interestedCoinsChangeStatus;
     public static interface InterestedCoinsChange{
         public void setStatus(boolean status);
@@ -152,6 +178,11 @@ public class QuyMainActivity extends BaseActivity {
         Intent intent = new Intent(QuyMainActivity.this, CoinService.class);
         bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
 
+        SocketServiceCreatedCallback socketServiceCreatedCallback = new SocketServiceCreatedCallback();
+        socketServiceConnection = new ServiceConnections.SocketServiceConnection(socketServiceCreatedCallback);
+        Intent intent2 = new Intent(QuyMainActivity.this, SocketService.class);
+        bindService(intent2, socketServiceConnection, Context.BIND_AUTO_CREATE);
+
     }
 
     @Override
@@ -162,9 +193,18 @@ public class QuyMainActivity extends BaseActivity {
             unbindService(serviceConnection);
             isBoundCoinService = false;
         }
+        if (isBoundSocketService) {
+            socketService.removeEventListener(REGISTER_SOCKET_SERVICE_NAME);
+            unbindService(socketServiceConnection);
+            isBoundSocketService = false;
+        }
     }
 
-
+    private void socketReloadProfile(){
+        banEditMainActivityHomeFragment.loadData();
+        binhMainActivityProfileFragment.loadData();
+        quyMainActivityTradingFragment.loadMiniProfile();
+    }
 
     ActivityResultLauncher<Intent> changeCoinLauncher = registerForActivityResult(
         new ActivityResultContracts.StartActivityForResult(), o -> {
