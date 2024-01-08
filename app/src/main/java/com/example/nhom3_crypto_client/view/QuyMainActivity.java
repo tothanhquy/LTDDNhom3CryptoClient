@@ -119,6 +119,7 @@ public class QuyMainActivity extends BaseActivity {
 
         banEditMainActivityHomeFragment = new BanEditMainActivityHomeFragment(getApplicationContext());
         banEditMainActivityHomeFragment.setEditInfoNavigation(homeEditInfoNavigation);
+        banEditMainActivityHomeFragment.setOpenSettingCallbackObject(openSettingCallbackOj);
         quyMainActivityInterestedCoinsFragment = new QuyMainActivityInterestedCoinsFragment(getApplicationContext(),InterestedCoinsChangeObject,OpenViewCoinObject);
         quyMainActivityTradingFragment = new QuyMainActivityTradingFragment(getApplicationContext(),changeCoinLauncher,InterestedCoinsChangeObject);
         quyMainActivityTradingFragment.setReloadProfileObject(reloadProfileObject);
@@ -274,15 +275,22 @@ public class QuyMainActivity extends BaseActivity {
     };
     ActivityResultLauncher<Intent> openSettingLauncher = registerForActivityResult(
         new ActivityResultContracts.StartActivityForResult(), o -> {
-            Intent intent = o.getData();
-            boolean isLogout = intent.getBooleanExtra("isLogout",false);
-                System.out.println("boolean isLogout = intent.getBooleanExtra(\"isLogout\",false);"+isLogout);
-            if(isLogout) {
-                Intent intent2 = new Intent();
-                intent2.putExtra("isLogout",true);
-                setResult(Activity.RESULT_OK,intent2);
-                finish();
-            }
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Intent intent = o.getData();
+                    if(intent!=null){
+                        boolean isLogout = intent.getBooleanExtra("isLogout",false);
+                        if(isLogout) {
+                            Intent intent2 = new Intent();
+                            intent2.putExtra("isLogout",true);
+                            setResult(Activity.RESULT_OK,intent2);
+                            finish();
+                        }
+                    }
+                }
+            });
+
         });
 
     public static interface ReloadProfile{
