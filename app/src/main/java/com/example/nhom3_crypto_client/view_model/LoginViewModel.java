@@ -39,8 +39,8 @@ public class LoginViewModel extends BaseViewModel{
 //                failCallback.handle();
             }else{
                 API.setAuth(context,response.data);
-//                _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Info,okCallback));
-                okCallback.handle();
+                _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Info,"","Đăng nhập thành công",okCallback));
+//                okCallback.handle();
             }
         }catch(Exception e){
             System.out.println(e);
@@ -74,7 +74,7 @@ public class LoginViewModel extends BaseViewModel{
             if(response.status== API.ResponseAPI.Status.Fail){
                 _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Error,response.error));
             }else{
-                _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Info,okCallback));
+                _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Info,"","Bạn hãy xác nhận mã OTP",okCallback));
             }
         }catch(Exception e){
             System.out.println(e);
@@ -108,7 +108,7 @@ public class LoginViewModel extends BaseViewModel{
                 _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Error,"",response.error,failOkCallback));
             }else{
                 okCallback.handle();
-                _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Info,okCallback));
+                _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Info, "","Đăng ký tài khoản thành công",okCallback));
             }
         }catch(Exception e){
             System.out.println(e);
@@ -140,8 +140,8 @@ public class LoginViewModel extends BaseViewModel{
             if(response.status== API.ResponseAPI.Status.Fail){
                 _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Error,"",response.error,failCalllback));
             }else{
-                okCallback.handle();
-//                _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Info,okCallback));
+//                okCallback.handle();
+                _notification.postValue(new SystemNotificationModel(SystemNotificationModel.Type.Info,"","Bạn hãy xác nhận mã OTP",okCallback));
             }
         }catch(Exception e){
             System.out.println(e);

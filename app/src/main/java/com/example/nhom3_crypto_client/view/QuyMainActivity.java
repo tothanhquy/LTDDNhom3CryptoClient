@@ -130,11 +130,12 @@ public class QuyMainActivity extends BaseActivity {
 
 
         ArrayList<Fragment> fragments = new ArrayList<>(Arrays.asList(banEditMainActivityHomeFragment, quyMainActivityInterestedCoinsFragment,quyMainActivityTradingFragment, binhMainActivityProfileFragment));
+//        ArrayList<Fragment> fragments = new ArrayList<>(Arrays.asList(quyMainActivityTradingFragment,banEditMainActivityHomeFragment, quyMainActivityInterestedCoinsFragment, binhMainActivityProfileFragment));
 
 
         ViewPager2 viewPager2 = findViewById(R.id.quyMainViewPager);
         viewPager2Adapter = new ViewPager2Adapter(getSupportFragmentManager(),getLifecycle(),viewPager2,fragments);
-        viewPager2.setOffscreenPageLimit(2);
+        viewPager2.setOffscreenPageLimit(3);
         viewPager2.setAdapter(viewPager2Adapter);
         TabLayout tabLayout = findViewById(R.id.quyMainTabLayout);
         viewPager2.setUserInputEnabled(false);
